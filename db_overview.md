@@ -16,4 +16,4 @@ Parking_places
 
 Payment_history
 ---------------
-(datestamp, user_ID, cost, lot_ID, place_ID)   
+(datestamp, user_ID, cost, lot_ID, place_ID, booking_date, time_start, time_end)   
