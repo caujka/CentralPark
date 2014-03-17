@@ -3,44 +3,54 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-users = [
+transactions = [
     {
-        'id': 1,
-        'login': u'root',
-        'first_name' : u'',
-        'last_name' :u'',
-        'password': u'toor', 
-        'isAdmin': True,
-        'isInspector': False
-    },
+        'transaction_id': 1,
+        'place_id': u'place_id',
+        'car': 'car',
+        'cost' : u'UAH',
+        'leave_before' :u'date',
+        'hourly_rate': u'rate', 
+        'result': 'result'
+    }
+]
+places = [
     {
-         'id': 2,
-        'login': u'varyag',
-        'first_name' : u'Stas',
-        'last_name' : u'Breslavskyi',
-        'password': u'ololololo', 
-        'isAdmin': False,
-        'isInspector': False
+        'place_id': 1,
+        'car': 'car',
+        'leave_before': 'time',
+        'hourly_rate': 'rate'
     }
 ]
 
-@app.route('/todo/api/v1.0/users', methods = ['GET'])
-def get_tasks():
-    return jsonify( { 'users': users } )
 
-@app.route('/todo/api/v1.0/signin', methods = ['POST'])
+@app.route('/todo/api/v1.0/places', methods = ['GET'])
+def get_tasks():
+    return jsonify( { 'places': places } )
+
+@app.route('/todo/api/v1.0/transact', methods = ['POST'])
 def create_profile():
-    user = {
-        'id': users[-1]['id'] + 1,
-        'login': request.json['login'],
-        'first_name': request.json.get('first_name', ''),
-        'last_name': request.json.get('last_name', ''),
-        'password': request.json.get('password'), 
-        'isAdmin': False,
-        'isInspector': False
-    }
-    users.append(user)
-    return jsonify( { 'user': user } ), 201
+    try:
+        transaction = {
+            'transaction_id': transactions[-1]['transaction_id'] + 1,
+            'place_id': request.json.get('place_id', ''),
+            'cost': request.json.get('cost', ''),
+            'leave_before': request.json.get('leave_before', ''),
+            'hourly_rate': request.json.get('hourly_rate'), 
+            'result': True
+        }
+        place = {
+            'place_id': places[-1]['place_id'] + 1,
+            'car': 'car',
+            'leave_before': request.json.get('leave_before', ''),
+            'hourly_rate': request.json.get('hourly_rate'), 
+        }
+        transactions.append(transactions)
+        places.append(place)
+        return jsonify( { 'transaction': transaction } ), 201
+    except:
+        return jsonify( {'Error': 'Transaction not successful! Try again.'}) 
 
 if __name__ == '__main__':
+    
     app.run(debug = True)
