@@ -25,11 +25,11 @@ places = [
 
 
 @app.route('/todo/api/v1.0/places', methods = ['GET'])
-def get_tasks():
+def get_places():
     return jsonify( { 'places': places } )
 
 @app.route('/todo/api/v1.0/transact', methods = ['POST'])
-def create_profile():
+def trasaction():
     try:
         transaction = {
             'transaction_id': transactions[-1]['transaction_id'] + 1,
