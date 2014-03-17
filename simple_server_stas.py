@@ -17,8 +17,7 @@ transactions = [
 places = [
     {
         'place_id': 1,
-        'car': '',
-        'leave_before': '',
+        'car': [{'car_number': 'leave_before'}],
         'hourly_rate': '',
     }
 ]
@@ -26,7 +25,9 @@ places = [
 
 @app.route('/todo/api/v1.0/places', methods = ['GET'])
 def get_places():
-    return jsonify( { 'places': places } )
+    for place in places:
+        if request.json.get('place_id', '') == place['place_id']:
+            return jsonify( { 'place': place })
 
 @app.route('/todo/api/v1.0/transact', methods = ['POST'])
 def trasaction():
@@ -34,26 +35,20 @@ def trasaction():
         error_flag = False
         if request.json.get('place_id', '') == place['place_id']:
             transaction = {
-                'transaction_id': transactions[-1]['transaction_id'] + 1,
+                'transaction_id': int(transactions[-1]['transaction_id']) + 1,
                 'place_id': request.json.get('place_id', ''),
-                'car': request.json.get('car', ''),
+                'car_number': request.json.get('car', ''),
+                'leave_before': request.json.get('leave_before', ''),
                 'cost': request.json.get('cost', ''),
                 'hourly_rate': request.json.get('hourly_rate'), 
                 'result': True
             }
-            parking_place = {
-                'place_id': request.json.get('place_id', ''),
-                'come_after': request.json.get('come_after', ''),
-                'leave_before': request.json.get('leave_before', ''),
-                'car': request.json.get('car', ''),
-                'hourly_rate': request.json.get('hourly_rate'), 
-            }
-            transactions.append(transactions)
-            places.append(parking_place)
+            place['car'].append({request.json.get('car_number', ''): request.json.get('leave_before', ''),})
+            transactions.append(transaction)
             error_flag = True
             break
     if(error_flag) :
-        return jsonify( { 'transaction': transaction, 'parking_place': parking_place } ), 201 
+        return jsonify( { 'transaction': transaction } ), 201 
     else:             
         return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'}) 
 
