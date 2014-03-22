@@ -1,0 +1,14 @@
+from app import db
+
+ROLE_USER = 0
+ROLE_ADMIN = 1
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    place_id = db.Column(db.Integer)
+    car_number = db.Column(db.String(10))
+    cost = db.Column(db.Integer)
+    leave_before = db.Column(db.Date)
+    result = db.Column(db.Binary)
+    def __repr__(self):
+    	return '<User %r>' % (self.nickname)
