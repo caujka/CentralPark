@@ -1,0 +1,24 @@
+
+#!/bin/sh
+echo Do you want to unpack and run CentralPark?
+echo Print "y" or "n"
+read ANSWER
+if [[ "$ANSWER" = "y" ]]; then 
+  echo "Starting unpacking..."
+  echo "$ANSWER"
+  FILE_EXCISTING = find app.db
+  if [[ True ]];
+  	then 
+ 	echo Database do not exist!
+ 	echo Database creating...
+
+  python db_create.py
+
+  	if [[ True ]]; then 
+  		echo Database created   
+    fi
+  else
+  	echo Database ready!
+  fi
+  echo Project ready to run! Visit http://localhost:5000 to Start 
+fi
