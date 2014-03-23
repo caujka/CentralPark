@@ -16,14 +16,28 @@ name text,
 adress text
 );
 
+INSERT INTO Parking_Lots VALUES (0, 'parking №1', 'Pasternaka str.');
+INSERT INTO Parking_Lots VALUES (1, 'parking №2', 'Fedkivycha str.');
+INSERT INTO Parking_Lots VALUES (2, 'parking №3', 'V. Velykogo str.');
+
 DROP TABLE IF EXISTS Parking_Places;
 CREATE TABLE Parking_Places (
 id_lot integer,
-id_place integer primary key,
+id_place integer primary key autoincrement,
 place_category integer,
 place_name text,
 FOREIGN KEY(id_lot) REFERENCES Parking_Lots(id_lot)
 );
+
+INSERT INTO Parking_Places VALUES (0, 0, 0, 'some name');
+INSERT INTO Parking_Places VALUES (0, 1, 1, 'some name');
+INSERT INTO Parking_Places VALUES (0, 2, 0, 'some name');
+INSERT INTO Parking_Places VALUES (1, 3, 1, 'some name');
+INSERT INTO Parking_Places VALUES (1, 4, 1, 'some name');
+INSERT INTO Parking_Places VALUES (1, 5, 0, 'some name');
+INSERT INTO Parking_Places VALUES (2, 6, 0, 'some name');
+INSERT INTO Parking_Places VALUES (2, 7, 0, 'some name');
+INSERT INTO Parking_Places VALUES (2, 8, 1, 'some name');
 
 DROP TABLE IF EXISTS Lot_Statistics;
 CREATE TABLE Lot_Statistics (
@@ -70,3 +84,4 @@ hour_22 integer,
 hour_23 integer,
 FOREIGN KEY(id_rate) REFERENCES Rate_Statistics(id_rate)
 );
+
