@@ -2,11 +2,11 @@ DROP TABLE IF EXISTS Payments;
 CREATE TABLE Payments (
 id integer primary key autoincrement,
 car_number text,
-time texttime,
-cost integer,
+time text,
+cost text,
 leave_before text,
-id_place integer,
-rate integer
+id_place text,
+rate text
 );
 
 DROP TABLE IF EXISTS Parking_Lots;
