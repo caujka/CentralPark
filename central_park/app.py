@@ -53,18 +53,6 @@ current application context.
 def home():
     return render_template('home.html')
 
-<<<<<<< HEAD
-@app.route('/payment')
-def pay():
-    return render_template('payment.html')
-
-
-@app.route('/payment', methods = ['POST'])
-def payment():
-    db = get_db()
-    query = "INSERT INTO 'Payments' ('car_number', 'time', 'cost', 'id_place', 'rate') \
-VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(request.json.get('car_number', ''), str(datetime.now().time()), str(request.json.get('cost', '')), str(request.json.get('id_place', '')), str(get_hourly_rate(request.json.get('id_lot', ''), request.json.get('id_place', ''))))
-=======
 @app.route('/payment', methods = ['POST'])
 def payment():
     db = get_db()
@@ -76,7 +64,6 @@ def payment():
     rate = get_hourly_rate(id_lot, id_place)
     query = "INSERT INTO 'Payments' ('car_number', 'leave_before', 'cost', 'id_place', 'rate') \
 VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number, leave_before, str(cost), str(id_lot), str(id_place), str(rate))
->>>>>>> 4ab91223759185dcf6bf5bf8c75d2ea921f8d976
     if (int(request.json.get('id_lot', '')) in [l[0] for l in db.execute('SELECT id_lot FROM Parking_Lots').fetchall()] and 
         int(request.json.get('id_place', '')) in [p[0] for p in db.execute('SELECT id_place FROM Parking_Places').fetchall()]):
         db.execute(query)
