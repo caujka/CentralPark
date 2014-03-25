@@ -1,0 +1,61 @@
+{% extends "header_template.html" %}
+{% block content %}
+         <h1>Pay for parking</h1>
+        {% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+        {% endif %}
+
+         <form method="post" action="" id="indef_form">
+              <dl>
+                 <dt>Username:
+                 <dd><input type=text name="username" value="{{request.form.username}}">
+                 <dt> ID LOT:
+                 <dd><input type="text" name="lot" id="id_lot" value="{{request.form.lot}}" size="20" >
+                 <dt>ID place:
+                 <dd><input type="text" name="place" id="id_place" value="{{request.form.place}}" size="20" >
+                 <dt>Car number:
+                 <dd><input type="text" name="car_num" id="car_nuber" value="{{request.form.car_num}}" size="20" >
+                 <dt>Money:
+                 <dd><input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20">
+              </dd>
+                  <br>
+                 <button  type="submit" onclick="return JSONFun();" >Sign in</button>
+
+        </form>
+
+
+<!--<script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+JSONFun = function() {
+
+        var formData = {
+            "id_lot":$("#id_lot").val(),
+            "id_place":$("#id_place").val(),
+            "car_number":$("#car_number").val(),
+            "cost":$("#cost").val(),
+            };
+
+       $.ajax({
+            url:'http://localhost:5000/payment',
+            type:'POST',
+            data: 'jsonData=' + $.toJSON(formData),
+            contentType: "application/json",
+            success: function (request)
+            {
+            alert('The result : ' + request);
+            },
+
+            error: function ()
+            {
+            alert('error');
+            },
+
+            });
+
+		return false;
+    };
+
+</script>
+
+{% endblock %}

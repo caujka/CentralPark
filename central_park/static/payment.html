@@ -1,0 +1,21 @@
+{% extends "template.html" %}
+{% block content %}
+         <h1>Pay for parking</h1>
+        {% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+        {% endif %}
+
+        <form action="" method=post>
+         <dl>
+             <dt>Username:
+             <dd><input type=text name="username" value="{{request.form.username}}">
+             <dt>Car number:
+             <dd><input type=text name="car_num" value="{{request.form.carnumber}}">
+             <dt>Car number:
+             <dd><input type=text name="id_place" value="{{request.form.place}}">
+             <dt>Sum:
+             <dd><input type="text" name="sum" value="{{request.form.sum}}">
+         </dl>
+    <p><input type="submit" value="Login">
+        </form>
+{% endblock %}

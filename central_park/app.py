@@ -1,7 +1,6 @@
 import os, datetime
 from sqlite3 import dbapi2 as sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, jsonify
+from flask import Flask, request, session, g, redirect, url_for, abort,render_template, flash, jsonify
 
 
 # create our little application :)
@@ -49,16 +48,20 @@ current application context.
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
-@app.route('/static/<path:path>')
-def static_proxy(path):
-    # send_static_file will guess the correct MIME type
-    return app.send_static_file(os.path.join('static', path))
+@app.route('/')
+def home():
+    return render_template('home.html')
 
-@app.route('/todo/api/v1.0/payment', methods = ['POST'])
+@app.route('/payment')
+def pay():
+    return render_template('payment.html')
+
+
+@app.route('/payment', methods = ['POST'])
 def payment():
     db = get_db()
     query = "INSERT INTO 'Payments' ('car_number', 'time', 'cost', 'id_place', 'rate') \
-VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(request.json.get('car_number', ''), str(datetime.datetime.now().time()), str(request.json.get('cost', '')), str(request.json.get('id_place', '')), str(get_hourly_rate(request.json.get('id_lot', ''), request.json.get('id_place', ''))))
+VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(request.json.get('car_number', ''), str(datetime.now().time()), str(request.json.get('cost', '')), str(request.json.get('id_place', '')), str(get_hourly_rate(request.json.get('id_lot', ''), request.json.get('id_place', ''))))
     if (int(request.json.get('id_lot', '')) in [l[0] for l in db.execute('SELECT id_lot FROM Parking_Lots').fetchall()] and 
         int(request.json.get('id_place', '')) in [p[0] for p in db.execute('SELECT id_place FROM Parking_Places').fetchall()]):
         db.execute(query)
