@@ -1,15 +1,16 @@
-from app import db
+from sqlalchemy import Column, Integer, String, Date
+from server.Model import Model
 
 class Parking_Lot(db.Model):
-	__tablename__ = 'Parking_Lot'
-	id = db.Column(db.Integer, primary_key = True)
-	id_lot = db.Column(db.Integer, db.ForeignKey('Parking_Place.id_lot'))
-	name = db.Column(db.String(64))
-	adress = db.Column(db.String(120), unique = True)
-	parking_places = db.relationship('Parking_Place', backref = 'has')
-	
-	def __repr__(self):
-		return '<Parking_Lot %r>' % (self.name)
+    __tablename__ = 'Parking_Lot'
+    id = db.Column(db.Integer, primary_key = True)
+    id_lot = db.Column(db.Integer, db.ForeignKey('Parking_Place.id_lot'))
+    name = db.Column(db.String(64))
+    adress = db.Column(db.String(120), unique = True)
+    parking_places = db.relationship('Parking_Place', backref = 'has')
+
+    def __repr__(self):
+    	return '<Parking_Lot %r>' % (self.name)
 
 class Parking_Place(db.Model):
 	__tablename__ = 'Parking_Place'
