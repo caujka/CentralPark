@@ -1,6 +1,9 @@
 {% extends "header_template.html" %}
 {% block content %}
 <h1> Payment result </h1>
+{% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+{% endif %}
 <dl>
 	<dt>
 		<b>Car number:</b>

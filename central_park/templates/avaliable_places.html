@@ -1,0 +1,10 @@
+{% extends "header_template.html" %}
+{% block content %}
+<h1> Available Places </h1>
+{% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+{% endif %}
+	{% for place in places %}
+    	<p> {{place.id_place}} on {{place.adress}} for {{place.rate}} </p>
+    {% endfor %}
+{% endblock %}
