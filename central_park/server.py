@@ -1,33 +1,71 @@
 import os
 from datetime import datetime, timedelta
-from sqlite3 import dbapi2 as sqlite3
+import models
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 from central_park.database import db_session
-#Controling session closing
-@app.teardown_appcontext
-def teardown_session(expception=None):
-    db_session.remove()
-
-
-
 
 # create our little application :)
 app = Flask(__name__)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'app.db'),
+    DATABASE=os.path.join(app.root_path, 'central_park.db'),
     DEBUG=True,
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
 ))
+
+
+#Controling session closing
+@app.teardown_appcontext
+def teardown_session(expception=None):
+    db_session.remove()
+
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
+
+@app.route('/static/<path:path>')
+def static_proxy(path):
+    # send_static_file will guess the correct MIME type
+    return app.send_static_file(os.path.join('static', path))
+
+
+@app.route('/payment', methods = ['POST'])
+def payment():
+    db = get_db()
+    car_number = request.json.get('car_number', '')
+    cost = float(request.json.get('cost', ''))
+    leave_before = str(datetime.now() + timedelta(hours = calculate_hours(cost)))
+    id_place = request.json.get('id_place', '')
+    id_lot = request.json.get('id_lot', '')
+    rate = get_hourly_rate(id_lot, id_place)
+    query = "INSERT INTO 'Payments' ('car_number', 'leave_before', 'cost', 'id_place', 'rate') \
+VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number, leave_before, str(cost), str(id_lot), str(id_place), str(rate))
+    if (int(request.json.get('id_lot', '')) in [l[0] for l in db.execute('SELECT id_lot FROM Parking_Lots').fetchall()] and 
+        int(request.json.get('id_place', '')) in [p[0] for p in db.execute('SELECT id_place FROM Parking_Places').fetchall()]):
+        db.execute(query)
+        print "OK!!!"
+        return jsonify( { 'Success': 'Everything is OK!' } ), 201 
+    else:             
+        print "ERROR!!!"
+        return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'}) 
+   
+if __name__ == '__main__':
+    init_db()
+    app.run(debug = True)
+
+
+
+
+
+
+
+'''
 def calculate_hours(cost):
     rate = 10.0
-    return cost / rate 
+    return cost / rate
 
 def get_hourly_rate(id_lot, id_place):
     hourly_rate = 10.0
@@ -56,32 +94,4 @@ current application context.
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
-
-@app.route('/static/<path:path>')
-def static_proxy(path):
-    # send_static_file will guess the correct MIME type
-    return app.send_static_file(os.path.join('static', path))
-
-@app.route('/payment', methods = ['POST'])
-def payment():
-    db = get_db()
-    car_number = request.json.get('car_number', '')
-    cost = float(request.json.get('cost', ''))
-    leave_before = str(datetime.now() + timedelta(hours = calculate_hours(cost)))
-    id_place = request.json.get('id_place', '')
-    id_lot = request.json.get('id_lot', '')
-    rate = get_hourly_rate(id_lot, id_place)
-    query = "INSERT INTO 'Payments' ('car_number', 'leave_before', 'cost', 'id_place', 'rate') \
-VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number, leave_before, str(cost), str(id_lot), str(id_place), str(rate))
-    if (int(request.json.get('id_lot', '')) in [l[0] for l in db.execute('SELECT id_lot FROM Parking_Lots').fetchall()] and 
-        int(request.json.get('id_place', '')) in [p[0] for p in db.execute('SELECT id_place FROM Parking_Places').fetchall()]):
-        db.execute(query)
-        print "OK!!!"
-        return jsonify( { 'Success': 'Everything is OK!' } ), 201 
-    else:             
-        print "ERROR!!!"
-        return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'}) 
-   
-if __name__ == '__main__':
-    init_db()
-    app.run(debug = True)
+'''
