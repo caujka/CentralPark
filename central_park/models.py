@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Binary, ForeignKey, DATETIME
 from database import Base
-
+import datetime
+from datetime import datetime
 
 class ParkingLot(Base):
     __tablename__ = 'ParkingLot'
@@ -62,6 +63,14 @@ class Payment(Base):
     expiration_time = Column(DATETIME())
     place_id = Column(ForeignKey(ParkingPlace.id))
     pricehistory_id = Column(ForeignKey(PriceHistory.id))
+
+    def __init__(self, car_number, cost, expiration_time, place_id, pricehistory_id):
+        self.car_number = car_number
+        self.cost = cost
+        self.date = datetime.now()
+        self.expiration_time = expiration_time
+        self.place_id = place_id
+        self.pricehistory_id = pricehistory_id
 
     def __repr__(self):
         return '<Payment %r$ till %r>' % (self.cost, self.expiration_time)
