@@ -3,6 +3,13 @@ from datetime import datetime, timedelta
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
+from central_park.database import db_session
+#Controling session closing
+@app.teardown_appcontext
+def teardown_session(expception=None):
+    db_session.remove()
+
+
 
 
 # create our little application :)
