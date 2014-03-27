@@ -1,12 +1,11 @@
 from sqlalchemy import Column, Integer, String, Binary, ForeignKey, DATETIME
 from database import Base
-import datetime
 from datetime import datetime
 
 class ParkingLot(Base):
     __tablename__ = 'ParkingLot'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, unique=False)
     address = Column(String, unique=False)
 
@@ -21,7 +20,7 @@ class ParkingLot(Base):
 class ParkingPlace(Base):
     __tablename__ = 'ParkingPlace'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     place_category = Column(Binary)
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
@@ -39,7 +38,7 @@ class ParkingPlace(Base):
 class PriceHistory(Base):
     __tablename__ = 'PriceHistory'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
     activation_time = Column(DATETIME)
     hourly_rate = Column(String)
@@ -54,9 +53,10 @@ class PriceHistory(Base):
 
 
 
+
 class Payment(Base):
     __tablename__ = 'Payment'
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     car_number = Column(String)
     cost = Column(Integer)
     date = Column(DATETIME)
