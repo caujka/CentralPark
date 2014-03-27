@@ -1,0 +1,39 @@
+{% extends "header_template.html" %}
+{% block content %}
+<h1> Payment result </h1>
+{% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+{% endif %}
+<dl>
+	<dt>
+		<b>Car number:</b>
+	</dt>
+	<dd>
+		{{credentials.car_number}}
+	</dd>
+	<dt>
+		<b>Place ID:</b>
+	</dt>
+	<dd>
+		{{credentials.id_place}}
+	</dd>
+	<dt>
+		<b>Leave before:</b>
+	</dt>
+	<dd>
+		{{credentials.leave_before}}
+	</dd>
+	<dt>
+		<b>Price:</b>
+	</dt>
+	<dd>
+		{{credentials.cost}}
+	<dd>
+	<dt>
+		<b>Rate:</b>
+	</dt>
+	<dd>
+		{{credentials.rate}}
+	</dd>
+</dl>
+{% endblock %}
