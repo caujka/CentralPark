@@ -7,19 +7,19 @@
 
          <form method="post" action="" id="indef_form">
               <dl>
-                 <dt>Username:
+                 <dt>Username {{ idd }}:
                  <dd><input type=text name="username" value="{{request.form.username}}">
                  <dt> ID LOT:
                  <dd><input type="text" name="lot" id="id_lot" value="{{request.form.lot}}" size="20" >
                  <dt>ID place:
                  <dd><input type="text" name="place" id="id_place" value="{{request.form.place}}" size="20" >
                  <dt>Car number:
-                 <dd><input type="text" name="car_num" id="car_nuber" value="{{request.form.car_num}}" size="20" >
+                 <dd><input type="text" name="car_num" id="car_number" value="{{request.form.car_num}}" size="20" >
                  <dt>Money:
                  <dd><input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20">
               </dd>
                   <br>
-                 <button  type="submit" onclick="return JSONFun();" >Sign in</button>
+                 <button  type="submit" onclick="JSONFun();" >Pay for</button>
 
         </form>
 
@@ -35,26 +35,27 @@ JSONFun = function() {
             "car_number":$("#car_number").val(),
             "cost":$("#cost").val(),
             };
-
-       $.ajax({
+        console.log(formData);
+        $.ajax({
             url:'http://localhost:5000/payment',
             type:'POST',
-            data: 'jsonData=' + $.toJSON(formData),
+            data: JSON.stringify(formData),
             contentType: "application/json",
             success: function (request)
             {
-            alert('The result : ' + request);
+            
             },
 
-            error: function ()
+            error: function (request)
             {
-            alert('error');
+            
             },
 
             });
 
 		return false;
     };
+
 
 </script>
 

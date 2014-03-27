@@ -6,34 +6,29 @@
 {% endif %}
 <dl>
 	<dt>
-		<b>Car number:</b>
+		<b>Car number1:</b>
+		{{ credentials.car_number }}
 	</dt>
-	<dd>
-		{{credentials.car_number}}
-	</dd>
+		
 	<dt>
 		<b>Place ID:</b>
+		{{ id_place }}
 	</dt>
-	<dd>
-		{{credentials.id_place}}
-	</dd>
+	
 	<dt>
 		<b>Leave before:</b>
+		{{ leave_before }}
 	</dt>
-	<dd>
-		{{credentials.leave_before}}
-	</dd>
+
 	<dt>
 		<b>Price:</b>
+		{{ cost }}
 	</dt>
-	<dd>
-		{{credentials.cost}}
-	<dd>
+
 	<dt>
 		<b>Rate:</b>
+		{{ rate }}
 	</dt>
-	<dd>
-		{{credentials.rate}}
-	</dd>
+	
 </dl>
 {% endblock %}

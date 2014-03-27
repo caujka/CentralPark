@@ -1,85 +1,76 @@
-from sqlalchemy import Column, Integer, String, Date
-from server.Model import Model
+from sqlalchemy import Column, Integer, String, Binary, ForeignKey, DATETIME
+from database import Base
+from datetime import datetime
 
-class Parking_Lot(db.Model):
-    __tablename__ = 'Parking_Lot'
-    id = db.Column(db.Integer, primary_key = True)
-    id_lot = db.Column(db.Integer, db.ForeignKey('Parking_Place.id_lot'))
-    name = db.Column(db.String(64))
-    adress = db.Column(db.String(120), unique = True)
-    parking_places = db.relationship('Parking_Place', backref = 'has')
+class ParkingLot(Base):
+    __tablename__ = 'ParkingLot'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=False)
+    address = Column(String, unique=False)
+
+    def __init__(self, name, address):
+        self.name = name
+        self.address = address
 
     def __repr__(self):
-    	return '<Parking_Lot %r>' % (self.name)
+        return '<ParkingLot: %r>' % (self.name)
 
-class Parking_Place(db.Model):
-	__tablename__ = 'Parking_Place'
-	id_lot = db.Column(db.Integer, primary_key = True)
-	id_place = db.Column(db.Integer)
-	place_category = db.Column(db.Binary)
-	place_name = db.Column(db.String(100))
 
-	def __repr__(self):
-		return '<Parking_Place %r>' % (self.place_name)
+class ParkingPlace(Base):
+    __tablename__ = 'ParkingPlace'
 
-class Lot_Statistics(db.Model):
-	__tablename__ = 'Lot_Statistics'
-	id = db.Column(db.Integer, primary_key = True)
-	id_lot = db.Column(db.Integer, db.ForeignKey('Parking_Lot.id_lot'))
-	id_rate = db.Column(db.Integer, db.ForeignKey('Rate_Statistics.id'))
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    place_category = Column(Binary)
+    parkinglot_id = Column(ForeignKey(ParkingLot.id))
 
-class Rate_Statistics(db.Model):
-	__tablename__ = 'Rate_Statistics'
-	id = db.Column(db.Integer, primary_key = True)
-	id_rate = db.Column(db.String(10), db.ForeignKey('Rate.id_rate'))
-	time_start = db.Column(db.DateTime)
-	time_finish = db.Column(db.DateTime)
-	
-	def __repr__(self):
-		return '<Rate_Statistics %r>' % (self.id)
+    def __init__(self, name, place_category, parkinglot_id):
+        self.name = name
+        self.place_category = place_category
+        self.parkinglot_id = parkinglot_id
 
-class Rate(db.Model):
-	__tablename__ = 'Rate'
-	id_rate = db.Column(db.String(10), primary_key = True)
-	hour_0 = db.Column(db.Integer)
-	hour_1 = db.Column(db.Integer)
-	hour_2 = db.Column(db.Integer)
-	hour_3 = db.Column(db.Integer)
-	hour_4 = db.Column(db.Integer)
-	hour_5 = db.Column(db.Integer)
-	hour_6 = db.Column(db.Integer)
-	hour_7 = db.Column(db.Integer)
-	hour_8 = db.Column(db.Integer)
-	hour_9 = db.Column(db.Integer)
-	hour_10 = db.Column(db.Integer)
-	hour_11 = db.Column(db.Integer)
-	hour_12 = db.Column(db.Integer)
-	hour_13 = db.Column(db.Integer)
-	hour_14 = db.Column(db.Integer)
-	hour_15 = db.Column(db.Integer)
-	hour_16 = db.Column(db.Integer)
-	hour_17 = db.Column(db.Integer)
-	hour_18 = db.Column(db.Integer)
-	hour_19 = db.Column(db.Integer)
-	hour_20 = db.Column(db.Integer)
-	hour_21 = db.Column(db.Integer)
-	hour_22 = db.Column(db.Integer)
-	hour_23 = db.Column(db.Integer)
+    def __repr__(self):
+        return '<ParkingPlace %r>' % (self.id)
 
-	def __repr__(self):
-		return '<Rate %r>' % (self.id_rate)
 
-class Payment(db.Model):
-	__tablename__ = 'Payment'
-	id = db.Column(db.Integer, primary_key = True)
-	car_number = db.Column(db.String(10))
-	cost = db.Column(db.Integer)
-	time_start = db.Column(db.String(20))
-	hours_paid = db.Column(db.String(15))
-	id_lot= db.Column(db.Integer)
-	id_place = db.Column(db.Integer)
-	id_rate = db.Column(db.String(10))
-	hourly_rate = db.Column(db.Integer)
 
-	def __repr__(self):
-		return '<Payment %r>' % (self.id)
+class PriceHistory(Base):
+    __tablename__ = 'PriceHistory'
+
+    id = Column(Integer, primary_key=True)
+    parkinglot_id = Column(ForeignKey(ParkingLot.id))
+    activation_time = Column(DATETIME)
+    hourly_rate = Column(String)
+
+    def __init__(self, parkinglot_id, activation_time, hourly_rate):
+        self.parkingLot_id = parkinglot_id
+        self.activation_time = activation_time
+        self.hourly_rate = hourly_rate
+
+    def __repr__(self):
+        return '<PriceHistory for %r lot from %r>' % (self.parkingLot_id, self.activation_time)
+
+
+
+
+class Payment(Base):
+    __tablename__ = 'Payment'
+    id = Column(Integer, primary_key=True)
+    car_number = Column(String)
+    cost = Column(Integer)
+    date = Column(DATETIME)
+    expiration_time = Column(DATETIME())
+    place_id = Column(ForeignKey(ParkingPlace.id))
+    pricehistory_id = Column(ForeignKey(PriceHistory.id))
+
+    def __init__(self, car_number, cost, expiration_time, place_id, pricehistory_id):
+        self.car_number = car_number
+        self.cost = cost
+        self.date = datetime.now()
+        self.expiration_time = expiration_time
+        self.place_id = place_id
+        self.pricehistory_id = pricehistory_id
+
+    def __repr__(self):
+        return '<Payment %r$ till %r>' % (self.cost, self.expiration_time)
