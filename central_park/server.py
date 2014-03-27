@@ -1,9 +1,10 @@
 import os
 from datetime import datetime, timedelta
-import models
-from flask import Flask, request, session, g, redirect, url_for, abort, \
+from models import ParkingLot, ParkingPlace, PriceHistory, Payment
+from flask import Flask, request, g, redirect, url_for, abort, \
      render_template, flash, jsonify
-from central_park.database import db_session
+from database import db_session, init_db
+
 
 # create our little application :)
 app = Flask(__name__)
@@ -52,10 +53,15 @@ VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number, leave_before, str(
         print "ERROR!!!"
         return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'}) 
    
+
+
 if __name__ == '__main__':
     init_db()
-    app.run(debug = True)
-
+    #parking_lot = ParkingLot("C1entxcv rewed", "bilidsafawf konia")
+    #db_session.add(parking_lot)
+    #db_session.commit()
+    #print parking_lot
+    app.run(debug=True)
 
 
 

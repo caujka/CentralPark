@@ -1,13 +1,17 @@
 from sqlalchemy import Column, Integer, String, Binary, ForeignKey, DATETIME
-from central_park.database import Base
+from database import Base
 
 
 class ParkingLot(Base):
     __tablename__ = 'ParkingLot'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-    address = Column(String, unique=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(String, unique=False)
+    address = Column(String, unique=False)
+
+    def __init__(self, name, address):
+        self.name = name
+        self.address = address
 
     def __repr__(self):
         return '<ParkingLot: %r>' % (self.name)
@@ -16,12 +20,15 @@ class ParkingLot(Base):
 class ParkingPlace(Base):
     __tablename__ = 'ParkingPlace'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String, unique=True)
     place_category = Column(Binary)
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
-    
 
+    def __init__(self, name, place_category, parkinglot_id):
+        self.name = name
+        self.place_category = place_category
+        self.parkinglot_id = parkinglot_id
 
     def __repr__(self):
         return '<ParkingPlace %r>' % (self.id)
@@ -31,10 +38,15 @@ class ParkingPlace(Base):
 class PriceHistory(Base):
     __tablename__ = 'PriceHistory'
 
-    id = Column(Integer, primary_key=True)
-    parkingLot_id = Column(ForeignKey(ParkingLot.id))
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    parkinglot_id = Column(ForeignKey(ParkingLot.id))
     activation_time = Column(DATETIME)
     hourly_rate = Column(String)
+
+    def __init__(self, parkinglot_id, activation_time, hourly_rate):
+        self.parkingLot_id = parkinglot_id
+        self.activation_time = activation_time
+        self.hourly_rate = hourly_rate
 
     def __repr__(self):
         return '<PriceHistory for %r lot from %r>' % (self.parkingLot_id, self.activation_time)
@@ -43,7 +55,7 @@ class PriceHistory(Base):
 
 class Payment(Base):
     __tablename__ = 'Payment'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     car_number = Column(String)
     cost = Column(Integer)
     date = Column(DATETIME)
