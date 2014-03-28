@@ -4,20 +4,20 @@
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
+<p>Choose parking lot</p>
 <p><select id="lot_id" multiple name="Lot">
-    <option disabled>Choose parking lot</option>
-    <option value="0">0</option>
-    <option selected value="1">1</option>
-    <option value="2">2</option>
-</select></p>
-
-<p><select id="place_id" multiple name="Place">
-    <option disabled>Choose parking place</option>
-    <option selected value="0">0</option>
+    <option disabled value="0"></option>
     <option value="1">1</option>
-    <option value="2">2</option>
+    <option selected value="2">2</option>
+    <option value="3">3</option>
 </select></p>
-
+<form>
+<select id="lot_id" multiple name="Lot">
+<option value="1" size=10>1</option>
+<option value="2"size=10>2</option>
+<option value="3"size=10>3</option>
+</select>
+</form>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 GetCars = function() {
