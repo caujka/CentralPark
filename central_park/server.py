@@ -42,8 +42,7 @@ def payment():
 
     if request.method == 'GET':
         return render_template('payment.html')
-        print 'ololo'
-
+     
     else:
         """
         car_number = request.values.get('car_number')
@@ -84,14 +83,6 @@ def payment():
         else:
             return render_template('payment_response.html', error="ERROR!!!" )
 
-"""
-        credentials = {'car_number' : car_number, 'cost': cost, 'leave_before':leave_before, 'id_place':id_place}
-=======
-'''
-        credentials = {'car_number' : 'oooooo', 'id_place':'33', 'leave_before':'ee', 'cost':'frrr','rate':'444'}
->>>>>>> 323ca79ff405733ecc8a6f1d97061d20517b5972
-        return render_template('payment_response.html', credentials=credentials)
-"""
 """
 
 @app.route('/price', methods = ['GET','POST'])
