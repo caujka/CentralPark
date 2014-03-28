@@ -26,24 +26,9 @@ def teardown_session(expception=None):
 
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
-def connect_db():
-    """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-def get_db():
-    """Opens a new database connection if there is none yet for the
-current application context.
-"""
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
 
 @app.route('/')
 def home():
-    # send_static_file will guess the correct MIME type
     return render_template('home.html')
 
 def get_hourly_rate(id_lot, id_place):
@@ -57,49 +42,71 @@ def payment():
 
     if request.method == 'GET':
         return render_template('payment.html')
-
+     
     else:
-
-        db = get_db()
-        data  = request.data
+        """
         car_number = request.values.get('car_number')
         cost = int(request.values.get('cost'))
         leave_before = str(datetime.now() + timedelta(hours = calculate_hours(cost)))
         id_place = request.values.get('id_place')
+        id_lot = request.json.get('id_lot', '')
+        print id_lot
+        rate = get_hourly_rate(id_lot, id_place) 
+        credentials = {'car_number' : car_number, 'cost': cost, 'leave_before':leave_before, 'id_place':id_place}
+    
+        """ 
+        cost = int(request.values.get('cost'))
         id_lot = request.values.get('id_lot')
-        #car_number = request.json.get('car_number', '')
-        #cost = float(request.json.get('cost', ''))
-        #leave_before = str(datetime.now() + timedelta(hours = calculate_hours(cost)))
-        #id_place = request.json.get('id_place', '')
-        #id_lot = request.json.get('id_lot', '')
-        rate = get_hourly_rate(id_lot, id_place)
-        query = "INSERT INTO 'Payments' ('car_number', 'leave_before', 'cost', 'id_place', 'rate') \
-    VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number, leave_before, str(cost), str(id_lot), str(id_place), str(rate))
-        '''
-        if id_lot in [l[0] for l in db.execute('SELECT id_lot FROM Parking_Lots').fetchall()] and \
-            id_place in [p[0] for p in db.execute('SELECT id_place FROM Parking_Places').fetchall()]:
-            db.execute(query)
-           # print "OK!!!"
-            #return jsonify( { 'Success': 'Everything is OK!' } ), 201
-            return render_template('payment_response.html', car_number=car_number)
+        id_place = request.values.get('id_place')
+        credentials = { 'car_number' : request.values.get('car_number'),
+                        'cost': cost,
+                        'leave_before':str(datetime.now() + timedelta(hours = calculate_hours(cost))),
+                        'id_place': id_place,
+                        'id_lot': id_lot,
+                        'rate': get_hourly_rate(id_lot, id_place) }
+        #print credentials
+       
+        #p = Payment(car_number = credentials['car_number'], cost = cost, expiration_time = credentials['leave_before'], place_id = id_place, pricehistory_id = 1)    
+        p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
+       
+        #query = "INSERT INTO 'Payment' ('car_number', 'cost', 'expiration_time','place_id', 'pricehistory') 
+        #VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number,str(cost), leave_before, str(id_place), str(rate))
+        
+       
+        if  (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
+            #(db_session.query(ParkingPlace).filter_by(id=id_place).first().id)):
+            db_session.add(p)
+            db_session.commit()
+            #Payment.insert().execute(credentials['car_number'], cost, credentials['leave_before'], id_place, credentials['rate'])
+            
+            return render_template('payment_response.html', credentials=credentials)
         else:
-            #print "ERROR!!!"
-            #return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'})
             return render_template('payment_response.html', error="ERROR!!!" )
-'''
-        credentials = {'car_number' : 'oooooo', 'id_place':'33', 'leave_before':'ee', 'cost':'frrr','rate':'444'}
-        return render_template('payment_response.html', credentials=credentials)
 
+"""
 
 @app.route('/price', methods = ['GET','POST'])
 def show_price():
     if request.method == 'GET':
          return render_template('get_cars.html')
     else:
+        id_lot=request.values.get('lot_id')
+        data = b.execute('SELECT * FROM PriceHistory where parkinglot_id={0}'.format(id_lot))
+        data.fetchall()
+        return render_template('response_price', data)
+
+
+@app.route('/find_place', methods=['GET', 'POST'])
+def find_place():
+    if request.method == 'GET':
+         return render_template('get_place.html')
+    else:
         db = get_db()
-        id_lot=request.values.get('id_lot')
-        print db.execute('SELECT * FROM PriceHistory where id_lot={0}'.format(id_lot))
-        return id_lot
+        low_pay = request.values.get('low_id')
+        up_pay = request.values.get('up_id')
+
+        query=('SELECT * FROM PriceHistory where hourly ')
+"""
 
 if __name__ == '__main__':
     init_db()

@@ -60,7 +60,7 @@ class Payment(Base):
     car_number = Column(String)
     cost = Column(Integer)
     date = Column(DATETIME)
-    expiration_time = Column(DATETIME())
+    expiration_time = Column(String)
     place_id = Column(ForeignKey(ParkingPlace.id))
     pricehistory_id = Column(ForeignKey(PriceHistory.id))
 

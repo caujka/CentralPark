@@ -4,7 +4,7 @@
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
-<p><select id="select_1" multiple name="Price">
+<p><select id="low_id" multiple name="Price">
     <option disabled>Choose lower limit</option>
     <option value="10">10</option>
     <option selected value="20">20</option>
@@ -12,7 +12,7 @@
     <option value="40">40</option>
 </select></p>
 
-<p><select id="select_2" multiple name="Price">
+<p><select id="up_id" multiple name="Price">
     <option disabled>Choose upper limit</option>
     <option selected value="20">20</option>
     <option value="30">30</option>
@@ -24,23 +24,23 @@
 SendLimits = function() {
 
         var formData = {
-            "lower_limit":$("#select_1").val(),
-            "upper_limit":$("#select_2").val(),
+            "lower_limit":$("#low_id").val(),
+            "upper_limit":$("#up_id").val(),
             };
 
        $.ajax({
             url:'http://localhost:5000/find_places',
-            type:'GET',
-            data: 'jsonData=' + $.toJSON(formData),
+            type:'POST',
+            data: JSON.stringify(formData),
             contentType: "application/json",
             success: function (request)
             {
-            alert('The result : ' + request);
+            
             },
 
             error: function ()
             {
-            alert('error');
+            
             },
 
             });
