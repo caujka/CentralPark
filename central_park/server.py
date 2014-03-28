@@ -26,24 +26,7 @@ def teardown_session(expception=None):
 
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
-<<<<<<< HEAD
-=======
-def connect_db():
-    """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
 
-def get_db():
-    """Opens a new database connection if there is none yet for the
-current application context.
-"""
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-
->>>>>>> 323ca79ff405733ecc8a6f1d97061d20517b5972
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -100,7 +83,7 @@ def payment():
             return render_template('payment_response.html', credentials=credentials)
         else:
             return render_template('payment_response.html', error="ERROR!!!" )
-<<<<<<< HEAD
+
 """
         credentials = {'car_number' : car_number, 'cost': cost, 'leave_before':leave_before, 'id_place':id_place}
 =======
