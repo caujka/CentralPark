@@ -1,4 +1,4 @@
-import os
+import os, sqlite3
 from datetime import datetime, timedelta
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, g, redirect, url_for, abort, \
@@ -26,6 +26,12 @@ def teardown_session(expception=None):
 
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
+def connect_db():
+    """Connects to the specific database."""
+    rv = sqlite3.connect(app.config['DATABASE'])
+    rv.row_factory = sqlite3.Row
+    return rv
+
 def get_db():
     """Opens a new database connection if there is none yet for the
 current application context.
@@ -39,6 +45,12 @@ current application context.
 def home():
     # send_static_file will guess the correct MIME type
     return render_template('home.html')
+
+def get_hourly_rate(id_lot, id_place):
+    return 10
+
+def calculate_hours(cost):
+    return 20
 
 @app.route('/payment', methods = ['GET','POST'])
 def payment():
@@ -75,7 +87,7 @@ def payment():
             #return jsonify( {'Error': 'Transaction is not successful! There is no such place in db. Try again.'})
             return render_template('payment_response.html', error="ERROR!!!" )
 '''
-        credentials = {'car_number' : '123fv'}
+        credentials = {'car_number' : 'oooooo', 'id_place':'33', 'leave_before':'ee', 'cost':'frrr','rate':'444'}
         return render_template('payment_response.html', credentials=credentials)
 
 
