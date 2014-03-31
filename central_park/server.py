@@ -44,40 +44,27 @@ def payment():
         return render_template('payment.html')
      
     else:
-        """
-        car_number = request.values.get('car_number')
-        cost = int(request.values.get('cost'))
-        leave_before = str(datetime.now() + timedelta(hours = calculate_hours(cost)))
-        id_place = request.values.get('id_place')
-        id_lot = request.json.get('id_lot', '')
-        print id_lot
-        rate = get_hourly_rate(id_lot, id_place) 
-        credentials = {'car_number' : car_number, 'cost': cost, 'leave_before':leave_before, 'id_place':id_place}
-    
-        """ 
+        username = request.values.get('username')
         cost = int(request.values.get('cost'))
         id_lot = request.values.get('id_lot')
         id_place = request.values.get('id_place')
-        credentials = { 'car_number' : request.values.get('car_number'),
+        credentials = { 'username' : username,
+                        'car_number' : request.values.get('car_number'),
                         'cost': cost,
                         'leave_before':str(datetime.now() + timedelta(hours = calculate_hours(cost))),
                         'id_place': id_place,
                         'id_lot': id_lot,
                         'rate': get_hourly_rate(id_lot, id_place) }
-        #print credentials
-       
-        #p = Payment(car_number = credentials['car_number'], cost = cost, expiration_time = credentials['leave_before'], place_id = id_place, pricehistory_id = 1)    
+              
+        
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
        
-        #query = "INSERT INTO 'Payment' ('car_number', 'cost', 'expiration_time','place_id', 'pricehistory') 
-        #VALUES('{0}', '{1}', '{2}', '{3}', '{4}')".format(car_number,str(cost), leave_before, str(id_place), str(rate))
-        
        
         if  (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
             #(db_session.query(ParkingPlace).filter_by(id=id_place).first().id)):
             db_session.add(p)
             db_session.commit()
-            #Payment.insert().execute(credentials['car_number'], cost, credentials['leave_before'], id_place, credentials['rate'])
+            
             
             return render_template('payment_response.html', credentials=credentials)
         else:
