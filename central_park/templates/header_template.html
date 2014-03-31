@@ -4,28 +4,30 @@
 	<title>Flask</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
     <script  src="http://www.tutorialrepublic.com/lib/js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
 </head>
 <body>
-<div>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <ul class="nav nav-pills">
-                  <li class="active"><a href="/">Home</a> </li>
-                    <li><a href="/welcome">Welcome</a> </li>
-                    <li><a href="/payment">Pay for...</a> </li>
-                    <li><a href="/price">Price for...</a> </li>
-                    <li><a href="/find_place">Find place</a> </li>
-                    <li><a href="/log">Log in</a></li>                    
-                </ul>
-            </div>            
-        </nav>
-</div>
-     <div>
+<div class="container">
+    <div>
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container">
+                    <ul class="nav nav-pills">
+                      <li class="active"><a href="/">Home</a> </li>
+                        <li><a href="/welcome">Welcome</a> </li>
+                        <li><a href="/payment">Pay for...</a> </li>
+                        <li><a href="/price">Price for...</a> </li>
+                        <li><a href="/find_place">Find place</a> </li>
+                        <li><a href="/log">Log in</a></li>
+                    </ul>
+                </div>
+            </nav>
+    </div>
+    <div class="content">
         {% block content%}
         {% endblock %}
     </div>
-
+</div>
 </body>
 </html>
