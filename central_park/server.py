@@ -83,18 +83,26 @@ def show_price():
     """
     return render_template('response_price.html')
 
-"""
-@app.route('/find_place', methods=['GET', 'POST'])
-def find_place():
+@app.route('/can_stand', methods=['GET', 'POST'])
+def can_stand():
     if request.method == 'GET':
-         return render_template('get_place.html')
+        return render_template('get_place.html')
     else:
-        db = get_db()
-        low_pay = request.values.get('low_id')
-        up_pay = request.values.get('up_id')
+        place = request.values.get('place')
+        for obj in db_session.query(Payment).filter(Payment.place_id == place):
+            car_number = obj.car_number
+            cost = obj.cost
+            expiration = obj.expiration_time
 
-        query=('SELECT * FROM PriceHistory where hourly ')
-"""
+        response = {
+        'id_lot': place,
+        'car': car_number,
+        'cost': cost,
+        'time': expiration
+        }
+        return render_template('response_aval_place.html', response=response)
+
+
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
     data = ''    
