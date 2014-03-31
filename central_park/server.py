@@ -100,7 +100,10 @@ def can_stand():
         'cost': cost,
         'time': expiration
         }
-        return render_template('response_aval_place.html', response=response)
+        if response:
+            return render_template('response_aval_place.html', response=response)
+        else:
+            return render_template('response_aval_place.html', error="Something not correct")
 
 
 @app.route('/log', methods = ['GET','POST'])
@@ -112,9 +115,6 @@ def log_in():
 def welcome():
     return render_template('welcome.html')
 
-@app.route('/find_place', methods = ['GET','POST'])
-def find_place():
-    return render_template('get_place.html')
 
 if __name__ == '__main__':
     init_db()
