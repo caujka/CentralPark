@@ -83,19 +83,20 @@ def payment():
         else:
             return render_template('payment_response.html', error="ERROR!!!" )
 
-"""
 
 @app.route('/price', methods = ['GET','POST'])
 def show_price():
+    """
     if request.method == 'GET':
          return render_template('get_cars.html')
     else:
         id_lot=request.values.get('lot_id')
         data = b.execute('SELECT * FROM PriceHistory where parkinglot_id={0}'.format(id_lot))
         data.fetchall()
-        return render_template('response_price', data)
+    """
+    return render_template('response_price.html')
 
-
+"""
 @app.route('/find_place', methods=['GET', 'POST'])
 def find_place():
     if request.method == 'GET':
@@ -107,6 +108,18 @@ def find_place():
 
         query=('SELECT * FROM PriceHistory where hourly ')
 """
+@app.route('/log', methods = ['GET','POST'])
+def log_in():
+    data = ''    
+    return render_template('log.html')
+
+@app.route('/welcome', methods = ['GET','POST'])
+def welcome():
+    return render_template('welcome.html')
+
+@app.route('/find_place', methods = ['GET','POST'])
+def find_place():
+    return render_template('get_place.html')
 
 if __name__ == '__main__':
     init_db()
