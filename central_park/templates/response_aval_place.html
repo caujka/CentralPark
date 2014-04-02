@@ -1,0 +1,17 @@
+{% extends "header_template.html" %}
+{% block content%}
+        <h2>Info of parking place</h2>
+        {% if error %}
+            <p class=error><Strong>Error</Strong> {{ error }}
+        {% endif %}
+<dl>
+    <dt>
+        <b>Place namber:</b> {{ response.id_lot }} <br/>
+        
+        <p>Car number: {{ response.car }}</p>
+        <p>Pay money: {{ response.cost }}</p>
+        <p>Must go out befor:  {{ response.time }}</p>
+    </dt>
+</dl>
+        
+{% endblock %}
