@@ -115,7 +115,7 @@ def get_current_parked_car(lot_id):
     return query
 
 
-def get_payment(lot_id, date):
+def get_payment_by_date(lot_id, date):
     """
     params:
         lot_id: id of parking lot (INT)
