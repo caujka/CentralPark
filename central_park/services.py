@@ -1,12 +1,18 @@
 from database import db_session
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from sqlalchemy import desc
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 
 
 # return current pricehistory_id for given parking_lot_id
-def get_current_pricehistory_id(current_parkinglot_id):
-    i = current_parkinglot_id
+def get_current_pricehistory_id(lot_id):
+    """
+    params:
+        lot_id: id of parking lot from ParkingLot (INT)
+    return:
+        tariff[0].id: id of actual PriceHistory for given ParkingLot (INT)
+    """
+    i = lot_id
     tariff = db_session.query(PriceHistory).filter(PriceHistory.parkinglot_id == i).order_by(desc(PriceHistory.activation_time)).limit(1)
     if tariff[0]:
         return tariff[0].id
@@ -14,9 +20,14 @@ def get_current_pricehistory_id(current_parkinglot_id):
         return None
 
 
-# return current hourly_rate for given parking lot
-def get_current_tariff_matrix(current_parkinglot_id):
-    i = current_parkinglot_id
+def get_current_tariff_matrix(lot_id):
+    """
+    params:
+        lot_id: id of ParkingLot (INT)
+    return:
+        tariff[0].hourly_rate: actual tariff matrix for given ParkingLot(STRING)
+    """
+    i = lot_id
     tariff = db_session.query(PriceHistory).filter(PriceHistory.parkinglot_id == i).order_by(desc(PriceHistory.activation_time)).limit(1)
     if tariff[0]:
         return tariff[0].hourly_rate
@@ -24,8 +35,15 @@ def get_current_tariff_matrix(current_parkinglot_id):
         return None
 
 
-# return time that shows when to leave parking place.
+
 def calculate_estimated_time(cost, lot_id):
+    """
+    params:
+        cost: payed amount of money (INT)
+        lot_id: id of parking lot (INT)
+    return:
+        time_finish: time expiration of parking (DATETIME)
+    """
     tariff = get_current_tariff_matrix(lot_id)
     tariff = parse_tariff_to_list(tariff)
     time_finish = time_start = datetime.now()
@@ -52,8 +70,14 @@ def calculate_estimated_time(cost, lot_id):
     return time_finish
 
 
-#return price of parking till marked time.
 def calculate_total_price(lot_id, time_finish):
+    """
+    params:
+        lot_id: id of parking lot (INT)
+        time_fifnish: time expiration of parking (DATETIME)
+    return:
+        cost: total cost for given parking duration (INT)
+    """
     tariff = get_current_tariff_matrix(lot_id)
     tariff = parse_tariff_to_list(tariff)
     time_start = datetime.now()
@@ -74,7 +98,38 @@ def calculate_total_price(lot_id, time_finish):
                 hour = 0
         else:
             cost += calculate_minutes_cost(tariff[hour], time_finish.minute - time_start.minute)
-            return cost
+            return int(cost)
+
+
+def get_current_parked_car(lot_id):
+    """
+    params:
+        lot_id: id of parking lot (INT)
+    return:
+        query: list of cars who allowed to be parked for now on given ParkingLor (LIST of objects)
+    """
+    query = db_session.query(Payment.car_number, Payment.expiration_time, Payment.place_id).\
+                                                filter(Payment.expiration_time > datetime.now(),
+                                                Payment.place_id == ParkingPlace.id,
+                                                ParkingPlace.parkinglot_id == lot_id).all()
+    return query
+
+
+def get_payment(lot_id, date):
+    """
+    params:
+        lot_id: id of parking lot (INT)
+        date: (DATE)
+    return:
+        query: list of Payment who parked in this date at ParkingLor (LIST of objects)
+    """
+    date = datetime.combine(date, time.min)
+    query = db_session.query(Payment).filter(Payment.date >= date,\
+                                                Payment.date <= (date + timedelta(days=1)),
+                                                Payment.place_id == ParkingPlace.id,
+                                                ParkingPlace.parkinglot_id == lot_id)
+
+    return query
 
 
 #some internal functions
