@@ -1,4 +1,4 @@
-import os, sqlite3
+import os, services
 from datetime import datetime, timedelta
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, g, redirect, url_for, abort, \
@@ -119,5 +119,3 @@ def welcome():
 if __name__ == '__main__':
     init_db()
     app.run(debug=True, use_reloader=False)
-
-

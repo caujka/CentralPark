@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Binary, ForeignKey, DATETIME
+from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
@@ -8,6 +9,8 @@ class ParkingLot(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=False)
     address = Column(String, unique=False)
+    parking_places = relationship("ParkingPlace")
+    price_history = relationship("PriceHistory")
 
     def __init__(self, name, address):
         self.name = name
@@ -24,6 +27,7 @@ class ParkingPlace(Base):
     name = Column(String, unique=True)
     place_category = Column(Binary)
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
+    payment = relationship("Payment")
 
     def __init__(self, name, place_category, parkinglot_id):
         self.name = name
@@ -42,6 +46,7 @@ class PriceHistory(Base):
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
     activation_time = Column(DATETIME)
     hourly_rate = Column(String)
+    payment = relationship("Payment")
 
     def __init__(self, parkinglot_id, activation_time, hourly_rate):
         self.parkingLot_id = parkinglot_id
@@ -49,9 +54,7 @@ class PriceHistory(Base):
         self.hourly_rate = hourly_rate
 
     def __repr__(self):
-        return '<PriceHistory for %r lot from %r>' % (self.parkingLot_id, self.activation_time)
-
-
+        return '<PriceHistory for %r lot from %r>' % (self.parkinglot_id, self.activation_time)
 
 
 class Payment(Base):
@@ -60,7 +63,7 @@ class Payment(Base):
     car_number = Column(String)
     cost = Column(Integer)
     date = Column(DATETIME)
-    expiration_time = Column(String)
+    expiration_time = Column(DATETIME)
     place_id = Column(ForeignKey(ParkingPlace.id))
     pricehistory_id = Column(ForeignKey(PriceHistory.id))
 

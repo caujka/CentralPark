@@ -123,6 +123,7 @@ def get_payment_by_date(lot_id, date):
     return:
         query: list of Payment who parked in this date at ParkingLor (LIST of objects)
     """
+
     date = datetime.combine(date, time.min)
     query = db_session.query(Payment).filter(Payment.date >= date,\
                                                 Payment.date <= (date + timedelta(days=1)),
@@ -132,6 +133,21 @@ def get_payment_by_date(lot_id, date):
     return query
 
 
+d = date.today() - timedelta(days=1)
+d2 = "2/2/2012"
+d2.strptime("%d-%m-%Y")
+#d2.strftime("%d/%m%Y")
+print d2
+print type (d2)
+
+'''
+def parse_date(date):
+    date = date.split('/')
+    print date
+    date = '-'.join(date)
+    return date
+
+'''
 #some internal functions
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
