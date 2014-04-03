@@ -86,7 +86,7 @@ def show_price():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_place.html')
+        return render_template('get_place.html', classactive_canstand="class=active")
     else:
         place = request.values.get('place')
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
