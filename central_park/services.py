@@ -115,7 +115,7 @@ def get_current_parked_car(lot_id):
     return query
 
 
-def get_payment_by_date(lot_id, date):
+def get_payment_by_date(lot_id, date_tmp):
     """
     params:
         lot_id: id of parking lot (INT)
@@ -124,30 +124,15 @@ def get_payment_by_date(lot_id, date):
         query: list of Payment who parked in this date at ParkingLor (LIST of objects)
     """
 
-    date = datetime.combine(date, time.min)
-    query = db_session.query(Payment).filter(Payment.date >= date,\
-                                                Payment.date <= (date + timedelta(days=1)),
+    date_tmp = datetime.strptime(date_tmp, "%d/%m/%Y")
+    query = db_session.query(Payment).filter(Payment.date >= date_tmp,\
+                                                Payment.date <= (date_tmp + timedelta(days=1)),
                                                 Payment.place_id == ParkingPlace.id,
-                                                ParkingPlace.parkinglot_id == lot_id)
+                                                ParkingPlace.parkinglot_id == lot_id).all()
 
     return query
 
 
-d = date.today() - timedelta(days=1)
-d2 = "2/2/2012"
-d2.strptime("%d-%m-%Y")
-#d2.strftime("%d/%m%Y")
-print d2
-print type (d2)
-
-'''
-def parse_date(date):
-    date = date.split('/')
-    print date
-    date = '-'.join(date)
-    return date
-
-'''
 #some internal functions
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
