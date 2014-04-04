@@ -52,25 +52,6 @@ GetInfo = function() {
         return false;
     };
 
-Data = [ { "place": "0" }, { "place": "1" }, { "place": "2" }, { "place": "3" }, ... ];
 
-
-
-function obj_init() {
-    var Objects = document.getElementById('place_id');
-    var count_elem = Data.length;
-    var selLen = Objects.options.length;
-    var last_elem = "";
-    for (var i=0; i < count_elem; i++) {
-        var t = Elements[i];
-        if (last_elem != t.place) {
-            Objects.options[selLen ++] = new Option(t.place, t.place);
-            last_elem = t.place;
-        }
-    }
-}
-
-
-Read more: http://shra.ru/2010/02/dinamicheskoe-sozdanie-vypadayushhikh-spiskov-select/#ixzz2xvTzCSLe
 </script>
 {% endblock %}
