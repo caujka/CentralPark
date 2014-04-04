@@ -72,17 +72,18 @@ def payment():
             return render_template('payment_response.html', error="ERROR!!!" )
 
 
-@app.route('/price', methods = ['GET','POST'])
-def show_price():
-    """
+@app.route('/history', methods = ['GET','POST'])
+def show_history():
+    hist = None
     if request.method == 'GET':
-         return render_template('get_cars.html')
+        return render_template('history.html')
     else:
-        id_lot=request.values.get('lot_id')
-        data = b.execute('SELECT * FROM PriceHistory where parkinglot_id={0}'.format(id_lot))
-        data.fetchall()
-    """
-    return render_template('response_price.html', classactive_price ="class=active")
+        Lot = request.values.get('Lot')
+        data_time = request.values.get('date')
+        actual_history = get_payment_by_date(Lot, data_time)
+        
+        return render_template('response_history.html', history_info = actual_history) 
+        
 
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():

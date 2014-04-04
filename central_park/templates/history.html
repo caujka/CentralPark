@@ -1,0 +1,62 @@
+{% extends "content_template.html" %}
+{% block content %}
+<h1>Get info about...</h1>
+{% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+{% endif %}
+<form method="post" action="">
+        <fieldset>Choose parking lot <select id="Lot_id" name="Lot">
+
+            <option value=""></option>
+
+            <option value="0">0</option>
+
+            <option value="1">1</option>
+
+            <option selected="selected" value="2">2</option>
+
+            <option value="3">3</option>
+
+        </select></fieldset><br/>
+
+
+    <input data-datepicker="datepicker" class="small" type="text" value="2014-03-28" name="date" id="data_id" />
+    <i class="glyphicon glyphicon-calendar"></i>        
+  
+
+     <input type="submit"  onclick="HistoryInfo();" size="20" value="Show info">  
+            
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+HistoryInfo = function() {
+
+        var formData = {
+            "Lot":$("#Lot_id").val(),
+            "date": $('#data_id').val()
+            };
+alert($('#data_id').val())
+       $.ajax({
+            url:'http://localhost:5000/find_places',
+            type:'POST',
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            success: function (request)
+            {
+             alert('Ok');
+             $("content").innerHTML(request);
+            },
+
+            error: function ()
+            {
+            alert('Error');
+            },
+
+            });
+
+        return false;
+    };
+
+</script>
+{% endblock %}
