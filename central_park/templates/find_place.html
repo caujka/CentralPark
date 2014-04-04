@@ -1,0 +1,65 @@
+{% extends "header_template.html" %}
+{% block content %}
+         <h1>Find parking places</h1>
+        {% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+        {% endif %}
+
+         <form method="post" action="" id="indef_form">
+              <dl>
+                 <dt> Lowest price:
+                 <dd><input type="text" name="l_price" id="l_price" value="{{request.form.lot}}" size="20" >
+                 <dt>Highest price:
+                 <dd><input type="text" name="h_price" id="h_price" value="{{request.form.place}}" size="20" >
+                  <br>
+                 <button  type="submit" onclick="JSONFun();" >Find!</button>
+
+        </form>
+
+{% if Message %}
+        <p class=mess> <h1>Information: </h1></p>
+        <dl>
+            <dt>
+                <b>Lot ID:</b> {{ Message.id_lot }} <br/>
+                <b>Place ID:</b> {{ Message.id_place }} <br/>
+                <p>Price: {{ Message.cost }}</p>
+                <!--   
+                <p>Earliest time:  {{ Message.e_time }}</p>
+                <p>Latest time:  {{ Message.l_time }}</p> -->
+            </dt>
+        </dl> 
+{% endif %}
+<!--<script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+JSONFun = function() {
+
+        var formData = {
+            "l_price":$("#l_price").val(),
+            "h_price":$("#h_price").val(),
+            };
+        console.log(formData);
+        $.ajax({
+            url:'http://localhost:5000/find',
+            type:'POST',
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            success: function (request)
+            {
+            
+            },
+
+            error: function (request)
+            {
+            
+            },
+
+            });
+
+        return false;
+    };
+
+
+</script>
+
+{% endblock %}
