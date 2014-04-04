@@ -30,7 +30,7 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', classactive_home ="class=active")
 
 def get_hourly_rate(id_lot, id_place):
     return 10
@@ -42,7 +42,7 @@ def calculate_hours(cost):
 def payment():
 
     if request.method == 'GET':
-        return render_template('payment.html')
+        return render_template('payment.html',classactive_payment ="class=active")
      
     else:
         username = request.values.get('username')
@@ -82,12 +82,12 @@ def show_price():
         data = b.execute('SELECT * FROM PriceHistory where parkinglot_id={0}'.format(id_lot))
         data.fetchall()
     """
-    return render_template('response_price.html')
+    return render_template('response_price.html', classactive_price ="class=active")
 
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_place.html')
+        return render_template('get_place.html', classactive_canstand="class=active")
     else:
         place = request.values.get('place')
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
@@ -102,19 +102,19 @@ def can_stand():
         'time': expiration
         }
         if response:
-            return render_template('response_aval_place.html', response=response)
+            return render_template('response_aval_place.html', response=response, classactive_canstand="class=active")
         else:
-            return render_template('response_aval_place.html', error="Something not correct")
+            return render_template('response_aval_place.html', error="Something not correct", classactive_canstand="class=active")
 
 
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
     data = ''    
-    return render_template('log.html')
+    return render_template('log.html',classactive_log ="class=active")
 
 @app.route('/welcome', methods = ['GET','POST'])
 def welcome():
-    return render_template('welcome.html')
+    return render_template('welcome.html', classactive_welcome ="class=active")
 
 
 if __name__ == '__main__':
