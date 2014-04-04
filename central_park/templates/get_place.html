@@ -6,22 +6,26 @@
 {% endif %}
 <form method="post" action="">
         <fieldset>Choose parking place <select id="place_id" name="place">
-
-            <option value=""></option>
-
-            <option value="0">0</option>
-
-            <option value="1">1</option>
-
-            <option selected="selected" value="2">2</option>
-
-            <option value="3">3</option>
-
+        {% for res in res_list %} 
+            <option value="{{res}}">{{res}}</option>
+         {% endfor %}
         </select></fieldset><br/>
         
         <p><button  type="submit" onclick="GetInfo();" >Show info</button> </p>     
             
 </form>
+
+{% if Message %}
+        <p class=mess> <h1>Information: </h1></p>
+        <dl>
+            <dt>
+                <b>Place namber:</b> {{ Message.id_lot }} <br/>
+                <p>Car number: {{ Message.car }}</p>
+                <p>Pay money: {{ Message.cost }}</p>
+                <p>Must go out befor:  {{ Message.time }}</p>
+            </dt>
+        </dl> 
+{% endif %}
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -38,18 +42,35 @@ GetInfo = function() {
             contentType: "application/json",
             success: function (request)
             {
-            
             },
-
             error: function ()
             {
-            
             },
 
-            });
+        });
 
         return false;
     };
 
+Data = [ { "place": "0" }, { "place": "1" }, { "place": "2" }, { "place": "3" }, ... ];
+
+
+
+function obj_init() {
+    var Objects = document.getElementById('place_id');
+    var count_elem = Data.length;
+    var selLen = Objects.options.length;
+    var last_elem = "";
+    for (var i=0; i < count_elem; i++) {
+        var t = Elements[i];
+        if (last_elem != t.place) {
+            Objects.options[selLen ++] = new Option(t.place, t.place);
+            last_elem = t.place;
+        }
+    }
+}
+
+
+Read more: http://shra.ru/2010/02/dinamicheskoe-sozdanie-vypadayushhikh-spiskov-select/#ixzz2xvTzCSLe
 </script>
 {% endblock %}

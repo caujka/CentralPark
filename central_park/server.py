@@ -83,12 +83,12 @@ def show_history():
         actual_history = get_payment_by_date(Lot, data_time)
         
         return render_template('response_history.html', history_info = actual_history) 
-        
+
 
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_place.html', classactive_canstand="class=active")
+        return render_template('get_place.html', classactive_canstand="class=active",res_list =[1,2,3])
     else:
         place = request.values.get('place')
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
@@ -103,7 +103,7 @@ def can_stand():
         'time': expiration
         }
         if response:
-            return render_template('response_aval_place.html', response=response, classactive_canstand="class=active")
+            return render_template('get_place.html', Message=response, classactive_canstand="class=active", res_list =[1,2,3])
         else:
             return render_template('response_aval_place.html', error="Something not correct", classactive_canstand="class=active")
 
