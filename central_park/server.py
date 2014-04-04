@@ -108,7 +108,6 @@ def can_stand():
         else:
             return render_template('get_place.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 
-
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
     data = ''    
@@ -118,6 +117,13 @@ def log_in():
 def welcome():
     return render_template('welcome.html', classactive_welcome ="class=active")
 
+@app.route('/find', methods = ['GET','POST'])
+def find_place():   
+    if request.method == 'POST':
+        return render_template('find_place.html', Message={'id_lot': 'some lot', \
+            'id_place': 'id_place', 'cost': 'cost'}, classactive_log ="class=active")
+    elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
+    
 
 if __name__ == '__main__':
     init_db()
