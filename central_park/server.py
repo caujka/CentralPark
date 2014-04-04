@@ -1,4 +1,5 @@
-import os, services
+import os, sqlite3
+from services import * 
 from datetime import datetime, timedelta
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, g, redirect, url_for, abort, \
@@ -51,12 +52,12 @@ def payment():
         credentials = { 'username' : username,
                         'car_number' : request.values.get('car_number'),
                         'cost': cost,
-                        'leave_before':str(datetime.now() + timedelta(hours = calculate_hours(cost))),
+                        'leave_before':datetime.now() + timedelta(hours = calculate_hours(cost)),
                         'id_place': id_place,
                         'id_lot': id_lot,
                         'rate': get_hourly_rate(id_lot, id_place) }
               
-        
+        print credentials['leave_before']
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
        
        
