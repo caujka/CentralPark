@@ -89,7 +89,7 @@ def show_history():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_place.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
+        return render_template('get_cars.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
     else:
         place = request.values.get('place')
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
@@ -104,9 +104,9 @@ def can_stand():
         'time': expiration
         }
         if response:
-            return render_template('get_place.html', Message=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
+            return render_template('get_cars.html', Message=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
         else:
-            return render_template('get_place.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
+            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
