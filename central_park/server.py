@@ -40,37 +40,32 @@ def calculate_hours(cost):
 
 @app.route('/payment', methods = ['GET','POST'])
 def payment():
-
     if request.method == 'GET':
         return render_template('payment.html',classactive_payment ="class=active")
      
-    elif (request.values):
-        username = request.values.get('username')
-        cost = int(request.values.get('cost'))
-        id_lot = request.values.get('id_lot')
-        id_place = request.values.get('id_place')
+    elif (request.method == 'POST'):
+        username = 'username' #request.json['username']
+        cost = int(request.json['cost'])
+        id_lot = request.json['id_lot']
+        id_place = request.json['id_place']
         credentials = { 'username' : username,
-                        'car_number' : request.values.get('car_number'),
+                        'car_number' : request.json['car_number'],
                         'cost': cost,
                         'leave_before':datetime.now() + timedelta(hours = calculate_hours(cost)),
                         'id_place': id_place,
                         'id_lot': id_lot,
                         'rate': get_hourly_rate(id_lot, id_place) }
-              
-        print credentials['leave_before']
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
-       
-       
+              
         if  (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
-            #(db_session.query(ParkingPlace).filter_by(id=id_place).first().id)):
+            print 'ololololololo'
             db_session.add(p)
             db_session.commit()
-            
-            
             return render_template('payment_response.html', credentials=credentials)
         else:
             return render_template('payment_response.html', error="ERROR!!!" )
-
+    else:
+        return render_template('payment_response.html', error="ERROR!!!" )
 
 @app.route('/history', methods = ['GET','POST'])
 def show_history():
@@ -90,8 +85,9 @@ def show_history():
 def can_stand():
     if request.method == 'GET':
         return render_template('get_cars.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
-    else:
-        place = request.values.get('place')
+    elif request.method == 'POST':
+        place = request.json['id_place']
+        print place
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
             car_number = obj.car_number
             cost = obj.cost
@@ -104,7 +100,7 @@ def can_stand():
         'time': expiration
         }
         if response:
-            return render_template('get_cars.html', Message=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
+            return render_template('auth_cars.html', response=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
         else:
             return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 

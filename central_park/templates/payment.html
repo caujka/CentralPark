@@ -5,8 +5,7 @@
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 
-         <form method="post" action="" id="indef_form">
-              <dl>
+         <dl>
                  <dt>Username {{ idd }}:</dt>
                  <dd><input type=text name="username" value="{{request.form.username}}"></dd>
                  <dt> ID LOT:</dt>
@@ -21,10 +20,15 @@
                   <br>
                  <button  type="submit" onclick="JSONFun();" >Pay for</button>
 
-        </form>
+        </dl>
+ 
 
 
-<!--<script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>-->
+        <div id='result'>
+        {{ result }}
+        </div>
+
+<script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     
@@ -59,11 +63,12 @@
         $.ajax({
             url:'http://localhost:5000/payment',
             type:'POST',
-            data: JSON.stringify(formData),
+            data: JSON.stringify(formData, null, '\t'),
             contentType: "application/json",
-            success: function (request)
+            success: function (response)
             {
-            
+                var myDiv = $('#result'); // The place where you want to inser the template
+                myDiv.html(response);
             },
 
             error: function (request)
@@ -80,5 +85,4 @@
 
 
 </script>
-
-{% endblock %}
+ {% endblock %} 
