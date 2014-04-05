@@ -44,7 +44,7 @@ def payment():
     if request.method == 'GET':
         return render_template('payment.html',classactive_payment ="class=active")
      
-    else:
+    elif (request.values):
         username = request.values.get('username')
         cost = int(request.values.get('cost'))
         id_lot = request.values.get('id_lot')
