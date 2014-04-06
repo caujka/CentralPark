@@ -5,6 +5,32 @@
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 
+         <fieldset>
+            Username {{ idd }}:
+            <input type=text name="username" value="{{request.form.username}}">
+            Select lot
+            <select id="lot_id" onchange="SendPlaceRequest()" name="lot">
+                {% for lot in lot_list %} 
+                <option value="{{lot}}">{{lot}}</option>
+                {% endfor %}
+            </select>
+            Select place
+            <select id="place_id" name="place">
+                {% for place in place_list %} 
+                <option value="{{place}}">{{place}}</option>
+                {% endfor %}
+            </select>
+            Car number:
+            <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" >
+            Money:
+            <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20">
+        </fieldset>
+        
+        <p><button  type="submit" onclick="GetInfo();" >Show info</button> </p>     
+
+
+
+
          <dl>
                  <dt>Username {{ idd }}:</dt>
                  <dd><input type=text name="username" value="{{request.form.username}}"></dd>
@@ -81,6 +107,31 @@
 		return false;
     };
     return true;
+    };
+
+    SendPlaceRequest = function(){
+        var formData = {    "id_lot":$("#id_lot").val(),    };
+        console.log(formData);
+        $.ajax({
+            url:'http://localhost:5000/payment',
+            type:'POST',
+            data: JSON.stringify(formData, null, '\t'),
+            contentType: "application/json",
+            success: function (response)
+            {
+                html = "<option id={0}>{1}</option>"
+                for value in response{
+                    $("select[name='place']").append(String.format(html, value, respons[value]);
+                };               
+            },
+
+            error: function (request)
+            {
+            
+            },
+
+            });
+
     };
 
 
