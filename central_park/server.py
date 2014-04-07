@@ -1,4 +1,5 @@
-import os, services
+import os, sqlite3
+from services import * 
 from datetime import datetime, timedelta
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, g, redirect, url_for, abort, \
@@ -51,12 +52,12 @@ def payment():
         credentials = { 'username' : username,
                         'car_number' : request.values.get('car_number'),
                         'cost': cost,
-                        'leave_before':str(datetime.now() + timedelta(hours = calculate_hours(cost))),
+                        'leave_before':datetime.now() + timedelta(hours = calculate_hours(cost)),
                         'id_place': id_place,
                         'id_lot': id_lot,
                         'rate': get_hourly_rate(id_lot, id_place) }
               
-        
+        print credentials['leave_before']
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
        
        
@@ -71,22 +72,24 @@ def payment():
             return render_template('payment_response.html', error="ERROR!!!" )
 
 
-@app.route('/price', methods = ['GET','POST'])
-def show_price():
-    """
+@app.route('/history', methods = ['GET','POST'])
+def show_history():
+    hist = None
     if request.method == 'GET':
-         return render_template('get_cars.html')
+        return render_template('history.html')
     else:
-        id_lot=request.values.get('lot_id')
-        data = b.execute('SELECT * FROM PriceHistory where parkinglot_id={0}'.format(id_lot))
-        data.fetchall()
-    """
-    return render_template('response_price.html', classactive_price ="class=active")
+        Lot = request.values.get('Lot')
+        data_time = request.values.get('date')
+        actual_history = get_payment_by_date(Lot, data_time)
+        
+        if actual_history:
+            return render_template('response_history.html', history_info = actual_history) 
+
 
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_place.html', classactive_canstand="class=active")
+        return render_template('get_cars.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
     else:
         place = request.values.get('place')
         for obj in db_session.query(Payment).filter(Payment.place_id == place):
@@ -101,10 +104,9 @@ def can_stand():
         'time': expiration
         }
         if response:
-            return render_template('response_aval_place.html', response=response, classactive_canstand="class=active")
+            return render_template('get_cars.html', Message=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
         else:
-            return render_template('response_aval_place.html', error="Something not correct", classactive_canstand="class=active")
-
+            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
@@ -115,6 +117,13 @@ def log_in():
 def welcome():
     return render_template('welcome.html', classactive_welcome ="class=active")
 
+@app.route('/find', methods = ['GET','POST'])
+def find_place():   
+    if request.method == 'POST':
+        return render_template('find_place.html', Message={'id_lot': 'some lot', \
+            'id_place': 'id_place', 'cost': 'cost'}, classactive_log ="class=active")
+    elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
+    
 
 if __name__ == '__main__':
     init_db()

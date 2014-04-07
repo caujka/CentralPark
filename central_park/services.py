@@ -129,7 +129,7 @@ def get_payment_by_date(lot_id, date_tmp):
         query: list of Payment who parked in this date at ParkingLor (LIST of objects)
     """
 
-    date_tmp = datetime.strptime(date_tmp, "%d/%m/%Y")
+    date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
     query = db_session.query(Payment).filter(Payment.date >= date_tmp,\
                                                 Payment.date <= (date_tmp + timedelta(days=1)),
                                                 Payment.place_id == ParkingPlace.id,

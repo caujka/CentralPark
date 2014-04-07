@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
     <script  src="http://www.tutorialrepublic.com/lib/js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/menu_switcher.js')}}"></script>
 </head>
-<body>
+<body onload='switch_menu()'>
 <div class="container">
     <div>
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container">
                     <ul class="nav nav-pills">
-                      <li {{classactive_home}} ><a href="/">Home</a> </li>
-                        <li {{classactive_welcome}}><a href="/welcome">Welcome</a> </li>
-                        <li {{classactive_payment}}><a href="/payment">Pay for...</a> </li>
-                        <li {{classactive_price}}><a href="/price">Price for...</a> </li>
-                        <li {{classactive_canstand}}><a href="/can_stand">Check place</a> </li>
-                        <li {{classactive_log}}><a href="/log">Log in</a></li>
+                        <li class="top_menu_item" id = 'welcome'><a href="/welcome">Home</a> </li>
+                        <li class="top_menu_item" id='payment'><a href="/payment">Pay</a> </li>
+                        <li class="top_menu_item" id='history'><a href="/history">History</a> </li>
+                        <li class="top_menu_item" id='can_stand'><a href="/can_stand">Check place</a> </li>
+                        <li class="top_menu_item" id='find_place'><a href="/find">Find Places</a> </li>
+                        <li class="top_menu_item" id='log'><a href="/log">Log in</a></li>
                     </ul>
                 </div>
             </nav>
