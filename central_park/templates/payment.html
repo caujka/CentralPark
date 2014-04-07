@@ -6,11 +6,11 @@
         {% endif %}
 
          <fieldset>
-            Username {{ idd }}:
+            <p>Username {{ idd }}:</p>
             <input type=text name="username" value="{{request.form.username}}">
             Select lot
-            <select id="lot_id" onchange="SendPlaceRequest()" name="lot">
-                {% for lot in lot_list %} 
+            <select id="lot_id" onchange="place_request();" name="lot">
+                {% for lot in lots %} 
                 <option value="{{lot}}">{{lot}}</option>
                 {% endfor %}
             </select>
@@ -29,111 +29,14 @@
         <p><button  type="submit" onclick="GetInfo();" >Show info</button> </p>     
 
 
-
-
-         <dl>
-                 <dt>Username {{ idd }}:</dt>
-                 <dd><input type=text name="username" value="{{request.form.username}}"></dd>
-                 <dt> ID LOT:</dt>
-                 <dd><input type="text" name="id_lot" id="id_lot" value="{{request.form.lot}}" size="20" ></dd>
-                 <dt>ID place:</dt>
-                 <dd><input type="text" name="id_place" id="id_place" value="{{request.form.place}}" size="20" ></dd>
-                 <dt>Car number:</dt>
-                 <dd><input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ></dd>
-                 <dt>Money:</dt>
-                 <dd><input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20"></dd>
-              </d>
-                  <br>
-                 <button  type="submit" onclick="JSONFun();" >Pay for</button>
-
-        </dl>
- 
-
-
         <div id='result'>
         {{ result }}
         </div>
 
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript">
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
     
-    // Check if string is a whole number(digits only).
-    var isWhole_re  = /^\s*\d+\s*$/;
-    function isWhole (s) {
-        return String(s).search (isWhole_re) != -1
-    };
     
-    function checkform ( form )
-    {
-  
-  // ** START **
-        if (form.id_lot.value == "" || form.id_place.value == "" || form.car_number.value == "" || form.car_number.value == "" || isWhole(form.cost.value) != true) {
-            alert( "Please enter valid data" );
-            form.username.focus();
-            return false ;
-        }
-  // ** END **
-        return true ;
-};
-
-    JSONFun = function() {
-        if (checkform(this)){
-        var formData = {
-            "id_lot":$("#id_lot").val(),
-            "id_place":$("#id_place").val(),
-            "car_number":$("#car_number").val(),
-            "cost":$("#cost").val(),
-            };
-        console.log(formData);
-        $.ajax({
-            url:'http://localhost:5000/payment',
-            type:'POST',
-            data: JSON.stringify(formData, null, '\t'),
-            contentType: "application/json",
-            success: function (response)
-            {
-                var myDiv = $('#result'); // The place where you want to inser the template
-                myDiv.html(response);
-            },
-
-            error: function (request)
-            {
-            
-            },
-
-            });
-
-		return false;
-    };
-    return true;
-    };
-
-    SendPlaceRequest = function(){
-        var formData = {    "id_lot":$("#id_lot").val(),    };
-        console.log(formData);
-        $.ajax({
-            url:'http://localhost:5000/payment',
-            type:'POST',
-            data: JSON.stringify(formData, null, '\t'),
-            contentType: "application/json",
-            success: function (response)
-            {
-                html = "<option id={0}>{1}</option>"
-                for value in response{
-                    $("select[name='place']").append(String.format(html, value, respons[value]);
-                };               
-            },
-
-            error: function (request)
-            {
-            
-            },
-
-            });
-
-    };
-
-
-</script>
- {% endblock %} 
+{% endblock %} 
