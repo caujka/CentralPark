@@ -34,6 +34,11 @@ def get_current_tariff_matrix(lot_id):
     else:
         return None
 
+"""def get_free_places_number(lot_id):
+    lot_places = db_session.query(ParkingPlace).filter(ParkingPlace.parkinglot_id == lot_id).all()
+    print lot_places
+    #busy_places = db_session.query(Payment.place_id).filter(Payment.place_id == lot_places.id, Payment.expiration_time > datetime.now())
+    return 0 #free_places """
 
 
 def calculate_estimated_time(cost, lot_id):
@@ -129,9 +134,13 @@ def get_payment_by_date(lot_id, date_tmp):
                                                 Payment.date <= (date_tmp + timedelta(days=1)),
                                                 Payment.place_id == ParkingPlace.id,
                                                 ParkingPlace.parkinglot_id == lot_id).all()
-
     return query
 
+
+"""def get_priced_parking_lot():
+    query = db_session.query()
+    return 0
+"""
 
 #some internal functions
 def calculate_minutes_cost(price_of_hour, minutes):
