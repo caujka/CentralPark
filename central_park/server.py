@@ -32,11 +32,6 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 def home():
     return render_template('home.html', classactive_home ="class=active")
 
-def get_hourly_rate(id_lot, id_place):
-    return 10
-
-def calculate_hours(cost):
-    return 20
 
 @app.route('/payment', methods = ['GET','POST'])
 def payment():
@@ -88,15 +83,17 @@ def can_stand():
     elif request.method == 'POST':
         place = request.json['id_place']
         print place
-        for obj in db_session.query(Payment).filter(Payment.place_id == place):
-            car_number = obj.car_number
-            cost = obj.cost
-            expiration = obj.expiration_time
-
+        query = get_parked_car_on_place(place)
+        if query is not []:
+            for obj in get_parked_car_on_place(place):
+                car_number = obj.car_number
+                expiration = obj.expiration_time
+        else:
+            car_number = "Free!"
+            expiration = "Free!"
         response = {
         'id_lot': place,
         'car': car_number,
-        'cost': cost,
         'time': expiration
         }
         if response:
