@@ -36,7 +36,7 @@ def home():
 @app.route('/payment', methods = ['GET','POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html',classactive_payment ="class=active")
+        return render_template('payment.html',classactive_payment ="class=active", lots={0, 1, 2})
      
     elif (request.method == 'POST'):
         username = 'username' #request.json['username']
@@ -100,6 +100,14 @@ def can_stand():
             return render_template('auth_cars.html', response=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
         else:
             return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
+
+
+@app.route('/dynamic_select', methods = ['POST'])
+def dynamic_select():
+    print 'ololololololo'
+    response = '0123'
+    return response
+
 
 @app.route('/log', methods = ['GET','POST'])
 def log_in():
