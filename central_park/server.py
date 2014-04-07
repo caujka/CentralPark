@@ -33,10 +33,10 @@ def home():
     return render_template('home.html', classactive_home ="class=active")
 
 
-@app.route('/payment', methods = ['GET','POST'])
+@app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html',classactive_payment ="class=active", lots={0, 1, 2})
+        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot())
      
     elif (request.method == 'POST'):
         username = 'username' #request.json['username']
@@ -62,7 +62,7 @@ def payment():
     else:
         return render_template('payment_response.html', error="ERROR!!!" )
 
-@app.route('/history', methods = ['GET','POST'])
+@app.route('/history', methods=['GET', 'POST'])
 def show_history():
     hist = None
     if request.method == 'GET':
@@ -102,23 +102,30 @@ def can_stand():
             return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 
 
-@app.route('/dynamic_select', methods = ['POST'])
+@app.route('/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
-    print 'ololololololo'
-    response = '0123'
+    lot_name = request.json['lot_id']
+    query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
+    for item in query:
+        lot_name = item[0]
+    print type(lot_name)
+    print lot_name
+    response = get_list_of_places_by_lot(lot_name)
     return response
 
 
-@app.route('/log', methods = ['GET','POST'])
+@app.route('/log', methods=['GET', 'POST'])
 def log_in():
     data = ''    
-    return render_template('log.html',classactive_log ="class=active")
+    return render_template('log.html', classactive_log ="class=active")
 
-@app.route('/welcome', methods = ['GET','POST'])
+
+@app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    return render_template('welcome.html', classactive_welcome ="class=active")
+    return render_template('welcome.html', classactive_welcome="class=active")
 
-@app.route('/find', methods = ['GET','POST'])
+
+@app.route('/find', methods=['GET', 'POST'])
 def find_place():   
     if request.method == 'POST':
         return render_template('find_place.html', Message={'id_lot': 'some lot', \

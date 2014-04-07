@@ -32,7 +32,7 @@
             contentType: "application/json",
             success: function (response)
             {
-                var myDiv = $('#result'); // The place where you want to inser the template
+                var myDiv = $('#result'); // The place where you want to insert the template
                 myDiv.html(response);
             },
 
@@ -48,29 +48,30 @@
     return true;
     };
 
-    place_request = function()
-    {
-        var formData = {"lot_id":$("#lot_id").val()};
-        console.log(formData);
-        $.ajax({
-            url:'http://localhost:5000/dynamic_select',
-            type:'POST',
-            data: JSON.stringify(formData, null, '\t'),
-            contentType: "application/json",
-            success: function (response)
-            {
-                for (value in response){
-                    console.log(value, response[value]);
-                    $("select[name='place']").append("<option value="+response[value]+">"+response[value]+"</option>");
-                };               
-            },
+place_request = function(){
+    var formData = {"lot_id":$("#lot_id").val()};
+    console.log(formData);
+    alert('JS started');
+    $.ajax({
+        url:'/dynamic_select',
+        type:'POST',
+        data: JSON.stringify(formData, null, '\t'),
+        contentType: "application/json",
+        success: function (response)
+        {
+            console.log(response);
+            alert('Sucs!');
+            for (value in response){
+                console.log(value, response[value]);
+                $("select[name='place']").append("<option value="+response[value]+">"+response[value]+"</option>");
+            };               
+        },
+        error: function (request)
+        {
+            alert('Error!!!')
+        },
 
-            error: function (request)
-            {
-            
-            },
-
-            });
+    });
 
 
-    };
+};

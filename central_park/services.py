@@ -127,6 +127,32 @@ def get_parked_car_on_place(place_id):
     return query
 
 
+def get_list_of_places_by_lot(lot_id):
+    """
+    params:
+        lot_id: id of parking lot (INT)
+    return:
+        response: list of parkingplace_id which respond to given ParkingLor (LIST of INT)
+    """
+    query = db_session.query(ParkingPlace.id).filter(ParkingPlace.parkinglot_id == lot_id)
+    respond = []
+    for item in query:
+        respond.append(item[0])
+    return respond
+
+
+def get_list_of_lot():
+    """
+    return:
+        response: list of all ParkingLot.names (LIST of STR)
+    """
+    query = db_session.query(ParkingLot.name).all()
+    respond = []
+    for item in query:
+        respond.append(item[0])
+    return respond
+
+
 def get_payment_by_date(lot_id, date_tmp):
     """
     params:

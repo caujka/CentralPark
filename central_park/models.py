@@ -24,7 +24,7 @@ class ParkingPlace(Base):
     __tablename__ = 'ParkingPlace'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     place_category = Column(Binary)
     parkinglot_id = Column(ForeignKey(ParkingLot.id))
     payment = relationship("Payment")
