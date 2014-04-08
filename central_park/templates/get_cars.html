@@ -4,7 +4,7 @@
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
-<fieldset>Choose parking place <select id="place_id" name="place">
+<fieldset>Виберіть парковку:<select id="lot_name" name="lot_name" res=get_list_of_lots()>
         {% for res in res_list %} 
             <option value="{{res}}">{{res}}</option>
          {% endfor %}
@@ -23,11 +23,11 @@
 GetInfo = function() {
 
         var formData = {
-            "id_place":$("#place_id").val(),
+            "lot_name":$("#lot_name").val(),
             };
 
        $.ajax({
-            url:'http://localhost:5000/can_stand',
+            url:'/can_stand',
             type:'POST',
             data: JSON.stringify(formData, null, '\t'),
             contentType: "application/json",
