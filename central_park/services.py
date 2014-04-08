@@ -140,18 +140,26 @@ def get_list_of_places_by_lot(lot_id):
         respond.append(item[0])
     return respond
 
-
+"""
 def get_list_of_lot():
-    """
+  
     return:
         response: list of all ParkingLot.names (LIST of STR)
-    """
+   
     query = db_session.query(ParkingLot.name).all()
     respond = []
     for item in query:
         respond.append(item[0])
     return respond
+"""
 
+def get_lots():
+    lots = db_session.query(ParkingLot.id)
+    list_lots = []
+    for lot in lots:
+        list_lots.append(lot.id)
+        
+    return list_lots
 
 def get_payment_by_date(lot_id, date_tmp):
     """

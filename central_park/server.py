@@ -5,6 +5,7 @@ from models import ParkingLot, ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 from database import db_session, init_db
+from json import *
 
 
 # create our little application :)
@@ -36,27 +37,37 @@ def home():
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot())
+        lot = request.values.get('lot')
+        k = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot)
+        return render_template('payment.html', classactive_payment="class=active", lots=get_lots(), place_list = get_list_of_places_by_lot(0) )
      
     elif (request.method == 'POST'):
-        username = 'username' #request.json['username']
+        username = request.json['name']
+         #request.json['username']
+        #request_dict = request.json['cost']
+        #print request_dict
         cost = int(request.json['cost'])
-        id_lot = request.json['id_lot']
-        id_place = request.json['id_place']
+        id_lot = int(request.json['lot_id'])
+        print (id_lot)
+        print g
+        
         credentials = { 'username' : username,
                         'car_number' : request.json['car_number'],
                         'cost': cost,
-                        'leave_before':datetime.now() + timedelta(hours = calculate_hours(cost)),
-                        'id_place': id_place,
-                        'id_lot': id_lot,
-                        'rate': get_hourly_rate(id_lot, id_place) }
-        p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
+                        'leave_before':calculate_estimated_time(int(cost),id_lot),
+                        'id_place': request.json['place_id'],
+                        'id_lot': request.json['lot_id'],
+                        'rate': get_current_tariff_matrix(id_lot)}
+
+        print credentials
+        p = Payment(credentials['car_number'], credentials['cost'], credentials['leave_before'], credentials['id_place'], 1)    
               
-        if (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
+        if (db_session.query(ParkingLot).filter(ParkingLot.id==1).first().id):
             print 'ololololololo'
+            print (p)
             db_session.add(p)
             db_session.commit()
-            return render_template('payment_response.html', credentials=credentials)
+            return render_template("payment_response.html", credentials=credentials)
         else:
             return render_template('payment_response.html', error="ERROR!!!" )
     else:

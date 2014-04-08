@@ -16,37 +16,40 @@
         return true ;
     };
 
-    GetInfo  = function() {
-        if (checkform(this)){
-        var formData = {
-            "lot_id":$("#lot_id").val(),
-            "place_id":$("#place_id").val(),
-            "car_number":$("#car_number").val(),
-            "cost":$("#cost").val(),
-            };
-        console.log(formData);
-        $.ajax({
-            url:'http://localhost:5000/payment',
-            type:'POST',
-            data: JSON.stringify(formData, null, '\t'),
-            contentType: "application/json",
-            success: function (response)
-            {
-                var myDiv = $('#result'); // The place where you want to insert the template
-                myDiv.html(response);
-            },
+GetInfo  = function() {
+    console.log('a');
+        if (checkform(this))
+        {
+            var formData = {
+                "name":$("#name").val(),
+                "lot_id":$("#lot_id").val(),
+                "place_id":$("#place_id").val(),
+                "car_number":$("#car_number").val(),
+                "cost":$("#cost").val(),
+                };
+            console.log(formData);
+            $.ajax({
+                url:'/payment',
+                type:'POST',
+                data: JSON.stringify(formData, null),
+                contentType: "application/json",
+                success: function (st)
+                {
 
-            error: function (request)
-            {
-            
-            },
+                    document.getElementById('result').innerHTML = st;
+                },
 
-            });
+                error: function ()
+                {
+                alert('error5');
+                },
+
+                });
 
 		return false;
     };
     return true;
-    };
+};
 
 place_request = function(){
     var formData = {"lot_id":$("#lot_id").val()};
