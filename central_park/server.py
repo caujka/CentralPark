@@ -39,7 +39,7 @@ def payment():
     if request.method == 'GET':
         lot = request.values.get('lot')
         k = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot)
-        return render_template('payment.html', classactive_payment="class=active", lots=get_lots(), place_list = get_list_of_places_by_lot(0) )
+        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
 
     elif (request.method == 'POST'):
         username = request.json['name']
@@ -47,9 +47,7 @@ def payment():
         #request_dict = request.json['cost']
         #print request_dict
         cost = int(request.json['cost'])
-        id_lot = int(request.json['lot_id'])
-        print (id_lot)
-        print g
+        id_lot = get_lotid_by_lotname(request.json['lot_id'])
         
         credentials = { 'username' : username,
                         'car_number' : request.json['car_number'],
@@ -90,15 +88,15 @@ def show_history():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_lots())
+        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_lot())
     elif request.method == 'POST':
         lot_name = request.json['lot_name']
         lot_id = get_lotid_by_lotname(lot_name)
         response = get_parked_car_on_lot(lot_id)
         if response:
-            return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lots())
+            return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lot())
         else:
-            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =get_list_of_lots())
+            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =get_list_of_lot())
 
 
 @app.route('/dynamic_select', methods=['POST', 'GET'])

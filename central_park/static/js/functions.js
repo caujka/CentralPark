@@ -17,8 +17,7 @@
     };
 
 GetInfo  = function() {
-    console.log('a');
-        if (checkform(this))
+       if (checkform(this))
         {
             var formData = {
                 "name":$("#name").val(),
@@ -41,7 +40,7 @@ GetInfo  = function() {
 
                 error: function ()
                 {
-                alert('error5');
+                alert('error');
                 },
 
                 });

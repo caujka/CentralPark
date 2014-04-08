@@ -50,7 +50,7 @@
             };
         console.log(formData);
         $.ajax({
-            url:'http://localhost:5000/find',
+            url:'/find',
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",

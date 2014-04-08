@@ -151,23 +151,14 @@ def get_list_of_places_by_lot(lot_id):
     return respond
 
 
-"""
+
 def get_list_of_lot():
-  
-
-
-def get_list_of_lots():
-    
-
-    return:
-        response: list of all ParkingLot.names (LIST of STR)
-   
     query = db_session.query(ParkingLot.name).all()
     respond = []
     for item in query:
         respond.append(item[0])
     return respond
-"""
+
 
 def get_lots():
     lots = db_session.query(ParkingLot.id)
@@ -225,7 +216,10 @@ def get_lotid_by_lotname(lot_name):
     query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
     for item in query:
         lot_id = item[0]
-    return lot_id
+    if lot_id:
+        return lot_id
+    else:
+        return lot_id
 
 
 #some internal functions
