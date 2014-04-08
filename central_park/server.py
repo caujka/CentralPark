@@ -30,7 +30,7 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 
 @app.route('/')
 def home():
-    return render_template('home.html', classactive_home ="class=active")
+    return render_template('welcome.html')
 
 
 @app.route('/payment', methods=['GET', 'POST'])

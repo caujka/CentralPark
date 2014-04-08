@@ -1,4 +1,4 @@
-{% extends "header_template.html" %}
+{% extends "start.html" %}
 {% block content %}
          <h1>Find parking places</h1>
         {% if error %}
@@ -23,9 +23,7 @@
                 <b>Lot ID:</b> {{ Message.id_lot }} <br/>
                 <b>Place ID:</b> {{ Message.id_place }} <br/>
                 <p>Price: {{ Message.cost }}</p>
-                <!--   
-                <p>Earliest time:  {{ Message.e_time }}</p>
-                <p>Latest time:  {{ Message.l_time }}</p> -->
+               
             </dt>
         </dl> 
 {% endif %}
