@@ -29,11 +29,11 @@ GetInfo = function() {
        $.ajax({
             url:'/can_stand',
             type:'POST',
-            data: JSON.stringify(formData, null, '\t'),
+            data: JSON.stringify(formData),
             contentType: "application/json",
             success: function (response)
             {
-                var myDiv = $('#result'); // The place where you want to inser the template
+                var myDiv = $('#result'); // The place where you want to insert the template
                 myDiv.html(response);
             },
             error: function ()

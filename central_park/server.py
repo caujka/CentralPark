@@ -83,23 +83,11 @@ def can_stand():
     elif request.method == 'POST':
         lot_name = request.json['lot_name']
         lot_id = get_lotid_by_lotname(lot_name)
-        query = get_parked_car_on_place(place)
-        if query is not []:
-            for obj in get_parked_car_on_place(place):
-                car_number = obj.car_number
-                expiration = obj.expiration_time
-        else:
-            car_number = "Free!"
-            expiration = "Free!"
-        response = {
-        'id_lot': place,
-        'car': car_number,
-        'time': expiration
-        }
+        response = get_parked_car_on_lot(lot_id)
         if response:
-            return render_template('auth_cars.html', response=response, classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
+            return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lots())
         else:
-            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
+            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =get_list_of_lots())
 
 
 @app.route('/dynamic_select', methods=['POST', 'GET'])

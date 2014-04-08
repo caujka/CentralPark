@@ -1,10 +1,9 @@
 {% block content %}
-<h1> Authorized Cars </h1>
+<h4> На парковці <b>{{lot_name}}</b> запарковані наступні машини:</h4>
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
-	<p>Authorized cars on Lot {{response.lot_id}}, Place {{response.place_id}}</p>
-	{% for car in cars %}
-    	<p> {{car.number}} </p>
+	{% for car in response %}
+    	<p> {{car.car_number}}  {{car.expiration_time}}  {{car.place_id}} </p>
     {% endfor %}
 {% endblock %}

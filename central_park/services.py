@@ -121,11 +121,20 @@ def get_parked_car_on_lot(lot_id):
     return:
         query: list of cars who allowed to be parked for now on given ParkingLor (LIST of objects)
     """
-    query = db_session.query(Payment.car_number, Payment.expiration_time).\
+    parked_car = db_session.query(Payment.car_number, Payment.expiration_time, Payment.place_id).\
                                                 filter(Payment.expiration_time > datetime.now(),
                                                 Payment.place_id == ParkingPlace.id,
-                                                ParkingLot.id == lot_id)
-    return query
+                                                ParkingPlace.parkinglot_id == lot_id).all()
+    place_list = []
+    i = 0
+    for car in parked_car:
+        place_list.append({
+            "place_id": car.place_id,
+            "car_number": car.car_number,
+            "expiration_time": car.expiration_time
+        })
+        i += 1
+    return place_list
 
 
 def get_list_of_places_by_lot(lot_id):
@@ -152,6 +161,7 @@ def get_list_of_lots():
     for item in query:
         respond.append(item[0])
     return respond
+
 
 
 def get_payment_by_date(lot_id, date_tmp):
@@ -215,4 +225,3 @@ def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
 
 def parse_tariff_to_list(tariff):
     return tuple([int(x) for x in tariff.split(';')])
-
