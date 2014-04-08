@@ -53,7 +53,6 @@ GetInfo  = function() {
 
 place_request = function(){
     var formData = {"lot_id":$("#lot_id").val()};
-    console.log(formData);
     $.ajax({
         url:'/dynamic_select',
         type:'POST',
@@ -65,7 +64,6 @@ place_request = function(){
             var places = ""
             for (var i=0; i<list.length; i++){
                 places += '<option value=' + list[i] + '>' + list[i] + '</option>'
-                //$("select[name='place']").append('<option value=' + list[i] + '>' + list[i] + '</option>')
             };
             document.getElementById('place_id').innerHTML = places;
 

@@ -114,7 +114,7 @@ def get_parked_car_on_lot(lot_id):
     return query
 
 
-def get_parked_car_on_place(place_id):
+def get_parked_car_on_lot(lot_id):
     """
     params:
         place_id: id of parking place (INT)
@@ -123,7 +123,8 @@ def get_parked_car_on_place(place_id):
     """
     query = db_session.query(Payment.car_number, Payment.expiration_time).\
                                                 filter(Payment.expiration_time > datetime.now(),
-                                                Payment.place_id == place_id).one()
+                                                Payment.place_id == ParkingPlace.id,
+                                                ParkingLot.id == lot_id)
     return query
 
 
@@ -140,9 +141,15 @@ def get_list_of_places_by_lot(lot_id):
         respond.append(item[0])
     return respond
 
+
 """
 def get_list_of_lot():
   
+
+
+def get_list_of_lots():
+    
+
     return:
         response: list of all ParkingLot.names (LIST of STR)
    
@@ -192,10 +199,23 @@ def get_priced_parking_lot(price_min, price_max):
     for item in query:
         tariff = get_current_tariff_matrix(item.id)
         tariff = parse_tariff_to_list(tariff)
-        print tariff
-        if ((tariff[current_hour] >= price_min) and (tariff[current_hour] <= price_max)):
-            lots.append(item)
+        if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
+            lots.append({'id': item.id, 'address': item.address, 'name': item.name})
+    print lots
     return lots
+
+
+def get_lotid_by_lotname(lot_name):
+    """
+    params:
+        lot_name: ParkingLot.name of serching ParkingLot (STRING)
+    return:
+        lot_id: ParkingLot.id of given ParkingLot (INT)
+    """
+    query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
+    for item in query:
+        lot_id = item[0]
+    return lot_id
 
 
 #some internal functions
