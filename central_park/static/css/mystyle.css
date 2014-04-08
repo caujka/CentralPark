@@ -61,6 +61,30 @@ color: black;
 background: url(../images/menuover.png) repeat-x;
 }
 
+#menu ul li a:active{
+
+background: url(../images/menuover.png) repeat-x;
+color: white;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus{
+
+background: url(../images/menuover.png) repeat-x;
+color: white;
+}
+.nav-pills>li.active>a:active{
+	color: white;
+}
+
+.navbar {
+	border: 0;
+}
+
+#menu ul li:active {
+color: black;
+background: url(../images/menuover.png) repeat-x;
+}
+
 #menubottom {
 background: #393939 url(../images/menubottom.jpg) no-repeat;
 padding: 5px 0;
