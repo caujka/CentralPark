@@ -187,6 +187,7 @@ def get_priced_parking_lot(price_min, price_max):
         print tariff
         if ((tariff[current_hour] >= price_min) and (tariff[current_hour] <= price_max)):
             lots.append(item)
+    print lots
     return lots
 
 
