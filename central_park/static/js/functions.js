@@ -51,7 +51,6 @@
 place_request = function(){
     var formData = {"lot_id":$("#lot_id").val()};
     console.log(formData);
-    alert('JS started');
     $.ajax({
         url:'/dynamic_select',
         type:'POST',
