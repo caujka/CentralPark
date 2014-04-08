@@ -62,7 +62,6 @@ place_request = function(){
             var places = ""
             for (var i=0; i<list.length; i++){
                 places += '<option value=' + list[i] + '>' + list[i] + '</option>'
-                //$("select[name='place']").append('<option value=' + list[i] + '>' + list[i] + '</option>')
             };
             document.getElementById('place_id').innerHTML = places;
 
