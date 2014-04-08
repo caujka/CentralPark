@@ -30,18 +30,13 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 
 @app.route('/')
 def home():
-    return render_template('home.html', classactive_home ="class=active")
+    return render_template('welcome.html')
 
-def get_hourly_rate(id_lot, id_place):
-    return 10
 
-def calculate_hours(cost):
-    return 20
-
-@app.route('/payment', methods = ['GET','POST'])
+@app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html',classactive_payment ="class=active", lots={0, 1, 2})
+        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot())
      
     elif (request.method == 'POST'):
         username = 'username' #request.json['username']
@@ -57,7 +52,7 @@ def payment():
                         'rate': get_hourly_rate(id_lot, id_place) }
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
               
-        if  (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
+        if (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
             print 'ololololololo'
             db_session.add(p)
             db_session.commit()
@@ -67,7 +62,7 @@ def payment():
     else:
         return render_template('payment_response.html', error="ERROR!!!" )
 
-@app.route('/history', methods = ['GET','POST'])
+@app.route('/history', methods=['GET', 'POST'])
 def show_history():
     hist = None
     if request.method == 'GET':
@@ -84,19 +79,21 @@ def show_history():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
+        return render_template('get_cars.html', classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
     elif request.method == 'POST':
         place = request.json['id_place']
         print place
-        for obj in db_session.query(Payment).filter(Payment.place_id == place):
-            car_number = obj.car_number
-            cost = obj.cost
-            expiration = obj.expiration_time
-
+        query = get_parked_car_on_place(place)
+        if query is not []:
+            for obj in get_parked_car_on_place(place):
+                car_number = obj.car_number
+                expiration = obj.expiration_time
+        else:
+            car_number = "Free!"
+            expiration = "Free!"
         response = {
         'id_lot': place,
         'car': car_number,
-        'cost': cost,
         'time': expiration
         }
         if response:
@@ -105,23 +102,28 @@ def can_stand():
             return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15] )
 
 
-@app.route('/dynamic_select', methods = ['POST'])
+@app.route('/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
-    print 'ololololololo'
-    response = '0123'
-    return response
+    lot_name = request.json['lot_id']
+    query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
+    for item in query:
+        lot_name = item[0]
+    list = get_list_of_places_by_lot(lot_name)
+    return jsonify(response=list)
 
 
-@app.route('/log', methods = ['GET','POST'])
+@app.route('/log', methods=['GET', 'POST'])
 def log_in():
     data = ''    
-    return render_template('log.html',classactive_log ="class=active")
+    return render_template('log.html', classactive_log="class=active")
 
-@app.route('/welcome', methods = ['GET','POST'])
+
+@app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    return render_template('welcome.html', classactive_welcome ="class=active")
+    return render_template('welcome.html', classactive_welcome="class=active")
 
-@app.route('/find', methods = ['GET','POST'])
+
+@app.route('/find', methods=['GET', 'POST'])
 def find_place():   
     if request.method == 'POST':
         return render_template('find_place.html', Message={'id_lot': 'some lot', \
