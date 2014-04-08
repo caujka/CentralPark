@@ -185,9 +185,8 @@ def get_priced_parking_lot(price_min, price_max):
     for item in query:
         tariff = get_current_tariff_matrix(item.id)
         tariff = parse_tariff_to_list(tariff)
-        print tariff
-        if ((tariff[current_hour] >= price_min) and (tariff[current_hour] <= price_max)):
-            lots.append(item)
+        if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
+            lots.append({'id': item.id, 'address': item.address, 'name': item.name})
     print lots
     return lots
 

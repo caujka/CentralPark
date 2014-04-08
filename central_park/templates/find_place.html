@@ -54,7 +54,7 @@
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",
-            success: function (request)
+            success: function (response)
             {
                 var myDiv = $('#result'); // The place where you want to insert the template
                 myDiv.html(response);
