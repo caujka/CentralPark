@@ -36,7 +36,7 @@ def home():
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot())
+        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lots())
      
     elif (request.method == 'POST'):
         username = 'username' #request.json['username']
@@ -79,10 +79,10 @@ def show_history():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
+        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_lots())
     elif request.method == 'POST':
-        place = request.json['id_place']
-        print place
+        lot_name = request.json['lot_name']
+        lot_id = get_lotid_by_lotname(lot_name)
         query = get_parked_car_on_place(place)
         if query is not []:
             for obj in get_parked_car_on_place(place):
@@ -105,10 +105,8 @@ def can_stand():
 @app.route('/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
     lot_name = request.json['lot_id']
-    query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
-    for item in query:
-        lot_name = item[0]
-    list = get_list_of_places_by_lot(lot_name)
+    lot_id = get_lotid_by_lotname(lot_name)
+    list = get_list_of_places_by_lot(lot_id)
     return jsonify(response=list)
 
 
