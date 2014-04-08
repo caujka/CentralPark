@@ -126,8 +126,7 @@ def welcome():
 @app.route('/find', methods=['GET', 'POST'])
 def find_place():   
     if request.method == 'POST':
-        return render_template('find_place.html', Message={'id_lot': 'some lot', \
-            'id_place': 'id_place', 'cost': 'cost'}, classactive_log ="class=active")
+        return render_template('response_aval_place.html', response=get_priced_parking_lot(request.json['l_price'], request.json['h_price']), classactive_log ="class=active")
     elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
     
 
