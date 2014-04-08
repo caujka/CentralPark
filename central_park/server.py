@@ -52,7 +52,7 @@ def payment():
                         'rate': get_hourly_rate(id_lot, id_place) }
         p = Payment(credentials['car_number'], cost, credentials['leave_before'], id_place, 1)    
               
-        if  (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
+        if (db_session.query(ParkingLot).filter(ParkingLot.id==id_lot).first().id):
             print 'ololololololo'
             db_session.add(p)
             db_session.commit()
@@ -79,7 +79,7 @@ def show_history():
 @app.route('/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active",res_list =[1,2,3,4,5,6,7,8,9,15])
+        return render_template('get_cars.html', classactive_canstand="class=active", res_list =[1,2,3,4,5,6,7,8,9,15])
     elif request.method == 'POST':
         place = request.json['id_place']
         print place
@@ -108,16 +108,14 @@ def dynamic_select():
     query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
     for item in query:
         lot_name = item[0]
-    print type(lot_name)
-    print lot_name
-    response = get_list_of_places_by_lot(lot_name)
-    return response
+    list = get_list_of_places_by_lot(lot_name)
+    return jsonify(response=list)
 
 
 @app.route('/log', methods=['GET', 'POST'])
 def log_in():
     data = ''    
-    return render_template('log.html', classactive_log ="class=active")
+    return render_template('log.html', classactive_log="class=active")
 
 
 @app.route('/welcome', methods=['GET', 'POST'])
