@@ -1,0 +1,83 @@
+<!DOCTYPE >
+<html >
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Flask</title>
+
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mystyle.css')}}">
+    <script  src="http://www.tutorialrepublic.com/lib/js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/menu_switcher.js')}}"></script>
+</head>
+<body onload='switch_menu()'>
+
+<div id="wrap">
+
+<div id="header">
+     
+<div id="top_menu">
+           <div class="contact_us"><p align="center">Central Parking<a href="#"></a></p></div>
+</div>
+
+</div>
+
+ 
+   	<nav class="navbar navbar-default" role="navigation" id="menu">
+       <div >
+        <div class="container">
+        
+            <ul class="nav nav-pills">
+			    <li class="top_menu_item" id='welcome'><a href="/welcome">Home</a> </li>
+                <li class="top_menu_item" id='payment'><a href="/payment">Pay</a> </li>
+                <li class="top_menu_item" id='history'><a href="/history">History</a> </li>
+                <li class="top_menu_item" id='can_stand' ><a href="/can_stand" size="40">Check place</a></li>
+                <li class="top_menu_item" id='find_place'><a href="/find">Find Places</a> </li>
+			    <li class="top_menu_item" id='log'><a href="/log">Log in</a></li>
+			</ul>
+        </div>
+        </div>
+    </nav>
+
+
+
+
+<div id="contentwrap"> 
+
+<div id="content">
+
+<div class="content">
+{% block content%}
+<div>Ласкаво просимо до системи міських парковок!
+Цей сервіс надасть вам змогу швидко знайти де припаркувати Ваше авто та одразу ж оплатити парковку!</div>
+<p>
+
+</p>
+
+
+        
+   
+<p>
+
+</p>
+     {% endblock %}
+ </div>
+
+</div>
+
+
+<div style="clear: both;"> </div>
+
+</div>
+
+<div id="footer">
+
+</div>
+
+</div>
+
+
+</body>
+</html>
