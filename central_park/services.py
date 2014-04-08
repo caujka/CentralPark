@@ -151,17 +151,31 @@ def get_list_of_places_by_lot(lot_id):
     return respond
 
 
+"""
+def get_list_of_lot():
+  
+
+
 def get_list_of_lots():
-    """
+    
+
     return:
         response: list of all ParkingLot.names (LIST of STR)
-    """
+   
     query = db_session.query(ParkingLot.name).all()
     respond = []
     for item in query:
         respond.append(item[0])
     return respond
+"""
 
+def get_lots():
+    lots = db_session.query(ParkingLot.id)
+    list_lots = []
+    for lot in lots:
+        list_lots.append(lot.id)
+        
+    return list_lots
 
 
 def get_payment_by_date(lot_id, date_tmp):
@@ -195,9 +209,9 @@ def get_priced_parking_lot(price_min, price_max):
     for item in query:
         tariff = get_current_tariff_matrix(item.id)
         tariff = parse_tariff_to_list(tariff)
-        print tariff
-        if ((tariff[current_hour] >= price_min) and (tariff[current_hour] <= price_max)):
-            lots.append(item)
+        if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
+            lots.append({'id': item.id, 'address': item.address, 'name': item.name})
+    print lots
     return lots
 
 

@@ -3,6 +3,7 @@ function switch_menu() {
 	for(var i=0; i<menu_bar.length; i++){
 		if('/' + menu_bar[i].id == document.location.pathname){
 			menu_bar[i].classList.add('active');
+	
 		}
 	}
 }

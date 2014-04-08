@@ -6,27 +6,27 @@
         {% endif %}
 
          <fieldset>
-            <p>Username {{ idd }}:</p>
-            <input type=text name="username" value="{{request.form.username}}">
+            <div>Username {{ idd }}:
+            <input type=text name="username" id="name" size="20"><br/>
             Select lot
-            <select id="lot_id" onchange="place_request();" name="lot">
+            <select id="lot_id" onchange="place_request();" name="lot" >
                 {% for lot in lots %} 
-                <option value="{{lot}}">{{lot}}</option>
+                <option value="{{lot}}" size="20">{{lot}}</option>
                 {% endfor %}
-            </select>
+            </select><br/>
             Select place
-            <select id="place_id" name="place">
+            <select id="place_id" name="place" >
                 {% for place in place_list %} 
-                <option value="{{place}}">{{place}}</option>
+                <option value="{{place}}" size="20">{{place}}</option>
                 {% endfor %}
-            </select>
+            </select><br/>
             Car number:
-            <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" >
+            <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ><br/>
             Money:
             <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20">
-        </fieldset>
+        </fieldset><br/>
         
-        <p><button  type="submit" onclick="GetInfo();" >Show info</button> </p>     
+        <button  type="submit" onclick="GetInfo();" >Show info</button> 
 
 
         <div id='result'>
