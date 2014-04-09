@@ -103,20 +103,6 @@ def calculate_total_price(lot_id, time_finish):
 def get_parked_car_on_lot(lot_id):
     """
     params:
-        lot_id: id of parking lot (INT)
-    return:
-        query: list of cars who allowed to be parked for now on given ParkingLor (LIST of objects)
-    """
-    query = db_session.query(Payment.car_number, Payment.expiration_time, Payment.place_id).\
-                                                filter(Payment.expiration_time > datetime.now(),
-                                                Payment.place_id == ParkingPlace.id,
-                                                ParkingPlace.parkinglot_id == lot_id).all()
-    return query
-
-
-def get_parked_car_on_lot(lot_id):
-    """
-    params:
         place_id: id of parking place (INT)
     return:
         query: list of cars who allowed to be parked for now on given ParkingLor (LIST of objects)
@@ -145,28 +131,22 @@ def get_list_of_places_by_lot(lot_id):
         response: list of parkingplace_id which respond to given ParkingLor (LIST of INT)
     """
     query = db_session.query(ParkingPlace.id).filter(ParkingPlace.parkinglot_id == lot_id)
-    respond = []
+    response = []
     for item in query:
-        respond.append(item[0])
-    return respond
-
+        response.append(item[0])
+    return response
 
 
 def get_list_of_lot():
+    """
+    return:
+        response: list of all ParkingLot.name (LIST of STR)
+    """
     query = db_session.query(ParkingLot.name).all()
-    respond = []
+    response = []
     for item in query:
-        respond.append(item[0])
-    return respond
-
-
-def get_lots():
-    lots = db_session.query(ParkingLot.id)
-    list_lots = []
-    for lot in lots:
-        list_lots.append(lot.id)
-        
-    return list_lots
+        response.append(item[0])
+    return response
 
 
 def get_payment_by_date(lot_id, date_tmp):
