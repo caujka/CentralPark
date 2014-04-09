@@ -1,9 +1,21 @@
+
 {% block content %}
-<h4> На парковці <b>{{lot_name}}</b> запарковані наступні машини:</h4>
-{% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+{% if response == [] %}
+        <p class=error><Strong>Дана парковка зараз вільна!</Strong></p>
+{% else %}
+    <h4> На парковці <b>{{lot_name}}</b> запарковані наступні машини:</h4>
+	<div class="table1">
+        <div class="row titlerow">
+            <div class="col col20">Номер паркомісця</div><div class="col col30">Номер машини</div><div class="col col50">Може стояти до:</div>
+        </div>
+        {% for car in response %}
+        <div class="row">
+
+    	    <div class="col col20">{{car.place_id}}</div><div class="col col30">{{car.car_number}}</div><div class="col col50">{{car.expiration_time.strftime("%H:%M  %d-%m-%Y")}}</div>
+
+        </div>
+        {% endfor %}
+
+    </div>
 {% endif %}
-	{% for car in response %}
-    	<p> {{car.car_number}}  {{car.expiration_time}}  {{car.place_id}} </p>
-    {% endfor %}
 {% endblock %}

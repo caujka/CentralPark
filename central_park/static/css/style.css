@@ -3,3 +3,42 @@
     background-color: rgb(248, 248, 248);
     border-color: rgb(231, 231, 231);
 }
+
+.content{
+    width:100%
+}
+
+.result{
+    width:100%
+}
+
+.table1{
+    width:95%;
+    display:table;
+    position:relative;
+}
+
+.row{
+    display:table-row;
+    text-align:center;
+}
+
+.titlerow{
+    font-size:16px
+}
+
+.col{
+    display:table-cell;
+    border:1px solid black;
+}
+.col20{
+    width:20%
+}
+
+.col30 {
+    width:30%
+}
+
+.col50{
+    width:50%
+}

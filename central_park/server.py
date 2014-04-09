@@ -1,11 +1,10 @@
-import os, sqlite3
+# -*- coding: utf-8 -*-
+import os
 from services import * 
 from datetime import datetime, timedelta
 from models import ParkingLot, ParkingPlace, PriceHistory, Payment
-from flask import Flask, request, g, redirect, url_for, abort, \
-     render_template, flash, jsonify
+from flask import Flask, request, render_template, jsonify
 from database import db_session, init_db
-from json import *
 
 
 # create our little application :)
@@ -43,9 +42,6 @@ def payment():
 
     elif (request.method == 'POST'):
         username = request.json['name']
-         #request.json['username']
-        #request_dict = request.json['cost']
-        #print request_dict
         cost = int(request.json['cost'])
         id_lot = get_lotid_by_lotname(request.json['lot_id'])
         
@@ -93,10 +89,8 @@ def can_stand():
         lot_name = request.json['lot_name']
         lot_id = get_lotid_by_lotname(lot_name)
         response = get_parked_car_on_lot(lot_id)
-        if response:
-            return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lot())
-        else:
-            return render_template('get_cars.html', error="Something not correct", classactive_canstand="class=active", res_list =get_list_of_lot())
+        print response
+        return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lot())
 
 
 @app.route('/dynamic_select', methods=['POST', 'GET'])

@@ -1,19 +1,21 @@
 {% extends "start.html" %}
 {% block content %}
-<h1>Get info about...</h1>
+<h2>Перевірка заповненості парковки</h2>
 {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+        <p class=error><Strong>Error</Strong> {{ error }} </p>
 {% endif %}
-<fieldset>Виберіть парковку:<select id="lot_name" name="lot_name" res=get_list_of_lots()>
+<fieldset>Виберіть парковку:
+    <select id="lot_name" name="lot_name" res=get_list_of_lots()>
         {% for res in res_list %} 
             <option value="{{res}}">{{res}}</option>
          {% endfor %}
-        </select></fieldset><br/>
-        
-        <p><button  type="submit" onclick="GetInfo();" >Show info</button> </p>     
+    </select>
+    <button  type="submit" onclick="GetInfo();"><b>Показати<b></button>
+</fieldset>
+
             
 
-<div id='result'>
+<div id='result' class="result">
         {{ result }}
 </div>
 
@@ -44,7 +46,5 @@ GetInfo = function() {
 
         return false;
     };
-
-
 </script>
 {% endblock %}
