@@ -40,38 +40,45 @@ def payment():
         k = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot)
         return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
 
-    elif (request.method == 'POST'):
+    else:
+        min_cost = 10;
+
         username = request.json['name']
         cost = int(request.json['cost'])
+        print request.json
         id_lot = get_lotid_by_lotname(request.json['lot_id'])
-        
-        credentials = { 'username' : username,
+        list_id_lot = get_lots()
+        list_id_plaace = get_list_of_places_by_lot(id_lot)
+
+        reg = r'\d{1,}'
+        reg_str = r'[A-Z, a-z, 0-9]{4,6}'
+
+        if ( (re.search(reg, request.json['cost'])) and re.search(reg, request.json['lot_id']) and re.search(reg, request.json['place_id']) and (cost >= min_cost) and re.search(reg_str,request.json['car_number']) ):
+            credentials = { 'username' : username,
                         'car_number' : request.json['car_number'],
                         'cost': cost,
                         'leave_before':calculate_estimated_time(int(cost),id_lot),
                         'id_place': request.json['place_id'],
                         'id_lot': request.json['lot_id'],
-                        'rate': get_current_tariff_matrix(id_lot)}
-
-        print credentials
-        p = Payment(credentials['car_number'], credentials['cost'], credentials['leave_before'], credentials['id_place'], 1)    
-              
-        if (db_session.query(ParkingLot).filter(ParkingLot.id==1).first().id):
-            print 'ololololololo'
-            print (p)
-            db_session.add(p)
-            db_session.commit()
-            return render_template("payment_response.html", credentials=credentials)
+                        'rate': get_current_tariff_matrix(id_lot)}       
+            p = Payment(credentials['car_number'], credentials['cost'], credentials['leave_before'], credentials['id_lot'], credentials['id_place'])    
+            
+            if (db_session.query(ParkingLot).filter(ParkingLot.id == id_lot).first().id) and p:
+                db_session.add(p)
+                db_session.commit()
+                
+                return render_template("payment_response.html", credentials=credentials)
+            
         else:
-            return render_template('payment_response.html', error="ERROR!!!" )
-    else:
-        return render_template('payment_response.html', error="ERROR!!!" )
+            eror = "Your data is not valid"
+            return render_template("payment_response.html", error=eror )
+
 
 @app.route('/history', methods=['GET', 'POST'])
 def show_history():
     hist = None
     if request.method == 'GET':
-        return render_template('history.html')
+        return render_template('history.html', years = (2010, 2011, 2012, 2013, 2014), months = (u'Січень',u'Лютий',u'Березень',u'Квітень',u'Травень',u'Червень',u'Липень',u'Серпень',u'Вересень',u'Жовтень',u'Листопад',u'Грудень' ))
     else:
         Lot = request.values.get('Lot')
         data_time = request.values.get('date')

@@ -36,11 +36,16 @@ GetInfo  = function() {
                 {
 
                     document.getElementById('result').innerHTML = st;
+                    $("#name").val("");
+                    $("#lot_id").val("");
+                    $("#place_id").val("");
+                    $("#car_number").val("");
+                    $("#cost").val("");
                 },
 
-                error: function ()
+                error: function (st)
                 {
-                alert('error');
+                    alert('erorr')
                 },
 
                 });

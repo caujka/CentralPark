@@ -4,34 +4,29 @@
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
+<pre><fieldset font="Arial">
+Username:       <input type=text name="username" id="name" size="20"><br/>
+Select lot:     <select id="lot_id" onchange="place_request();" name="lot" >
+                                {% for lot in lots %} 
+                                <option value="{{lot}}" size="20">{{lot}}</option>
+                                {% endfor %}
+                                </select><br/>
+Select place:   <select id="place_id" name="place" >
+                                {% for place in place_list %} 
+                                <option value="{{place}}" size="20">{{place}}</option>
+                                {% endfor %}
+                                </select><br/>
+Car number:     <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ><br/>
+Money:          <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20"><br/></fieldset>
+                <button  type="submit" onclick="GetInfo();" >Show info</button> 
 
-         <fieldset>
-            <div>Username {{ idd }}:
-            <input type=text name="username" id="name" size="20"><br/>
-            Select lot
-            <select id="lot_id" onchange="place_request();" name="lot" >
-                {% for lot in lots %} 
-                <option value="{{lot}}" size="20">{{lot}}</option>
-                {% endfor %}
-            </select><br/>
-            Select place
-            <select id="place_id" name="place" >
-                {% for place in place_list %} 
-                <option value="{{place}}" size="20">{{place}}</option>
-                {% endfor %}
-            </select><br/>
-            Car number:
-            <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ><br/>
-            Money:
-            <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20">
-        </fieldset><br/>
-        
-        <button  type="submit" onclick="GetInfo();" >Show info</button> 
+</pre>
+
+<div id='result'>
+{{ result }}
+</div>
 
 
-        <div id='result'>
-        {{ result }}
-        </div>
 
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
