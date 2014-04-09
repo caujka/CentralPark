@@ -1,7 +1,11 @@
-<h1> Payment result </h1>
+
+{% block content%}
+<h3> Payment result </h3>
 {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+        <div class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
+
+{% if credentials %}
 <dl>
 	<dt>
 		<b>Username:</b>
@@ -34,3 +38,7 @@
 	</dt>
 	
 </dl>
+
+{% endif%}
+
+{% endblock %}
