@@ -19,7 +19,10 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
-
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('page_not_found.html'), 404
+    
 #Controling session closing
 @app.teardown_appcontext
 def teardown_session(expception=None):
