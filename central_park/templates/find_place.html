@@ -1,16 +1,16 @@
 {% extends "start.html" %}
 {% block content %}
-         <h1>Find parking places</h1>
+         <h1>Пошук парковки за ціною</h1>
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 
 
               <dl>
-                 <dt> Lowest price:
-                 <dd><input type="text" name="l_price" id="l_price"  size="20" >
-                 <dt>Highest price:
-                 <dd><input type="text" name="h_price" id="h_price" size="20" >
+                 <dt>Від:</dt>
+                    <dd><input type="text" name="l_price" id="l_price"  size="20" ></dd></dl>
+                 <dt>До:</dt>
+                    <dd><input type="text" name="h_price" id="h_price" size="20" ></dd>
                   <br>
                  <button  type="submit" onclick="SendInfo();" >Find!</button>
 

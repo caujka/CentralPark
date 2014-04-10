@@ -1,10 +1,10 @@
 {% extends "start.html" %}
 {% block content %}
-<h1> Authorized Cars </h1>
+<h1> Оплачені місця </h1>
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
-	<p>Authorized cars on Lot {{lot_id}}, Place {{place_id}}</p>
+	<p>Машини, що стоять на парковці "{{lot_id}}", місце№{{place_id}}</p>
 	{% for car in cars %}
     	<p> {{car.number}} </p>
     {% endfor %}

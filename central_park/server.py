@@ -44,14 +44,12 @@ def payment():
         return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
 
     else:
-        min_cost = 10;
+        min_cost = 10
 
         username = request.json['name']
         cost = int(request.json['cost'])
         print request.json
         id_lot = get_lotid_by_lotname(request.json['lot_id'])
-        list_id_lot = get_lots()
-        list_id_plaace = get_list_of_places_by_lot(id_lot)
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'

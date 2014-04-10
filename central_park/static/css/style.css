@@ -12,8 +12,9 @@
     width:100%
 }
 
-.table1{
+.table{
     width:95%;
+    border:2px solid black;
     display:table;
     position:relative;
 }
