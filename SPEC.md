@@ -156,20 +156,24 @@
 інтерфейсу. 
 
 # Hardware configuration
-1 GHz processor x86 (32 bit or 64 bit) or ARM; 1 GB of RAM; 5.9 gigabytes of hard drive space or better
- 
+* Main Server - 1 GHz processor x86 (32 bit or 64 bit) or ARM; 1 GB of RAM; 5.9 gigabytes of hard drive space or better
+* Static Server - 1 GHz processor x86 (32 bit or 64 bit) or ARM; 1 GB of RAM; 10 gigabytes of hard drive
+* DatabaseServer - 2 or more CPU cores, 2 or more GB of RAM, Disk I/O subsystem applicable for a write-intensive database
+
 # Software configuration
-Linux 12.04, Python 2.7.6, sqlalchemy, Flask 0.10
+* Main Server - Ubuntu 12.04, Python 2.7.6, sqlalchemy, Flask 0.10
+* Static Server - Linux, static server (Apache or lighttpd or Cherokee)
+* DatabaseServer - Linux, MySql
 
 # Робота з помилками
 1) Сервер
-* втрата звязку з базою даних*
+* втрата звязку з базою даних
 	* повернути клієнту повідомлення "сервіс тимчасово не працює", записати в лог файл помилку, повідомити адміністратора ресурса (e-mail, sms etc.)
-* втрата звязку зі статичним сервером*
+* втрата звязку зі статичним сервером
 	* повернути клієнту мінімалістичну версію сайта без використання javascript-а і валідації на клієнті, повідомити адміністратора ресурса (e-mail, sms etc.)
 
 2) Банк і системи оплати
-* нема зязку з банківскою системою*
+* нема зязку з банківскою системою
 	* в клієнта неактивне відповідне меню
 
 # Тестування
