@@ -67,7 +67,7 @@
 - Через кіоск;
 
 ![Картинка][image1]
-[image1]:../CentralPark/docs/img/dymae1.jpg
+[image1]:https://github.com/caujka/CentralPark/tree/master/docs/img/dymae1.jpg
 
 
 
@@ -78,7 +78,7 @@
 1) Перейти по адресі CentralPark.Lviv.ua
 
 ![Картинка][image2]
-[image2]:../CentralPark/docs/img/111.jpg
+[image2]:https://github.com/caujka/CentralPark/tree/master/docs/img/111.jpg
 
 Користувач опиниться на початковій сторінці аплікації, де одразу можна здійснити оплату. Тут присутні поля для ввлду та кнопка переходу до наступного кроку.
 
@@ -87,19 +87,19 @@
 3) Після цього користувачеві представляються активні тарифи та можливість ввести час в годинах, скільки він буде стояти.
 
 ![Картинка][image3]
-[image3]:../CentralPark/docs/img/222.jpg
+[image3]:https://github.com/caujka/CentralPark/tree/master/docs/img/222.jpg
 
 
 4) Ввівши час, аплікація перенаправляє користувача на систему онлайн-платежів, де відбувається безпосередня оплата паркування.
 
 ![Картинка][image4]
-[image4]:../CentralPark/docs/img/333.jpg
+[image4]:https://github.com/caujka/CentralPark/tree/master/docs/img/333.jpg
 
 
 5) Після завершення транзакції користувачу представляється сторінка з підтвердженням, де містяться дані: номер машини, номер місця, сума оплати, тривалість паркування (в годинах або до якого конкретно часу).
 
 ![Картинка][image5]
-[image5]:../CentralPark/docs/img/444.jpg
+[image5]:https://github.com/caujka/CentralPark/tree/master/docs/img/444.jpg
 
 
 
@@ -115,7 +115,7 @@
 3) У відповідь отримує підтвердження про оплату у вигляді: #car_number на #parking_nubber може стояти до ##год.
 
 ![Картинка][image6]
-[image6]:../CentralPark/docs/img/mob.jpg
+[image6]:https://github.com/caujka/CentralPark/tree/master/docs/img/mob.jpg
 
 
 ***Оплата через кіоск***
@@ -125,7 +125,7 @@
 1) На екрані демонструються тарифи парковки та форма для оплати.
 
 ![Картинка][image7]
-[image7]:../CentralPark/docs/img/parkom.png
+[image7]:https://github.com/caujka/CentralPark/tree/master/docs/img/parkom.png
 
 2) Користувач вводить номер машини, суму грошей, що хоче заплатити.
 
