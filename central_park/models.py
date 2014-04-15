@@ -3,39 +3,29 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-class ParkingLot(Base):
-    __tablename__ = 'ParkingLot'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=False)
-    address = Column(String, unique=False)
-    parking_places = relationship("ParkingPlace")
-    price_history = relationship("PriceHistory")
-
-    def __init__(self, name, address):
-        self.name = name
-        self.address = address
-
-    def __repr__(self):
-        return '<ParkingLot: %r>' % (self.name)
-
 
 class ParkingPlace(Base):
     __tablename__ = 'ParkingPlace'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    place_category = Column(Binary)
-    parkinglot_id = Column(ForeignKey(ParkingLot.id))
-    payment = relationship("Payment")
+    category = Column(Binary)
+    location = Column(String)
+    address = Column(String, unique=False)
+    min_capacity = Column(Integer)
 
-    def __init__(self, name, place_category, parkinglot_id):
+    payment = relationship("Payment")
+    price_history = relationship("PriceHistory")
+
+
+    def __init__(self, name, place_category, location, min_capacity):
         self.name = name
         self.place_category = place_category
-        self.parkinglot_id = parkinglot_id
+        self.location = location
+        self.min_capacity = min_capacity
 
     def __repr__(self):
-        return '<ParkingPlace %r>' % (self.id)
+        return '<ParkingPlace %r address %r capacity %r>' % (self.name, self.address, self.min_capacity)
 
 
 
@@ -43,18 +33,19 @@ class PriceHistory(Base):
     __tablename__ = 'PriceHistory'
 
     id = Column(Integer, primary_key=True)
-    parkinglot_id = Column(ForeignKey(ParkingLot.id))
     activation_time = Column(DATETIME)
     hourly_rate = Column(String)
+
+    parkingplace_id = Column(ForeignKey(ParkingPlace.id))
     payment = relationship("Payment")
 
-    def __init__(self, parkinglot_id, activation_time, hourly_rate):
-        self.parkingLot_id = parkinglot_id
+    def __init__(self, parkingplace_id, activation_time, hourly_rate):
+        self.parkingplace_id = parkingplace_id
         self.activation_time = activation_time
         self.hourly_rate = hourly_rate
 
     def __repr__(self):
-        return '<PriceHistory for %r lot from %r>' % (self.parkinglot_id, self.activation_time)
+        return '<PriceHistory for parkingplace# %r since %r>' % (self.parkingplace_id, self.activation_time)
 
 
 class Payment(Base):
@@ -64,6 +55,8 @@ class Payment(Base):
     cost = Column(Integer)
     date = Column(DATETIME)
     expiration_time = Column(DATETIME)
+    transaction = Column(String)
+
     place_id = Column(ForeignKey(ParkingPlace.id))
     pricehistory_id = Column(ForeignKey(PriceHistory.id))
 
