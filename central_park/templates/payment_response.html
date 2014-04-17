@@ -1,39 +1,39 @@
 
 {% block content%}
-<h3> Payment result </h3>
+<h3>{{_('Payment result') }} </h3>
 {% if error %}
-        <div class=error><Strong>Error</Strong> {{ error }}
+        <div class=error><Strong>{{_('Error') }}</Strong> {{ error }}
 {% endif %}
 
 {% if credentials %}
 <dl>
 	<dt>
-		<b>Імя користувача:</b>
+		<b>{{_('User name')}}:</b>
 		{{ credentials.username }}
 	</dt>
 
 	<dt>
-		<b>Номер машини:</b>
+		<b>{{_('Car number:') }}</b>
 		{{ credentials.car_number }}
 	</dt>
 		
 	<dt>
-		<b>Місце №:</b>
+		<b>{{_('Place №:') }}</b>
 		{{ credentials.id_place }}
 	</dt>
 	
 	<dt>
-		<b>Стоїть до:</b>
+		<b>{{_('Can stand to:') }}</b>
 		{{ credentials.leave_before }}
 	</dt>
 
 	<dt>
-		<b>Сума:</b>
+		<b>{{_('Sum:') }}</b>
 		{{ credentials.cost }}
 	</dt>
 
 	<dt>
-		<b>Тариф:</b>
+		<b>{{_('Rate:') }}</b>
 		{{ credentials.rate }}
 	</dt>
 	

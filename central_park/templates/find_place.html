@@ -1,18 +1,18 @@
 {% extends "start.html" %}
 {% block content %}
-         <h1>Пошук парковки за ціною</h1>
+         <h1>{{_('Search parking by price') }}</h1>
         {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
         {% endif %}
 
 
               <dl>
-                 <dt>Від:</dt>
+                 <dt>{{_('From:') }}</dt>
                     <dd><input type="text" name="l_price" id="l_price"  size="20" ></dd></dl>
-                 <dt>До:</dt>
+                 <dt>{{_('To:') }}</dt>
                     <dd><input type="text" name="h_price" id="h_price" size="20" ></dd>
                   <br>
-                 <button  type="submit" onclick="SendInfo();" >Find!</button>
+                 <button  type="submit" onclick="SendInfo();" >{{_('Find!') }}</button>
 
 <div id='result'>
     {{ result }}

@@ -1,16 +1,16 @@
 {% extends "start.html" %}
 {% block content %}
-<h2>Перевірка заповненості парковки</h2>
+<h2>{{_('Check filling parking') }}</h2>
 {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }} </p>
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }} </p>
 {% endif %}
-<fieldset>Виберіть парковку:
+<fieldset>{{_('Select parking lot') }}:
     <select id="lot_name" name="lot_name" res=get_list_of_lots()>
         {% for res in res_list %} 
             <option value="{{res}}">{{res}}</option>
          {% endfor %}
     </select>
-    <button  type="submit" onclick="GetInfo();"><b>Показати</b></button>
+    <button  type="submit" onclick="GetInfo();"><b>{{_('Show') }}</b></button>
 </fieldset>
 
             

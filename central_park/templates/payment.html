@@ -1,24 +1,24 @@
 {% extends "start.html" %}
 {% block content %}
-         <h1>Оплата паркування</h1>
+         <h1>{{_('Pay for parking') }}</h1>
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 <pre><fieldset font="Arial">
-Імя користувача:       <input type=text name="username" id="name" size="20"><br/>
-Виберіть парковку:     <select id="lot_id" onchange="place_request();" name="lot" >
+{{_('User name:') }}       <input type=text name="username" id="name" size="20"><br/>
+{{_('Select parking lot:') }}     <select id="lot_id" onchange="place_request();" name="lot" >
                                 {% for lot in lots %} 
                                 <option value="{{lot}}" size="20">{{lot}}</option>
                                 {% endfor %}
                                 </select><br/>
-Виберіть місце:   <select id="place_id" name="place" >
+{{_('Select parking place:') }}   <select id="place_id" name="place" >
                                 {% for place in place_list %} 
                                 <option value="{{place}}" size="20">{{place}}</option>
                                 {% endfor %}
                                 </select><br/>
-Введіть номер машини:     <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ><br/>
-Гроші:          <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20"><br/></fieldset>
-                <button  type="submit" onclick="GetInfo();" >ОПЛАТИТИ</button>
+{{_('Enter your car number:') }}     <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20" ><br/>
+{{_('Money:') }}          <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="20"><br/></fieldset>
+                <button  type="submit" onclick="GetInfo();" >{{_('PAY') }}</button>
 
 </pre>
 

@@ -1,14 +1,14 @@
 {% block content%}
-        <h2>Info of parking place</h2>
+        <h2>{{_('Info of parking place') }]</h2>
         {% if error %}
             <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 {% for lot in lots %}
     <dl>
     	<dt>
-        	<b>ID парковки:</b> {{ lot.id }} <br/>
-        	<b>Імя парковки:</b> {{ lot.name}} <br/>
-        	<b>Адреса парковки: {{ lot.address }}</b>
+        	<b>{{_('Parking ID:') }}</b> {{ lot.id }} <br/>
+        	<b>{{_('Name of parking:') }}</b> {{ lot.name}} <br/>
+        	<b>{{_('Address parking:') }}'</b> {{ lot.address }}<br/>
 	    </dt>
 	</dl>
 {% endfor %}
