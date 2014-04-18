@@ -2,7 +2,7 @@
 import os
 from services import * 
 from datetime import datetime, timedelta
-from models import ParkingLot, ParkingPlace, PriceHistory, Payment
+from models import ParkingPlace, PriceHistory, Payment
 from flask import Flask, request, render_template, jsonify
 from database import db_session, init_db
 
@@ -39,9 +39,7 @@ def home():
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        lot = request.values.get('lot')
-        k = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot)
-        return render_template('payment.html', classactive_payment="class=active", lots=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
+        return render_template('payment.html', classactive_payment="class=active", places=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
 
     else:
         min_cost = 10

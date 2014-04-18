@@ -4,27 +4,33 @@ from sqlalchemy import desc
 from datetime import datetime, timedelta, date, time
 
 
-def create_payment_record(car_number, place_id, cost, transaction):
-    id
-    car_number
-    cost
-    date
-    expiration_time
-    transaction 
-    place_id
-    pricehistory_id
+# FIXED for NEW database
+def create_payment_record(car_number, place_id, cost, expiration_time, transaction):
+    """
+    params:
+        car_number(STRING), place_id(INT), cost(INT),
+        expiration_time: expiration time, calculated on template (DATETIME)
+        transaction: information about type of paying and operation number (STRING)
+    return:
+        tariff[0].id: id of actual PriceHistory for given ParkingLot (INT)
+    """
+    already_parked = db_session.query(Payment).filter(Payment.place_id == place_id,
+                                                       Payment.car_number == car_number,
+                                                       Payment.expiration_time >= datetime.now()).first()
+    if already_parked is not None:
+        already_parked.expiration_time = expiration_time
+        already_parked.cost += cost
+        already_parked.transaction += ', '+transaction
+        db_session.commit()
+    else:
+        pricehistory_id = get_current_pricehistory_id(place_id)
+        if insert_payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
+            return True
+        else:
+            return False
 
-    return 0
 
 
-def insert_payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
-    try:
-        pay = Payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id)
-        db_session.add(pay)
-        db_session.commit(pay)
-        return True
-    except ValueError:
-        return False
 
 
 # FIXED for NEW database
@@ -59,7 +65,8 @@ def get_current_tariff_matrix(lot_id):
         return None
 
 
-def calculate_estimated_time(cost, place_id):
+# FIXED for NEW database
+def calculate_estimated_time(time_start, cost, place_id):
     """
     params:
         cost: payed amount of money (INT)
@@ -69,7 +76,7 @@ def calculate_estimated_time(cost, place_id):
     """
     tariff = get_current_tariff_matrix(place_id)
     tariff = parse_tariff_to_list(tariff)
-    time_finish = time_start = datetime.now()
+    time_finish = time_start
     cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
     if (cost_in_first_hour < cost):
         cost -= cost_in_first_hour
@@ -87,12 +94,13 @@ def calculate_estimated_time(cost, place_id):
         else:
             minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour])
             time_finish += timedelta(minutes=minutes_in_last_hour)
-    else:
+    else:# FIXED for NEW database
         minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
         time_finish += timedelta(minutes=minutes_in_last_hour)
     return time_finish
 
 
+# FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
     """
     params:
@@ -124,17 +132,17 @@ def calculate_total_price(place_id, time_finish):
             return int(cost)
 
 
-def get_parked_car_on_lot(lot_id):
+# FIXED for NEW database
+def get_parked_car_on_lot(place_id):
     """
     params:
         place_id: id of parking place (INT)
     return:
-        query: list of cars who allowed to be parked for now on given ParkingLor (LIST of objects)
+        query: list of cars who allowed to be parked for now on given ParkingLor (LIST of dictionaries)
     """
     parked_car = db_session.query(Payment.car_number, Payment.expiration_time, Payment.place_id).\
                                                 filter(Payment.expiration_time > datetime.now(),
-                                                Payment.place_id == ParkingPlace.id,
-                                                ParkingPlace.parkinglot_id == lot_id).all()
+                                                Payment.place_id == place_id).all()
     place_list = []
     i = 0
     for car in parked_car:
@@ -147,33 +155,21 @@ def get_parked_car_on_lot(lot_id):
     return place_list
 
 
-def get_list_of_places_by_lot(lot_id):
-    """
-    params:
-        lot_id: id of parking lot (INT)
-    return:
-        response: list of parkingplace_id which respond to given ParkingLor (LIST of INT)
-    """
-    query = db_session.query(ParkingPlace.id).filter(ParkingPlace.parkinglot_id == lot_id)
-    response = []
-    for item in query:
-        response.append(item[0])
-    return response
-
-
-def get_list_of_lot():
+# FIXED for NEW database
+def get_list_of_places():
     """
     return:
         response: list of all ParkingLot.name (LIST of STR)
     """
-    query = db_session.query(ParkingLot.name).all()
+    query = db_session.query(ParkingPlace.name).all()
     response = []
     for item in query:
         response.append(item[0])
     return response
 
 
-def get_payment_by_date(lot_id, date_tmp):
+# FIXED for NEW database
+def get_payment_by_date(place, date_tmp):
     """
     params:
         lot_id: id of parking lot (INT)
@@ -185,11 +181,11 @@ def get_payment_by_date(lot_id, date_tmp):
     date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
     query = db_session.query(Payment).filter(Payment.date >= date_tmp,
                                              Payment.date <= (date_tmp + timedelta(days=1)),
-                                             Payment.place_id == ParkingPlace.id,
-                                             ParkingPlace.parkinglot_id == lot_id).all()
+                                             Payment.place_id == place).all()
     return query
 
 
+# FIXED for NEW database
 def get_priced_parking_lot(price_min, price_max):
     """
     params:
@@ -199,34 +195,43 @@ def get_priced_parking_lot(price_min, price_max):
         lots: list of ParkingLot with price for current hour in given range (LIST of objects)
     """
     current_hour = datetime.now().hour
-    query = db_session.query(ParkingLot)
-    lots = []
+    query = db_session.query(ParkingPlace)
+    places = []
     for item in query:
         tariff = get_current_tariff_matrix(item.id)
         tariff = parse_tariff_to_list(tariff)
         if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
-            lots.append({'id': item.id, 'address': item.address, 'name': item.name})
-    print lots
-    return lots
+            places.append({'id': item.id, 'address': item.address, 'name': item.name})
+    return places
 
 
-def get_lotid_by_lotname(lot_name):
+def get_placeid_by_placename(place_name):
     """
     params:
         lot_name: ParkingLot.name of serching ParkingLot (STRING)
     return:
         lot_id: ParkingLot.id of given ParkingLot (INT)
     """
-    query = db_session.query(ParkingLot.id).filter(ParkingLot.name == lot_name)
+    query = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
     for item in query:
-        lot_id = item[0]
-    if lot_id:
-        return lot_id
+        place_id = item[0]
+    if place_id:
+        return place_id
     else:
-        return lot_id
+        return place_id
 
 
 #some internal functions
+#fixed for new database
+def insert_payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
+    try:
+        pay = Payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id)
+        db_session.add(pay)
+        db_session.commit()
+        return True
+    except ValueError:
+        return False
+
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
 

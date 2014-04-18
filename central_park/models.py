@@ -53,20 +53,22 @@ class Payment(Base):
     id = Column(Integer, primary_key=True)
     car_number = Column(String)
     cost = Column(Integer)
-    date = Column(DATETIME)
+    activation_time = Column(DATETIME)
     expiration_time = Column(DATETIME)
     transaction = Column(String)
 
     place_id = Column(ForeignKey(ParkingPlace.id))
     pricehistory_id = Column(ForeignKey(PriceHistory.id))
 
-    def __init__(self, car_number, cost, expiration_time, place_id, pricehistory_id):
+    def __init__(self, car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
         self.car_number = car_number
         self.cost = cost
         self.date = datetime.now()
         self.expiration_time = expiration_time
+        self.transaction = transaction
         self.place_id = place_id
         self.pricehistory_id = pricehistory_id
+
 
     def __repr__(self):
         return '<Payment from %r cost:%r$ till %r>' % (self.car_number, self.cost, self.expiration_time)
