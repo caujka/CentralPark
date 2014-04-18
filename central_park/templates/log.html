@@ -1,15 +1,15 @@
 {% extends "start.html" %}
 {% block content%}
-        <h1>login</h1>
+        <h1>{{_('login') }}</h1>
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
 
         <form action="" method=post>
          <dl>
-             <dt>Введіть логін:
+             <dt>{{_('Login or username') }}:
              <dd><input type=text name="username" value="{{request.form.username}}">
-             <dt>Введіть пароль:
+             <dt>{{_('Password') }}:
              <dd><input type="password" name="password">
          </dl>
     <p><input type="submit" value="Login">

@@ -1,11 +1,11 @@
 {% extends "content_template.html" %}
 {% block content %}
-<h1>Get info about...</h1>
+<h1>{{_('Get info') }}</h1>
 {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
 {% endif %}
 <form method="post" action="">
-        <fieldset>Choose parking lot <select id="Lot_id" name="Lot">
+        <fieldset>{{_('Choose parking lot') }} <select id="Lot_id" name="Lot">
 
             <option value=""></option>
 

@@ -1,10 +1,10 @@
 {% extends "start.html" %}
 {% block content %}
-<h1> Available Places </h1>
+<h1> {{_('Available Places') }} </h1>
 {% if error %}
-        <p class=error><Strong>Error</Strong> {{ error }}
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
 {% endif %}
 	{% for place in places %}
-    	<p> {{place.id_place}} on {{place.adress}} for {{place.rate}} </p>
+    	<p> {{place.id_place}} {{_('on') }} {{place.adress}} {{_('for') }} {{place.rate}} </p>
     {% endfor %}
 {% endblock %}

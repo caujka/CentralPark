@@ -1,10 +1,10 @@
 {% extends "start.html" %}
 {% block content %}
-<h1> Оплачені місця </h1>
+<h1>{{_('Paid places') }}</h1>
 {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
 {% endif %}
-	<p>Машини, що стоять на парковці "{{lot_id}}", місце№{{place_id}}</p>
+	<p>{{_('Cars parked on') }}</p> "{{lot_id}}", <p>{{_('place №') }}</p>{{place_id}}
 	{% for car in cars %}
     	<p> {{car.number}} </p>
     {% endfor %}

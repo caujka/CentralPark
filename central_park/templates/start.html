@@ -2,7 +2,7 @@
 <html >
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>Flask</title>
+<title>Central Parking</title>
 
  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
@@ -30,12 +30,22 @@
         <div class="container">
         
             <ul class="nav nav-pills">
-			    <li class="top_menu_item" id='welcome'><a href="/welcome">Початкова</a> </li>
-                <li class="top_menu_item" id='find_place'><a href="/find">Пошук парковки</a> </li>
-                <li class="top_menu_item" id='payment'><a href="/payment">Оплата парковки</a> </li>
-                <li class="top_menu_item" id='can_stand' ><a href="/can_stand" size="40">Наповненість парковки</a></li>
-                <li class="top_menu_item" id='history'><a href="/history">Статистика</a> </li>
-			    <li class="top_menu_item" id='log'><a href="/log">Log in</a></li>
+			    <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
+                <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
+                <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li>
+                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>
+			    <li class="top_menu_item" id='log'><a href="/{{g.current_lang}}/log">{{_('Log in') }}</a></li>
+
+                <div align='right' id='lang'>
+                    <input type="button" value="uk" id="id_ukr" onclick="language(this);">
+                    <input type="button" value="en" id="id_en" onclick="language(this);">
+                    <script type="text/javascript">
+                        language = function(element) {
+                               window.location.assign("/" + element.value + location.pathname.substring(3));
+                        };
+                    </script>
+                </div>
 			</ul>
         </div>
         </div>
@@ -50,8 +60,8 @@
 
 <div class="content">
 {% block content%}
-<div>Ласкаво просимо до системи міських парковок!
-Цей сервіс надасть вам змогу швидко знайти де припаркувати Ваше авто та одразу ж оплатити парковку!</div>
+<div>Welcome to the city parking system
+This service allows you to quickly find out where to park your car and immediately pay for parking!</div>
 <p>
 
 </p>
