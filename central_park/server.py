@@ -3,9 +3,10 @@ import os
 from services import * 
 from datetime import datetime, timedelta
 from models import ParkingPlace, PriceHistory, Payment
-from flask import Flask, request, render_template, jsonify
 from database import db_session, init_db
-from flask.ext.babel import babel
+from flask.ext.babel import *
+from flask_babelex import *
+from flask import *
 
 
 # create our little application :)
@@ -25,6 +26,7 @@ app.config.update(dict(
 def get_locale():   
     return g.get('current_lang', 'en')
 
+
 @app.before_request
 def before():
     if request.view_args and 'lang_code' in request.view_args:
@@ -32,6 +34,7 @@ def before():
             return abort(404)
         g.current_lang = request.view_args['lang_code']
         request.view_args.pop('lang_code')
+
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -44,26 +47,27 @@ def teardown_session(expception=None):
 
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
+
 @app.route('/')
 def home():
-     return redirect(url_for('welcome', lang_code = "en"))
+     return redirect(url_for('welcome', lang_code="en"))
+
 
 @app.route('/<lang_code>')
 def index():
     return render_template('welcome.html')
 
+
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html', classactive_payment="class=active", places=get_list_of_lot(), place_list = get_list_of_places_by_lot(0) )
+        return render_template('payment.html', classactive_payment="class=active", places=get_list_of_places())
 
     else:
-        min_cost = 10
-
         username = request.json['name']
         cost = int(request.json['cost'])
         print request.json
-        id_lot = get_lotid_by_lotname(request.json['lot_id'])
+        id_lot = get_placeid_by_placename(request.json['lot_id'])
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'
@@ -106,7 +110,7 @@ def show_history():
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_lot())
+        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_places())
     elif request.method == 'POST':
         lot_name = request.json['lot_name']
         lot_id = get_lotid_by_lotname(lot_name)
@@ -117,10 +121,12 @@ def can_stand():
 
 @app.route('/<lang_code>/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
-    lot_name = request.json['lot_id']
-    lot_id = get_lotid_by_lotname(lot_name)
-    list = get_list_of_places_by_lot(lot_id)
-    return jsonify(response=list)
+    place_name = request.json['place']
+    place = db_session.query(ParkingPlace.name).filter(ParkingPlace.name == place_name)
+    if place == []:
+        return jsonify(response='None')
+    else:
+        return jsonify(response='OK')
 
 
 @app.route('/<lang_code>/log', methods=['GET', 'POST'])
