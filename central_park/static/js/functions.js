@@ -64,13 +64,11 @@ place_request = function(){
         contentType: "application/json",
         success: function (response)
         {
-            if response["response"] == "OK":
-            ;
-            var places = ""
-            for (var i=0; i<list.length; i++){
-                places += '<option value=' + list[i] + '>' + list[i] + '</option>'
-            };
-            document.getElementById('place_id').innerHTML = places;
+            if (response["response"] == "OK"){
+                
+                getElementById("place_valid") = "";
+            }
+            
 
         },
         error: function (request)

@@ -192,6 +192,7 @@ def get_priced_parking_lot(price_min, price_max):
     return places
 
 
+# FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
     params:
@@ -199,14 +200,11 @@ def get_placeid_by_placename(place_name):
     return:
         lot_id: ParkingLot.id of given ParkingLot (INT)
     """
-    query = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
-    for item in query:
-        place_id = item[0]
-    if place_id:
-        return place_id
-    else:
-        return place_id
+    parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
+    for item in parking_place:
+        return map(lambda x: x[0], item)
 
+    
 
 #some internal functions
 #fixed for new database

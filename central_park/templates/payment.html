@@ -6,11 +6,10 @@
         {% endif %}
 <pre><fieldset font="Arial">
 {{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" size="20" required="on"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="place_valid"><br>
-{{_('Enter your car number:') }}     <input type="text" name="car_number" id="car_number" value="{{request.form.car_num}}" size="20"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="car_number_valid"><br>
+{{_('Enter your car number:') }}     <input type="text" name="car_number" id="car_number" value="{{request.form.car_number}}" size="20"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="car_number_valid"><br>
 {{_('Money:') }}          <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="5"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="monay_valid"><br>
 </fieldset>
                 <button  type="submit" onclick="GetInfo();" >{{_('PAY') }}</button>
-
 </pre>
 
 <div id='result'>
