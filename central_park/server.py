@@ -141,6 +141,9 @@ def maps():
 def welcome():
     return render_template('welcome.html', classactive_welcome="class=active")
 
+@app.route('/maps_ajax_info', methods=['GET', 'POST'])
+def maps_ajax():
+    return 'aaaaaaa_info'
 
 @app.route('/<lang_code>/find', methods=['GET', 'POST'])
 def find_place():   
