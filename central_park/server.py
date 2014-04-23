@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from models import ParkingPlace, PriceHistory, Payment
 from database import db_session, init_db
 from flask.ext.babel import *
-from flask_babelex import *
+#from flask_babelex import *
 from flask import *
 
 
@@ -56,7 +56,6 @@ def home():
 @app.route('/<lang_code>')
 def index():
     return render_template('welcome.html')
-
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
 def payment():
@@ -134,6 +133,9 @@ def log_in():
     data = ''    
     return render_template('log.html', classactive_log="class=active")
 
+@app.route('/<lang_code>/maps', methods=['GET', 'POST'])
+def maps():
+    return render_template('maps.html', classactive_maps="class=active")
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():

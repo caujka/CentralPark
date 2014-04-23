@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Test Google Maps</title>
+{% extends "start.html" %}
+{% block content %}
     <style>
       html, body, #map-canvas {
         height: 100%;
@@ -17,5 +13,5 @@
   <body>
     <div id="map-canvas" style="width:79%; height:100%; float:left"></div>
     <div id="content-window" style="width:19%; height:100%; float:left"></div>
-  </body>
-</html>
+{% endblock %}
+
