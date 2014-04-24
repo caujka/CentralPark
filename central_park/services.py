@@ -48,19 +48,17 @@ def get_current_pricehistory_id(place_id):
 
 
 # FIXED for NEW database
-def get_current_tariff_matrix(lot_id):
+def get_current_tariff_matrix(place_id):
     """
     params:
         lot_id: id of ParkingLot (INT)
     return:
         tariff[0].hourly_rate: actual tariff matrix for given ParkingLot(STRING)
     """
-    i = lot_id
-    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).limit(1).all()
+    i = place_id
+    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).all()
     if len(tariff) > 0:
-
         return tariff[0].hourly_rate
-
     else:
         return None
 
@@ -75,25 +73,28 @@ def calculate_estimated_time(time_start, cost, place_id):
         time_finish: time expiration of parking (DATETIME)
     """
     tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-    time_finish = time_start
-    cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
-    if (cost_in_first_hour < cost):
-        cost -= cost_in_first_hour
-        hour = time_start.hour + 1
-        time_finish += timedelta(hours=1)
-        time_finish += timedelta(minutes=60-time_finish.minute)
-        time_finish += timedelta(minutes=60-time_finish.second)
-        while cost > tariff[hour]:
-            cost -= tariff[hour % 24]
+    print tariff
+    if tariff:
+        time_finish = time_start
+        cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
+        if (cost_in_first_hour < cost):
+            cost -= cost_in_first_hour
+            hour = time_start.hour + 1
             time_finish += timedelta(hours=1)
-        else:
-            minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour])
+            time_finish += timedelta(minutes=60-time_finish.minute)
+            time_finish += timedelta(minutes=60-time_finish.second)
+            while cost > tariff[hour]:
+                cost -= tariff[hour % 24]
+                time_finish += timedelta(hours=1)
+            else:
+                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour])
+                time_finish += timedelta(minutes=minutes_in_last_hour)
+        else:# FIXED for NEW database
+            minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
             time_finish += timedelta(minutes=minutes_in_last_hour)
-    else:# FIXED for NEW database
-        minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
-        time_finish += timedelta(minutes=minutes_in_last_hour)
-    return time_finish
-
+        return time_finish
+    else:
+        return None
 
 # FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
@@ -209,8 +210,7 @@ def get_placeid_by_placename(place_name):
         lot_id: ParkingLot.id of given ParkingLot (INT)
     """
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
-    for item in parking_place:
-        return map(lambda x: x[0], item)
+    return parking_place[0][0]
 
 
 
@@ -234,5 +234,8 @@ def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
 
 
 def parse_tariff_to_list(tariff):
-    print "--------------wiuresohgidakl.",tariff.split(';')
-    return tuple([int(x) for x in tariff.split(';')])
+    print tariff
+    if tariff:
+        return tuple([int(x) for x in tariff.split(';')])
+    else:
+        return None

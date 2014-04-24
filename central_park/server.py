@@ -4,11 +4,11 @@ from services import *
 from datetime import datetime, timedelta
 from models import ParkingPlace, PriceHistory, Payment
 from database import db_session, init_db
-#from flask.ext.babel import *
-#from flask_babelex import *
-from flask.ext.babel import Babel
+from flask.ext.babel import *
+from flask_babelex import *
 from flask import *
 from flask import Flask, request, render_template, jsonify, json
+import re
 # create our little application :)
 app = Flask(__name__)
 babel = Babel(app)
@@ -63,14 +63,16 @@ def payment():
 
     else:
         min_possible_cost = 1
-        cost = int(request.json['cost'])
-        place_id = get_placeid_by_placename(request.json['lot_id'])
+        place_id = get_placeid_by_placename(request.json['place'])
+        print place_id, type(place_id)
+
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'
 
-        if (reg.search(reg, cost) and reg.search(reg, request.json['place']) and
-                (cost >= min_possible_cost) and reg.search(reg_str,request.json['car_number'])):
+        if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
+                and re.search(reg_str, request.json['car_number'])):
+            cost = int(request.json['cost'])
             transaction = "web%s" % str(datetime.now())
             time_left = calculate_estimated_time(datetime.now(), cost, place_id)
             credentials = {
@@ -78,7 +80,7 @@ def payment():
                 'cost': cost,
                 'time_left': time_left,
                 'transaction': transaction,
-                'place_id': request.json['place_id'],
+                'place_id': request.json['place'],
                 'rate': get_current_tariff_matrix(place_id)
             }
             pricehistory_id = get_current_pricehistory_id(place_id)
@@ -124,13 +126,10 @@ def can_stand():
 @app.route('/<lang_code>/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
     place_name = request.json['place']
-
     place = db_session.query(ParkingPlace.name).filter(ParkingPlace.name == place_name).all()
     if place == []:
-        print "None"
         return jsonify(response='None')
     else:
-        print "None"
         return jsonify(response='OK')
 
 
@@ -139,30 +138,39 @@ def log_in():
     data = ''    
     return render_template('log.html', classactive_log="class=active")
 
+
 @app.route('/<lang_code>/maps', methods=['GET', 'POST'])
 def maps():
     return render_template('maps.html', classactive_maps="class=active")
+
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():
     return render_template('welcome.html', classactive_welcome="class=active")
 
+
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
     return 'aaaaaaa_info'
+
 
 @app.route('/<lang_code>/find', methods=['GET', 'POST'])
 def find_place():
     if request.method == 'POST':
         return render_template('response_aval_place.html', lots=get_priced_parking_lot(request.json['l_price'], request.json['h_price']), classactive_log ="class=active")
-    elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
+    elif request.method == 'GET': return render_template('find_place.html', classactive_log="class=active")
 
 
 @app.route('/<lang_code>/time_left', methods=['GET', 'POST'])
 def time_left():
     cost = request.json['cost']
     place_id = request.json['place']
-    return jsonify(calculate_estimated_time(datetime.now(), cost, place_id))
+    est_time = calculate_estimated_time(datetime.now(), int(cost), place_id)
+    if est_time:
+        return est_time.strftime("%H:%M:%S %Y-%m-%d")
+    else:
+        return ''
+
 
 if __name__ == '__main__':
     init_db()

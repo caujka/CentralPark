@@ -7,9 +7,8 @@
     function checkform ( form )
     {
     // ** START **
-        if (form.place.value == "" || form.car_number.value == "" || isWhole(form.cost.value) != true) {
+        if (form.place.value == "" || form.car_number.value == "" || form.cost.value == "" || isWhole(form.cost.value) != true) {
             alert( "Please enter valid data" );
-            // form.username.focus();
             return false ;
         }
     // ** END **
@@ -24,23 +23,20 @@ GetInfo  = function() {
                 "car_number":$("#car_number").val(),
                 "cost":$("#cost").val(),
                 };
+            var lang_code = document.URL.split('/')[3];
             $.ajax({
-                url:'/<lang_code>/payment',
+                url:'/'+lang_code+'/payment',
                 type:'POST',
                 data: JSON.stringify(formData, null),
                 contentType: "application/json",
                 success: function (st)
                 {
-
                     document.getElementById('result').innerHTML = st;
-                    $("#place").val("");
-                    $("#car_number").val("");
-                    $("#cost").val("");
                 },
 
                 error: function (st)
                 {
-                    alert('erorr')
+                    alert('error in paying')
                 },
 
                 });
@@ -49,51 +45,79 @@ GetInfo  = function() {
     };
     return true;
 };
+is_valid_cost = function(value){
+    value = $.trim(value);
+    var isWhole_re  = /^\s*\d{1,3}\s*$/;
+    if (String(value).search(isWhole_re) != -1){
+        return true;
+    };
+    return false;
+}
+
 
 time_left = function(){
-    var formData = {
-        "place":$("#place").val(),
-        "cost":$("#cost").val(),
-    };
-    $.ajax({
-                url:'/en/time_left',
-                type:'POST',
-                data: JSON.stringify(formData, null),
-                contentType: "application/json",
-                success: function (time_till)
-                {
-                    document.getElementById(time_left_label).className = "";
-                    document.getElementById('time_left_value').innerHTML = time_till;
-                },
+    cost = $.trim($("#cost").val());
+    if (is_valid_cost(cost)){
+        var formData = {
+            "place": $("#place").val(),
+            "cost": cost,
+        };
+        $.ajax({
+                    url:'/en/time_left',
+                    type:'POST',
+                    data: JSON.stringify(formData, null),
+                    contentType: "application/json",
+                    success: function (time_till)
+                    {
+                        document.getElementById('time_left_label').className = " ";
+                        document.getElementById('time_left_value').innerHTML = time_till;
+                    },
 
-                error: function (st)
-                {
-                    alert('erorr')
-                },
-            })
+                    error: function (st)
+                    {
+                        
+                    },
+                })
+    }
 };
 
-place_request = function(){
-    var formData = {"place":$("#place").val()};
-    $.ajax({
-        url:'/en/dynamic_select',
-        type:'POST',
-        data: JSON.stringify(formData, null, '\t'),
-        contentType: "application/json",
-        success: function (response)
-        {
-            if (response["response"] == "OK"){
-                document.getElementById("place_not_valid").className = "hidden";
-                document.getElementById("place_valid").className = "";
-            } else { 
-                document.getElementById("place_not_valid").className = ""; 
-                document.getElementById("place_valid").className = "hidden";
-            }
-        },
-        error: function (request)
-        {
-            alert('Error!!!')
-        },
+is_not_empty = function(value){
+    if (value){
+        return true;
+    };
+    return false;
+};
 
-    });
+
+place_request = function(){
+    var place = $.trim($("#place").val());
+    
+    if (is_not_empty(place)){
+        var formData = {"place":place};
+    
+        $.ajax({
+            url:'/en/dynamic_select',
+            type:'POST',
+            data: JSON.stringify(formData, null, '\t'),
+            contentType: "application/json",
+            success: function (response)
+            {
+                if (response["response"] == "OK"){
+                    document.getElementById("placeValid").innerHTML = 
+                        '<img src="../static/images/checked.png" alt="OK!">';
+                } else { 
+                    document.getElementById("placeValid").innerHTML = 
+                        '<label>Please_enter_place_name_correctly</label>';
+                };
+            },
+            error: function (request)
+            {
+                alert('Error!!!')
+            },
+
+        });
+    } else {
+         document.getElementById("placeValid").innerHTML = 
+                        '<label>Please_enter_place_name_correctly</label>';
+    };
 };
