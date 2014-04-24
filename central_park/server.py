@@ -4,8 +4,9 @@ from services import *
 from datetime import datetime, timedelta
 from models import ParkingPlace, PriceHistory, Payment
 from database import db_session, init_db
-from flask.ext.babel import *
+#from flask.ext.babel import *
 #from flask_babelex import *
+from flask.ext.babel import Babel
 from flask import *
 from flask import Flask, request, render_template, jsonify, json
 # create our little application :)
