@@ -19,7 +19,13 @@
 <div id="header">
      
 <div id="top_menu">
-           <div class="contact_us"><p align="center">CentralParking<a href="#"></a></p></div>
+           <div class="contact_us" align="right" id='btn'>
+           <input type="button" value="uk" id="id_ukr" onclick="language(this);">
+            <input type="button" value="en" id="id_en" onclick="language(this);">
+
+           <a href="#"><p>CentralPark</p></a>
+</div>         
+
 </div>
 
 </div>
@@ -38,8 +44,7 @@
 			    <li class="top_menu_item" id='log'><a href="/{{g.current_lang}}/log">{{_('Log in') }}</a></li>
 <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
                 <div align='right' id='lang'>
-                    <input type="button" value="uk" id="id_ukr" onclick="language(this);">
-                    <input type="button" value="en" id="id_en" onclick="language(this);">
+                
                     <script type="text/javascript">
                         language = function(element) {
                                window.location.assign("/" + element.value + location.pathname.substring(3));
