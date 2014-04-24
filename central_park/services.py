@@ -39,7 +39,8 @@ def get_current_pricehistory_id(place_id):
         tariff[0].id: id of actual PriceHistory for given ParkingLot (INT)
     """
     i = place_id
-    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).limit(1)
+    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).all()
+
     if tariff[0]:
         return tariff[0].id
     else:
@@ -55,9 +56,11 @@ def get_current_tariff_matrix(lot_id):
         tariff[0].hourly_rate: actual tariff matrix for given ParkingLot(STRING)
     """
     i = lot_id
-    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkinglot_id == i).order_by(desc(PriceHistory.activation_time)).limit(1)
-    if tariff[0]:
+    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).limit(1).all()
+    if len(tariff) > 0:
+
         return tariff[0].hourly_rate
+
     else:
         return None
 
@@ -148,7 +151,7 @@ def get_list_of_places():
     return:
         response: list of all ParkingLot.name (LIST of STR)
     """
-    list_of_places_tuples = db_session.query(ParkingPlace.name).all()
+    list_of_places_tuples = db_session.query(ParkingPlace.id).all()
     response = []
     for item in list_of_places_tuples:
         response.append(item[0])
@@ -166,9 +169,10 @@ def get_payment_by_date(place, date_tmp):
     """
 
     date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
-    list_of_payments = db_session.query(Payment).filter(Payment.date >= date_tmp,
-                                             Payment.date <= (date_tmp + timedelta(days=1)),
+    list_of_payments = db_session.query(Payment).filter(Payment.activation_time >= date_tmp,
+                                             Payment.activation_time <= (date_tmp + timedelta(days=1)),
                                              Payment.place_id == place).all()
+    print list_of_payments
     return list_of_payments
 
 
@@ -184,11 +188,15 @@ def get_priced_parking_lot(price_min, price_max):
     current_hour = datetime.now().hour
     query = db_session.query(ParkingPlace)
     places = []
+    print "---------------------------[", price_min, price_max
     for item in query:
-        tariff = get_current_tariff_matrix(item.id)
+        tariff = get_current_tariff_matrix(2)
+        print tariff
         tariff = parse_tariff_to_list(tariff)
+        print tariff
         if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
-            places.append({'id': item.id, 'address': item.address, 'name': item.name})
+           places.append({'id': item.id, 'address': item.address, 'name': item.name})
+    print '----------------', places
     return places
 
 
@@ -226,4 +234,5 @@ def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
 
 
 def parse_tariff_to_list(tariff):
+    print "--------------wiuresohgidakl.",tariff.split(';')
     return tuple([int(x) for x in tariff.split(';')])

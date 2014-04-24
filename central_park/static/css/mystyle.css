@@ -32,6 +32,14 @@ background: #393939 url(../images/header.jpg) no-repeat;
 height: 140px;
 line-height: 160px;
 }
+#btn {
+background: #393939 url(../images/header.jpg) no-repeat;
+height: 140px;
+line-height: 5;
+padding-right: 22;
+vertical-align: top;
+}
+
 
 #menu {
 background: #393939 url(../images/menu.jpg) no-repeat;
@@ -156,9 +164,13 @@ line-height: 80px;
 
 
 #top_menu .contact_us a{
-	float: right;
+	float: left;
 	display: block;
-	width: 300px;
+	width: 700px;
 	height: 130px;
 	background: url(../images/2.png) bottom no-repeat;
+}
+
+input {
+line-height: 1;
 }

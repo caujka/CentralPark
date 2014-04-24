@@ -8,8 +8,7 @@ from database import db_session, init_db
 #from flask_babelex import *
 from flask.ext.babel import Babel
 from flask import *
-
-
+from flask import Flask, request, render_template, jsonify, json
 # create our little application :)
 app = Flask(__name__)
 babel = Babel(app)
@@ -53,7 +52,6 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 def home():
      return redirect(url_for('welcome', lang_code="en"))
 
-
 @app.route('/<lang_code>')
 def index():
     return render_template('welcome.html')
@@ -95,16 +93,20 @@ def payment():
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():
-    hist = None
+    
     if request.method == 'GET':
-        return render_template('history.html', years = (2010, 2011, 2012, 2013, 2014), months = (u'Січень',u'Лютий',u'Березень',u'Квітень',u'Травень',u'Червень',u'Липень',u'Серпень',u'Вересень',u'Жовтень',u'Листопад',u'Грудень' ))
+        list_of_place = get_list_of_places()
+        return render_template('history.html', place_list = list_of_place)
+    
     else:
-        Lot = request.values.get('Lot')
+        choosen_place = request.values.get('place')
+        print (choosen_place)
+      
         data_time = request.values.get('date')
-        actual_history = get_payment_by_date(Lot, data_time)
-        
-        if actual_history:
-            return render_template('response_history.html', history_info = actual_history) 
+      
+        actual_history = get_payment_by_date(choosen_place, data_time)
+        print (actual_history)
+        return render_template('response_history.html', history_info = actual_history) 
 
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
@@ -112,11 +114,10 @@ def can_stand():
     if request.method == 'GET':
         return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_places())
     elif request.method == 'POST':
-        lot_name = request.json['lot_name']
-        lot_id = get_lotid_by_lotname(lot_name)
-        response = get_parked_car_on_lot(lot_id)
-        print response
-        return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active", res_list=get_list_of_lot())
+        lot_name = request.values.get('lot_name')
+        #lot_id = get_list_of_places()
+        response = get_parked_car_on_lot(lot_name)
+        return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active")
 
 
 @app.route('/<lang_code>/dynamic_select', methods=['POST', 'GET'])
@@ -148,9 +149,12 @@ def maps_ajax():
 
 @app.route('/<lang_code>/find', methods=['GET', 'POST'])
 def find_place():   
-    if request.method == 'POST':
-        return render_template('response_aval_place.html', lots=get_priced_parking_lot(request.json['l_price'], request.json['h_price']), classactive_log ="class=active")
-    elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
+    if request.method == "GET":
+        return render_template('find_place.html', classactive_log ="class=active")
+    else:
+        print '------------', request.values.get('l_price')
+        return render_template('response_aval_place.html', lots=get_priced_parking_lot(request.values.get('l_price'), request.values.get('h_price')), classactive_log ="class=active")
+    
     
 
 if __name__ == '__main__':
