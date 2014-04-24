@@ -1,5 +1,6 @@
-<!DOCTYPE >
-<html >
+<!DOCTYPE>
+
+<html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title>Central Parking</title>
@@ -11,23 +12,20 @@
     <script  src="http://www.tutorialrepublic.com/lib/js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/menu_switcher.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
 </head>
 <body onload='switch_menu()'>
 
 <div id="wrap">
-
-<div id="header">
-     
-<div id="top_menu">
+    <div id="header">
+        <div id="top_menu">
            <div class="contact_us"><p align="center">CentralParking<a href="#"></a></p></div>
-</div>
+        </div>
+    </div>
 
-</div>
-
- 
    	<nav class="navbar navbar-default" role="navigation" id="menu">
-       <div >
-        <div class="container">
+       <div>
+           <div class="container">
         
             <ul class="nav nav-pills">
 			    <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
@@ -47,47 +45,25 @@
                     </script>
                 </div>
 			</ul>
-        </div>
+            </div>
         </div>
     </nav>
 
-
-
-
-<div id="contentwrap"> 
-
-<div id="content">
-
-<div class="content">
-{% block content%}
-<div>Welcome to the city parking system
+    <div id="contentwrap">
+        <div id="content">
+            <div class="content">
+                {% block content%}
+            <div>Welcome to the city parking system
 This service allows you to quickly find out where to park your car and immediately pay for parking!</div>
-<p>
 
-</p>
+            {% endblock %}
+            </div>
+        </div>
+        <div style="clear: both;"> </div>
+    </div>
 
-
-        
-   
-<p>
-
-</p>
-     {% endblock %}
- </div>
+    <div id="footer"></div>
 
 </div>
-
-
-<div style="clear: both;"> </div>
-
-</div>
-
-<div id="footer">
-
-</div>
-
-</div>
-
-
 </body>
 </html>

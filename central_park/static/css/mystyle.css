@@ -8,7 +8,7 @@ padding: 0;
 }
 
 a { color: #960224; text-decoration: none;}
-p { color: yellow; text-decoration: none; align:left; font-weight:bold; font-size:25pt;}
+p { color: yellow; text-decoration: none; text-align:left; font-weight:bold; font-size:25pt;}
 a:hover { text-decoration: underline; }
 
 h1 {

@@ -6,13 +6,13 @@
     
     function checkform ( form )
     {
-  // ** START **
-        if (form.lot_id.value == "" || form.place_id.value == "" || form.car_number.value == "" || form.car_number.value == "" || isWhole(form.cost.value) != true) {
+    // ** START **
+        if (form.place.value == "" || form.car_number.value == "" || isWhole(form.cost.value) != true) {
             alert( "Please enter valid data" );
             // form.username.focus();
             return false ;
         }
-  // ** END **
+    // ** END **
         return true ;
     };
 
@@ -20,15 +20,12 @@ GetInfo  = function() {
        if (checkform(this))
         {
             var formData = {
-                "name":$("#name").val(),
-                "lot_id":$("#lot_id").val(),
-                "place_id":$("#place_id").val(),
+                "place":$("#place").val(),
                 "car_number":$("#car_number").val(),
                 "cost":$("#cost").val(),
                 };
-            console.log(formData);
             $.ajax({
-                url:'/payment',
+                url:'/<lang_code>/payment',
                 type:'POST',
                 data: JSON.stringify(formData, null),
                 contentType: "application/json",
@@ -36,9 +33,7 @@ GetInfo  = function() {
                 {
 
                     document.getElementById('result').innerHTML = st;
-                    $("#name").val("");
-                    $("#lot_id").val("");
-                    $("#place_id").val("");
+                    $("#place").val("");
                     $("#car_number").val("");
                     $("#cost").val("");
                 },
@@ -55,21 +50,45 @@ GetInfo  = function() {
     return true;
 };
 
+time_left = function(){
+    var formData = {
+        "place":$("#place").val(),
+        "cost":$("#cost").val(),
+    };
+    $.ajax({
+                url:'/en/time_left',
+                type:'POST',
+                data: JSON.stringify(formData, null),
+                contentType: "application/json",
+                success: function (time_till)
+                {
+                    document.getElementById(time_left_label).className = "";
+                    document.getElementById('time_left_value').innerHTML = time_till;
+                },
+
+                error: function (st)
+                {
+                    alert('erorr')
+                },
+            })
+};
+
 place_request = function(){
     var formData = {"place":$("#place").val()};
     $.ajax({
-        url:'/dynamic_select',
+        url:'/en/dynamic_select',
         type:'POST',
         data: JSON.stringify(formData, null, '\t'),
         contentType: "application/json",
         success: function (response)
         {
             if (response["response"] == "OK"){
-                
-                getElementById("place_valid") = "";
+                document.getElementById("place_not_valid").className = "hidden";
+                document.getElementById("place_valid").className = "";
+            } else { 
+                document.getElementById("place_not_valid").className = ""; 
+                document.getElementById("place_valid").className = "hidden";
             }
-            
-
         },
         error: function (request)
         {
@@ -77,6 +96,4 @@ place_request = function(){
         },
 
     });
-
-
 };

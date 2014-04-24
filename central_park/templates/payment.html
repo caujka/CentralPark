@@ -4,24 +4,23 @@
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
-<pre><fieldset font="Arial">
-{{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" size="20" required="on"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="place_valid"><br>
-{{_('Enter your car number:') }}     <input type="text" name="car_number" id="car_number" value="{{request.form.car_number}}" size="20"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="car_number_valid"><br>
-{{_('Money:') }}          <input type="text" name="cost" id="cost" value="{{request.form.cost}}" size="5"><img src="../static/images/checked.png" alt="OK!" class="hidden" id="monay_valid"><br>
+<fieldset font="Arial">
+<pre>{{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" size="20" required></pre>
+            <img src="../static/images/checked.png" alt="OK!" class="hidden" id="place_valid">
+            <label id="place_not_valid" class="hidden">{{_('Please, enter place name correctly!') }}</label><br>
+<pre>{{_('Enter your car number:') }}     <input type="text" name="car_number" id="car_number" value="{{request.form.car_number}}" size="20" required></pre>
+            <img src="../static/images/checked.png" alt="OK!" class="hidden" id="car_number_valid"><br>
+<pre>{{_('Money:') }}          <input type="text" name="cost" id="cost" onchange="time_left();" value="{{request.form.cost}}" size="5" required><label class="hidden" id="parking_left_label">{{_('Parking till:') }}</label><label id="time_left_value"></label></label></pre>
+            <img src="../static/images/checked.png" alt="OK!" class="hidden" id="money_valid"><br>
 </fieldset>
                 <button  type="submit" onclick="GetInfo();" >{{_('PAY') }}</button>
-</pre>
+
 
 <div id='result'>
 {{ result }}
 </div>
 
-
-
+<script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
-
-<script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
-    
-    
 {% endblock %} 

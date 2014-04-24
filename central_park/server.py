@@ -61,36 +61,37 @@ def index():
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html', classactive_payment="class=active", places=get_list_of_places())
+        return render_template('payment.html', classactive_payment="class=active")
 
     else:
-        username = request.json['name']
+        min_possible_cost = 1
         cost = int(request.json['cost'])
-        print request.json
-        id_lot = get_placeid_by_placename(request.json['lot_id'])
+        place_id = get_placeid_by_placename(request.json['lot_id'])
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'
 
-        if ( (re.search(reg, request.json['cost'])) and re.search(reg, request.json['lot_id']) and re.search(reg, request.json['place_id']) and (cost >= min_cost) and re.search(reg_str,request.json['car_number']) ):
-            credentials = { 'username' : username,
-                        'car_number' : request.json['car_number'],
-                        'cost': cost,
-                        'leave_before':calculate_estimated_time(int(cost),id_lot),
-                        'id_place': request.json['place_id'],
-                        'id_lot': request.json['lot_id'],
-                        'rate': get_current_tariff_matrix(id_lot)}       
-            p = Payment(credentials['car_number'], credentials['cost'], credentials['leave_before'], credentials['id_lot'], credentials['id_place'])    
-            
-            if (db_session.query(ParkingLot).filter(ParkingLot.id == id_lot).first().id) and p:
-                db_session.add(p)
-                db_session.commit()
-                
-                return render_template("payment_response.html", credentials=credentials)
-            
+        if (reg.search(reg, cost) and reg.search(reg, request.json['place']) and
+                (cost >= min_possible_cost) and reg.search(reg_str,request.json['car_number'])):
+            transaction = "web%s" % str(datetime.now())
+            time_left = calculate_estimated_time(datetime.now(), cost, place_id)
+            credentials = {
+                'car_number': request.json['car_number'],
+                'cost': cost,
+                'time_left': time_left,
+                'transaction': transaction,
+                'place_id': request.json['place_id'],
+                'rate': get_current_tariff_matrix(place_id)
+            }
+            pricehistory_id = get_current_pricehistory_id(place_id)
+
+            p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
+            db_session.add(p)
+            db_session.commit()
+            return render_template("payment_response.html", credentials=credentials)
         else:
-            eror = "Your data is not valid"
-            return render_template("payment_response.html", error=eror )
+            error = "Your data is not valid"
+            return render_template("payment_response.html", error=error)
 
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
@@ -122,10 +123,13 @@ def can_stand():
 @app.route('/<lang_code>/dynamic_select', methods=['POST', 'GET'])
 def dynamic_select():
     place_name = request.json['place']
-    place = db_session.query(ParkingPlace.name).filter(ParkingPlace.name == place_name)
+
+    place = db_session.query(ParkingPlace.name).filter(ParkingPlace.name == place_name).all()
     if place == []:
+        print "None"
         return jsonify(response='None')
     else:
+        print "None"
         return jsonify(response='OK')
 
 
@@ -145,6 +149,13 @@ def find_place():
     if request.method == 'POST':
         return render_template('response_aval_place.html', lots=get_priced_parking_lot(request.json['l_price'], request.json['h_price']), classactive_log ="class=active")
     elif request.method == 'GET': return render_template('find_place.html', classactive_log ="class=active")
+
+
+@app.route('/<lang_code>/time_left', methods=['GET', 'POST'])
+def time_left():
+    cost = request.json['cost']
+    place_id = request.json['place']
+    return jsonify(calculate_estimated_time(datetime.now(), cost, place_id))
     
 
 if __name__ == '__main__':

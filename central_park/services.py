@@ -204,7 +204,7 @@ def get_placeid_by_placename(place_name):
     for item in parking_place:
         return map(lambda x: x[0], item)
 
-    
+
 
 #some internal functions
 #fixed for new database
