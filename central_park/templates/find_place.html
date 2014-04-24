@@ -1,18 +1,22 @@
-{% extends "start.html" %}
+{% extends "content_template.html" %}
 {% block content %}
          <h1>{{_('Search parking by price') }}</h1>
         {% if error %}
         <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
         {% endif %}
 
-
+<form method="POST">
               <dl>
                  <dt>{{_('From:') }}</dt>
                     <dd><input type="text" name="l_price" id="l_price"  size="20" ></dd></dl>
                  <dt>{{_('To:') }}</dt>
                     <dd><input type="text" name="h_price" id="h_price" size="20" ></dd>
                   <br>
+
+
                  <button  type="submit" onclick="SendInfo();" >{{_('Find!') }}</button>
+
+                 </form>
 
 <div id='result'>
     {{ result }}
@@ -43,14 +47,15 @@
     };
 
     SendInfo = function() {
-        if (checkform(this)){
+
         var formData = {
             "l_price":$("#l_price").val(),
             "h_price":$("#h_price").val(),
             };
-        console.log(formData);
+       
+        console.log(formData)
         $.ajax({
-            url:'/find',
+            url:'/en/find',
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",
@@ -60,7 +65,7 @@
                 myDiv.html(response);
             },
 
-            error: function (request)
+            error: function (response)
             {
             
             },
@@ -69,8 +74,8 @@
 
     return false;
     };
-    return true;
-    };
+
+
 
 
 </script>

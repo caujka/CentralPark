@@ -4,6 +4,8 @@
 {% if error %}
         <p class=error><Strong>{{_('Error') }}</Strong> {{ error }} </p>
 {% endif %}
+
+<form method="POST">
 <fieldset>{{_('Select parking lot') }}:
     <select id="lot_name" name="lot_name" res=get_list_of_lots()>
         {% for res in res_list %} 
@@ -13,6 +15,7 @@
     <button  type="submit" onclick="GetInfo();"><b>{{_('Show') }}</b></button>
 </fieldset>
 
+</form>
             
 
 <div id='result' class="result">
@@ -29,7 +32,7 @@ GetInfo = function() {
             };
 
        $.ajax({
-            url:'/can_stand',
+            url:'127.0.0.1:5000/en/can_stand',
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",

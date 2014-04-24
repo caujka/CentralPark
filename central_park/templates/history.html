@@ -4,22 +4,14 @@
 {% if error %}
         <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
 {% endif %}
-<form method="post" action="">
-        <fieldset>{{_('Choose parking lot') }} <select id="Lot_id" name="Lot">
-
-            <option value=""></option>
-
-            <option value="0">0</option>
-
-            <option value="1">1</option>
-
-            <option selected="selected" value="2">2</option>
-
-            <option value="3">3</option>
-
-        </select></fieldset><br/>
-
-
+<form method="POST">
+<fieldset>{{_('Choose parking lot') }} 
+    <select id="place_id" name="place" >
+        {% for place in place_list %} 
+            <option value="{{place}}" size="20">{{place}}</option>
+        {% endfor %}
+    </select>
+</fieldset><br/>
     <input data-datepicker="datepicker" class="small" type="text" value="2014-03-28" name="date" id="data_id" />
     <i class="glyphicon glyphicon-calendar"></i>        
   
@@ -33,24 +25,25 @@
 HistoryInfo = function() {
 
         var formData = {
-            "Lot":$("#Lot_id").val(),
+            "Place":$("#place_id").val(),
             "date": $('#data_id').val()
             };
-alert($('#data_id').val())
-       $.ajax({
-            url:'http://localhost:5000/find_places',
+            console.log(formData)
+        $.ajax({
+            url:'127.0.0.1:5000/en/history',
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",
+
             success: function (request)
             {
              alert('Ok');
-             $("content").innerHTML(request);
+           
             },
 
-            error: function ()
+            error: function (request)
             {
-            alert('Error');
+            alert('Error125');
             },
 
             });

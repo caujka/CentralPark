@@ -1,4 +1,24 @@
+//ajax_return_data_parking(res)
+
 function initialize() {
+
+function ajax_return_info(_marker,res)
+{
+//alert(res);
+  call_info_window(_marker,res+"00001j");
+}
+
+function ajax_init_info(_marker,str)
+{
+//alert("kkk");
+$.ajax({
+    url:"/maps_ajax_info",
+        data: {"b":str},
+        success: function(res){ajax_return_info(_marker,res);}
+      }); 
+
+};
+
   var myLatlng = new google.maps.LatLng(49.8392491,24.0300454);
   var mapOptions = {
     zoom: 12,
@@ -12,7 +32,7 @@ function initialize() {
   var markers_lng = [24.0300454,24.0303454,24.0305454];
   var markers_id = [0,1,2];
   
-  function getRandom(min, max)
+function getRandom(min, max)
 {
   return Math.random() * (max - min) + min;
 }
@@ -45,8 +65,10 @@ function initialize() {
   });
 */ 
   //todo here goes ajax
-  function   call_info_window(marker){
-	infowindow.setContent(marker.getTitle() +'test string <button onclick=alert("sas")>sdcsdcs</button>'); 
+
+  function   call_info_window(marker, info_park){
+
+	infowindow.setContent(marker.getTitle()+'  test string <button onclick=alert("sas")>sdcsdcs</button><p>'+ info_park); 
 	infowindow.open(map,marker);  
   }
   
@@ -58,8 +80,9 @@ function initialize() {
 	});
 	
   google.maps.event.addListener(marker, 'click', function(event) {
-  call_info_window(marker);
-  });
+  ajax_init_info(marker,"str");
+//  call_info_window(marker); 
+  }); 
   markers.push(marker);
   }
   
