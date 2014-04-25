@@ -41,7 +41,7 @@ def get_current_pricehistory_id(place_id):
     i = place_id
     tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).all()
 
-    if tariff[0]:
+    if len(tariff) > 0:
         return tariff[0].id
     else:
         return None
@@ -73,10 +73,12 @@ def calculate_estimated_time(time_start, cost, place_id):
         time_finish: time expiration of parking (DATETIME)
     """
     tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-    print tariff
     if tariff:
         time_finish = time_start
-        cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
+        try:
+            cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)   
+        except AttributeError:
+            raise AttributeError("AttributeError") 
         if (cost_in_first_hour < cost):
             cost -= cost_in_first_hour
             hour = time_start.hour + 1
@@ -105,8 +107,11 @@ def calculate_total_price(place_id, time_finish):
     return:
         cost: total cost for given parking duration (INT)
     """
+    if type(time_finish) is not datetime: return "value time_finish is not datetime"
+
     tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
     time_start = datetime.now()
+    
     if (time_finish.hour == time_start.hour and time_finish.day == time_start.day):
         return calculate_minutes_cost(time_finish.minute - time_start.minute, tariff[time_start.hour])
     else:
@@ -173,7 +178,6 @@ def get_payment_by_date(place, date_tmp):
     list_of_payments = db_session.query(Payment).filter(Payment.activation_time >= date_tmp,
                                              Payment.activation_time <= (date_tmp + timedelta(days=1)),
                                              Payment.place_id == place).all()
-    print list_of_payments
     return list_of_payments
 
 
@@ -189,15 +193,11 @@ def get_priced_parking_lot(price_min, price_max):
     current_hour = datetime.now().hour
     query = db_session.query(ParkingPlace)
     places = []
-    print "---------------------------[", price_min, price_max
     for item in query:
         tariff = get_current_tariff_matrix(2)
-        print tariff
         tariff = parse_tariff_to_list(tariff)
-        print tariff
         if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
            places.append({'id': item.id, 'address': item.address, 'name': item.name})
-    print '----------------', places
     return places
 
 
@@ -234,7 +234,6 @@ def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
 
 
 def parse_tariff_to_list(tariff):
-    print tariff
     if tariff:
         return tuple([int(x) for x in tariff.split(';')])
     else:

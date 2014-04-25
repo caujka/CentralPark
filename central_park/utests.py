@@ -1,10 +1,10 @@
 import unittest, random  
 from services import *
-import datetime
+from datetime import datetime
 class GetCurrentPriceHistoryTestCase(unittest.TestCase):
   	def test_number_get_current_pricehistory_id(self):
   		place_id = 1
-   		self.assertIsInstance(get_current_pricehistory_id(place_id), str, "get_current_pricehistory_id function returns incorrent value." + str(type(get_current_pricehistory_id(place_id)))) 
+   		self.assertIsInstance(get_current_pricehistory_id(place_id), int, "get_current_pricehistory_id function returns incorrent value.") 
 
    	def test_none_get_current_pricehistory_id(self):
   		place_id = None
@@ -14,7 +14,7 @@ class GetCurrentPriceHistoryTestCase(unittest.TestCase):
 class GetCurrentTariffMatrixTestCase(unittest.TestCase):
   	def test_number_get_current_tariff_matrix(self):
   		lot_id = 1
-   		self.assertTrue(get_current_tariff_matrix(lot_id) != None, "get_current_tariff_matrix function returns incorrent value." + str(type(get_current_tariff_matrix(lot_id)))) 
+   		self.assertTrue(get_current_tariff_matrix(lot_id) != None, "get_current_tariff_matrix function returns incorrent value.") 
 
    	def test_none_get_current_tariff_matrix(self):
   		lot_id = None
@@ -23,27 +23,28 @@ class GetCurrentTariffMatrixTestCase(unittest.TestCase):
 
 class CalculateEstimatedTimeTestCase(unittest.TestCase):
   	def test_normal_calculate_estimated_time(self):
-  		time_start = datetime.datetime.now()
+  		time_start = datetime.now()
   		cost = 10 
   		place_id = 1
-   		self.assertTrue(calculate_estimated_time(time_start, cost, place_id) is datetime.datetime, "calculate_estimated_time function returns incorrent value.") 
+   		self.assertIsInstance(calculate_estimated_time(time_start, cost, place_id), datetime, "calculate_estimated_time function returns incorrent value.") 
 
    	def test_error_calculate_estimated_time(self):
-  		time_start = "some string"
+  		time_start = datetime.now()
   		cost = 10 
-  		place_id = 1
-   		self.assertFalse(calculate_estimated_time(time_start, cost, place_id) is datetime.datetime, "calculate_estimated_time function returns incorrent value.") 
+  		place_id = "olololo"
+
+   		self.assertTrue(calculate_estimated_time(time_start, cost, place_id) == None, "calculate_estimated_time function returns incorrent value.") 
 
 class CalculateTotalPriceTestCase(unittest.TestCase):
   	def test_normal_calculate_total_price(self):
   		place_id = 1 
-  		time_finish = datetime.datetime.now()
+  		time_finish = datetime.now()
    		self.assertIsInstance(calculate_total_price(place_id, time_finish), int, "calculate_total_price function returns incorrent value.") 
 
    	def test_error_calculate_total_price(self):
   		place_id = 1 
   		time_finish = "somestring"
-   		self.assertNotIsInstance(calculate_total_price(place_id, time_finish), int, "calculate_total_price function returns incorrent value.") 
+   		self.assertIsInstance(calculate_total_price(place_id, time_finish), str, "calculate_total_price function returns incorrent value.") 
 
 
 class GetParkedCarOnLotTestCase(unittest.TestCase):
@@ -63,7 +64,7 @@ class GetListOfPlacesTestCase(unittest.TestCase):
 class GetPaymentByDateTestCase(unittest.TestCase):
   	def test_normal_get_payment_by_date(self):
    		place = 1
-   		date_tmp = str(datetime.date.today())
+   		date_tmp = str(date.today())
    		self.assertIsInstance(get_payment_by_date(place, date_tmp), list, "get_payment_by_date function returns incorrent value.") 
 
 
@@ -75,14 +76,14 @@ class GetPricesParkingLotTestCase(unittest.TestCase):
 
 class GetPlaceidByPlacenameTestCase(unittest.TestCase):
   	def test_normal_get_placeid_by_placename(self):
-   		place_name = "somename"
+   		place_name = "name01"
    		self.assertTrue(get_placeid_by_placename(place_name) != None, "get_placeid_by_placename function returns incorrent value.") 
 
 class InsertPaymentTestCase(unittest.TestCase):
   	def test_normal_insert_payment(self):
    		car_number = "ol755olo" 
    		cost = 50
-   		expiration_time = datetime.datetime.now() 
+   		expiration_time = datetime.now() 
    		transaction = "string" 
    		place_id = 1
    		pricehistory_id=5
@@ -105,12 +106,3 @@ class ParseTariffToListTestCase(unittest.TestCase):
    		tariff = "10;50"
    		self.assertIsInstance(parse_tariff_to_list(tariff), tuple, "parse_tariff_to_list function returns incorrent value.") 
 
-
-
-#parse_tariff_to_list(tariff)
-"""
-  	def test_not_number_income(self):
-  		income = random.randint(0,10000)
-    	str_income = "Text string"
-  		self.assertFalse(str_income == fee(income), "Fee function returns incorrent value when string is income.") 
-"""
