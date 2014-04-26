@@ -1,14 +1,14 @@
 DELETE FROM ParkingPlace;
 
-INSERT INTO ParkingPlace VALUES (0, 'name01', 0, "location", "address", 2);
-INSERT INTO ParkingPlace VALUES (1, 'name02', 0, "location", "address", 3);
-INSERT INTO ParkingPlace VALUES (2, 'name03', 1, "location", "address",1);
-INSERT INTO ParkingPlace VALUES (3, 'name11', 1, "location", "address",2);
-INSERT INTO ParkingPlace VALUES (4, 'name12', 1, "location", "address",3);
-INSERT INTO ParkingPlace VALUES (5, 'name13', 0, "location", "address",1);
-INSERT INTO ParkingPlace VALUES (6, 'name21', 0, "location", "address",2);
-INSERT INTO ParkingPlace VALUES (7, 'name22', 1, "location", "address",1);
-INSERT INTO ParkingPlace VALUES (8, 'name23', 0, "location", "address",2);
+INSERT INTO ParkingPlace VALUES (0, 'name01', 0, "49.839951,24.028375", "address", 2);
+INSERT INTO ParkingPlace VALUES (1, 'name02', 0, "49.832876,23.998107", "address", 3);
+INSERT INTO ParkingPlace VALUES (2, 'name03', 1, "49.832626,23.999652", "address",1);
+INSERT INTO ParkingPlace VALUES (3, 'name11', 1, "49.839436,23.99521", "address",2);
+INSERT INTO ParkingPlace VALUES (4, 'name12', 1, "49.842563,24.017848", "address",3);
+INSERT INTO ParkingPlace VALUES (5, 'name13', 0, "49.842563,23.017848", "address",1);
+INSERT INTO ParkingPlace VALUES (6, 'name21', 0, "49.852563,24.017848", "address",2);
+INSERT INTO ParkingPlace VALUES (7, 'name22', 1, "49.842563,23.013248", "address",1);
+INSERT INTO ParkingPlace VALUES (8, 'name23', 0, "49.832563,24.99948", "address",2);
 
 DELETE FROM PriceHistory;
 
