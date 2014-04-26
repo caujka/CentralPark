@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from models import ParkingPlace, PriceHistory, Payment
 from database import db_session, init_db
 from flask.ext.babel import *
-from flask_babelex import *
 from flask import *
 from flask import Flask, request, render_template, jsonify, json
 import re
@@ -74,7 +73,7 @@ def payment():
                 and re.search(reg_str, request.json['car_number'])):
             cost = int(request.json['cost'])
             transaction = "web%s" % str(datetime.now())
-            time_left = calculate_estimated_time(datetime.now(), cost, place_id)
+            time_left = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), cost, place_id)
             credentials = {
                 'car_number': request.json['car_number'],
                 'cost': cost,
@@ -102,13 +101,10 @@ def show_history():
         return render_template('history.html', place_list = list_of_place)
     
     else:
-        choosen_place = request.values.get('place')
-        print (choosen_place)
-      
-        data_time = request.values.get('date')
-      
+        choosen_place = request.json['place']      
+        data_time = request.json['date']
         actual_history = get_payment_by_date(choosen_place, data_time)
-        print (actual_history)
+        print "------", actual_history
         return render_template('response_history.html', history_info = actual_history) 
 
 
@@ -165,7 +161,7 @@ def find_place():
 def time_left():
     cost = request.json['cost']
     place_id = request.json['place']
-    est_time = calculate_estimated_time(datetime.now(), int(cost), place_id)
+    est_time = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), int(cost), place_id)
     if est_time:
         return est_time.strftime("%H:%M:%S %Y-%m-%d")
     else:

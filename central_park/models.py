@@ -69,6 +69,3 @@ class Payment(Base):
         self.place_id = place_id
         self.pricehistory_id = pricehistory_id
 
-
-    def __repr__(self):
-        return '<Payment from %r cost:%r$ till %r>' % (self.car_number, self.cost, self.expiration_time)

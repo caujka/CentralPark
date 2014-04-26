@@ -110,7 +110,7 @@ def calculate_total_price(place_id, time_finish):
     if type(time_finish) is not datetime: return "value time_finish is not datetime"
 
     tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-    time_start = datetime.now()
+    time_start = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     if (time_finish.hour == time_start.hour and time_finish.day == time_start.day):
         return calculate_minutes_cost(time_finish.minute - time_start.minute, tariff[time_start.hour])
@@ -137,7 +137,7 @@ def get_parked_car_on_lot(place_id):
         query: list of cars who allowed to be parked for now on given ParkingLor (LIST of dictionaries)
     """
     parked_car = db_session.query(Payment.car_number, Payment.expiration_time, Payment.place_id).\
-                                                filter(Payment.expiration_time > datetime.now(),
+                                                filter(Payment.expiration_time > datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                                 Payment.place_id == place_id).all()
     place_list = []
     i = 0
@@ -173,12 +173,16 @@ def get_payment_by_date(place, date_tmp):
     return:
         query: list of Payment who parked in this date at ParkingLor (LIST of objects)
     """
-
+    res = []
     date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
     list_of_payments = db_session.query(Payment).filter(Payment.activation_time >= date_tmp,
                                              Payment.activation_time <= (date_tmp + timedelta(days=1)),
                                              Payment.place_id == place).all()
-    return list_of_payments
+    for i in range(len(list_of_payments)):
+        res.append({"car_number" : list_of_payments[i].car_number,
+                  "cost" : list_of_payments[i].cost,
+                  "expiration_time" : list_of_payments[i].expiration_time})
+    return res
 
 
 # FIXED for NEW database
