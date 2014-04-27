@@ -76,27 +76,27 @@ def calculate_estimated_time(time_start, cost, place_id):
     if tariff:
         time_finish = time_start
         try:
-            cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)   
+            cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
         except AttributeError:
             raise AttributeError("AttributeError") 
         if (cost_in_first_hour < cost):
             cost -= cost_in_first_hour
             hour = time_start.hour + 1
             time_finish += timedelta(hours=1)
-            time_finish += timedelta(minutes=60-time_finish.minute)
-            time_finish += timedelta(minutes=60-time_finish.second)
-            while cost > tariff[hour]:
+            time_finish -= timedelta(minutes=60-time_finish.minute)
+            while cost > tariff[hour % 24]:
                 cost -= tariff[hour % 24]
                 time_finish += timedelta(hours=1)
+                hour += 1
             else:
-                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour])
+                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour % 24])
                 time_finish += timedelta(minutes=minutes_in_last_hour)
-        else:# FIXED for NEW database
+        else:
             minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
             time_finish += timedelta(minutes=minutes_in_last_hour)
         return time_finish
-    else:
-        return None
+    return None
+
 
 # FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
@@ -227,7 +227,8 @@ def insert_payment(car_number, cost, expiration_time, transaction, place_id, pri
         db_session.commit()
         return True
     except ValueError:
-        return False
+        raise ValueError('Database insertion error')
+
 
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60

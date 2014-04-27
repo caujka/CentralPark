@@ -63,8 +63,6 @@ def payment():
     else:
         min_possible_cost = 1
         place_id = get_placeid_by_placename(request.json['place'])
-        print place_id, type(place_id)
-
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'
@@ -72,8 +70,8 @@ def payment():
         if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
                 and re.search(reg_str, request.json['car_number'])):
             cost = int(request.json['cost'])
-            transaction = "web%s" % str(datetime.now())
-            time_left = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), cost, place_id)
+            transaction = "web%s" % str(datetime.now().strftime("%Y%m%d%H%M%S"))
+            time_left = calculate_estimated_time(datetime.now(), cost, place_id)
             credentials = {
                 'car_number': request.json['car_number'],
                 'cost': cost,
@@ -84,9 +82,8 @@ def payment():
             }
             pricehistory_id = get_current_pricehistory_id(place_id)
 
-            p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
-            db_session.add(p)
-            db_session.commit()
+            insert_payment(credentials['car_number'], credentials['cost'], credentials['time_left'],
+                           credentials['transaction'], get_placeid_by_placename(credentials['place']),pricehistory_id)
             return render_template("payment_response.html", credentials=credentials)
         else:
             error = "Your data is not valid"
@@ -104,8 +101,7 @@ def show_history():
         choosen_place = request.json['place']      
         data_time = request.json['date']
         actual_history = get_payment_by_date(choosen_place, data_time)
-        print "------", actual_history
-        return render_template('response_history.html', history_info = actual_history) 
+        return render_template('response_history.html', history_info = actual_history)
 
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
@@ -163,8 +159,8 @@ def find_place():
 @app.route('/<lang_code>/time_left', methods=['GET', 'POST'])
 def time_left():
     cost = request.json['cost']
-    place_id = request.json['place']
-    est_time = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), int(cost), place_id)
+    place = request.json['place']
+    est_time = calculate_estimated_time(datetime.now(), int(cost), get_placeid_by_placename(place))
 
     if est_time:
         return jsonify(time_left=est_time.strftime("%H:%M:%S %Y-%m-%d"))

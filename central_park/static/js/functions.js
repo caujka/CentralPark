@@ -2,7 +2,7 @@
     
 function checkform ( form )
 {
-    if (form.place.value == "" || form.car_number.value == "" || is_valid_cost(form.cost.value) != true) {
+    if (form.place.value == "" || form.car_number.value == "" || is_valid_cost(form.cost.value) == true) {
         alert( "Please enter valid data" );
         return false ;
     }
