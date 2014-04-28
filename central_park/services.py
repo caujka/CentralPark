@@ -5,10 +5,6 @@ from datetime import datetime, timedelta, date, time
 
 
 
-
-
-
-
 # FIXED for NEW database
 def get_current_pricehistory_id(place_id):
     """
@@ -62,7 +58,7 @@ def calculate_estimated_time(time_start, cost, place_id):
             cost -= cost_in_first_hour
             hour = time_start.hour + 1
             time_finish += timedelta(hours=1)
-            time_finish -= timedelta(minutes=60-time_finish.minute)
+            time_finish.replace(minute=0, second=0)
             while cost > tariff[hour % 24]:
                 cost -= tariff[hour % 24]
                 time_finish += timedelta(hours=1)
