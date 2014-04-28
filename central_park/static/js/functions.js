@@ -57,6 +57,7 @@ time_left = function(){
     if (is_valid_cost(cost)){
         var formData = {
             "place": $("#place").val(),
+            "car_number": $("#car_number").val(),
             "cost": cost,
         }; 
         $.ajax({
