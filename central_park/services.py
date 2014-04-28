@@ -200,7 +200,6 @@ def get_priced_parking_lot(price_min, price_max):
            places.append({'id': item.id, 'address': item.address, 'name': item.name})
     return places
 
-
 # FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
@@ -211,8 +210,6 @@ def get_placeid_by_placename(place_name):
     """
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
     return parking_place[0][0]
-
-
 
 #some internal functions
 #fixed for new database
@@ -231,7 +228,6 @@ def calculate_minutes_cost(price_of_hour, minutes):
 
 def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
     return 60 * estimated_money / price_of_hour
-
 
 def parse_tariff_to_list(tariff):
     if tariff:
