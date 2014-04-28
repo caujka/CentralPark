@@ -8,6 +8,7 @@ from flask.ext.babel import *
 from flask import *
 from flask import Flask, request, render_template, jsonify, json
 import re
+from math import *
 # create our little application :)
 app = Flask(__name__)
 babel = Babel(app)
@@ -111,7 +112,7 @@ def show_history():
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
 def can_stand():
     if request.method == 'GET':
-        return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_places())
+        return render_template('chek_parking.html')
     elif request.method == 'POST':
         lot_name = request.values.get('lot_name')
         #lot_id = get_list_of_places()
@@ -170,6 +171,35 @@ def time_left():
         return jsonify(time_left=est_time.strftime("%H:%M:%S %Y-%m-%d"))
     return jsonify(time_left='error')
 
+
+@app.route('/<lang_code>/take_coord', methods=['GET', 'POST'])
+def take_coord():
+    x = request.json['coord_lan']
+    y = request.json['coord_log']
+    r = request.json['radius']
+    valid_parking = []
+    locations = take_parking_coord()
+    return jsonify(list_ofcoord=locations)
+
+
+@app.route('/<lang_code>/get_payment_by_coord', methods=['GET', 'POST'])
+def get_payment_by_coord():
+    ls = request.json['ls']
+    final_list = get_payment_by_circle_coord(ls)
+    info = {}
+    print "start"
+    for cars_in_parcing in final_list:
+        cars = []
+        for car in cars_in_parcing:
+            car = {
+                'car_number': car[1],
+                'expception_time': car[2]
+            }
+            cars.append(car)
+        info[cars_in_parcing[0][0]] = cars
+    print info
+    #return jsonify(res=final_list)
+    return jsonify(res=info)
 
 if __name__ == '__main__':
     init_db()
