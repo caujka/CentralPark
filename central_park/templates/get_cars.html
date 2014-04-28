@@ -13,6 +13,25 @@
          {% endfor %}
     </select>
     <button  type="submit" onclick="GetInfo();"><b>{{_('Show') }}</b></button>
+<p id="demo">Click the button to get your coordinates:</p>
+    <input type="button"   onclick="getLocation();"><b>{{_('Showinf') }}</b>
+
+<script>
+var x=document.getElementById("demo");
+function getLocation()
+  {
+  if (navigator.geolocation)
+    {
+    navigator.geolocation.watchPosition(showPosition);
+    }
+  else{x.innerHTML="Geolocation is not supported by this browser.";}
+  }
+function showPosition(position)
+  {
+  x.innerHTML="Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude + "<br>jklm" + position.coords.accuracy;    
+  }
+</script>
 </fieldset>
 
 </form>
@@ -24,6 +43,7 @@
 
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<!--
 <script type="text/javascript">
 GetInfo = function() {
 
@@ -49,5 +69,7 @@ GetInfo = function() {
 
         return false;
     };
-</script>
+</script>-->
+
+
 {% endblock %}

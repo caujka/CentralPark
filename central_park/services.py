@@ -278,3 +278,33 @@ def parse_tariff_to_list(tariff):
         return tuple([int(x) for x in tariff.split(';')])
     else:
         return None
+
+
+def take_parking_coord():
+    locations = db_session.query(ParkingPlace.location, ParkingPlace.id, ParkingPlace.name).all()
+    ls = []
+    tup = ()
+    list_of_coord =[]
+    for i in locations:
+        ls.append(i[0])
+        tup = tuple(ls)
+    
+    k=0
+    while k < len(tup):
+        a=tuple([float(x) for x in tup[k].split(',')])    
+        list_of_coord.append(a)
+        k+=1
+    return list_of_coord
+
+
+def get_payment_by_circle_coord(list_of_id):
+    list_of_payment = []
+    for i in list_of_id:
+        element = db_session.query(ParkingPlace.name, Payment.car_number, Payment.expiration_time)
+        element = element.filter(ParkingPlace.id == i, Payment.place_id == i,\
+            Payment.expiration_time > datetime.now()).order_by(ParkingPlace.name).all()
+        if element:
+            list_of_payment.append(element)
+    return list_of_payment
+
+    
