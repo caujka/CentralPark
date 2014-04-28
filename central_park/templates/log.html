@@ -12,7 +12,7 @@
              <dt>{{_('Password') }}:
              <dd><input type="password" name="password">
          </dl>
-    <p><input type="submit" value="Login">
+    <p><input type="submit" value={{_('login') }}>
         </form>
     {% for message in get_flashed_messages() %}
         <div class=flash>

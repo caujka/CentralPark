@@ -183,7 +183,6 @@ def get_priced_parking_lot(price_min, price_max):
            places.append({'id': item.id, 'address': item.address, 'name': item.name})
     return places
 
-
 # FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
