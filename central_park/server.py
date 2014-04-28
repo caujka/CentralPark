@@ -22,7 +22,6 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
-
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
@@ -40,8 +39,7 @@ def before():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
-
-
+    
 #Controling session closing
 @app.teardown_appcontext
 def teardown_session(expception=None):
@@ -54,11 +52,9 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 def home():
      return redirect(url_for('welcome', lang_code="en"))
 
-
 @app.route('/<lang_code>')
 def index():
     return render_template('welcome.html')
-
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
 def payment():
@@ -66,31 +62,32 @@ def payment():
         return render_template('payment.html', classactive_payment="class=active")
 
     else:
+        min_possible_cost = 1
+        place_id = get_placeid_by_placename(request.json['place'])
+        print place_id, type(place_id)
+
 
         reg = r'\d{1,}'
-        reg_str = r'[A-Z, a-z, 0-9]{3,8}'
+        reg_str = r'[A-Z, a-z, 0-9]{4,6}'
 
-        if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
-                and re.search(reg_str, request.json['car_number']) and int(request.json['cost']) > 0
-                and get_placeid_by_placename(request.json['place'])):
-
+        if (re.search(reg, request.json['cost']) and re.search(reg_str, request.json['place'])
+                and re.search(reg_str, request.json['car_number'])):
             cost = int(request.json['cost'])
-            place_id = get_placeid_by_placename(request.json['place'])
-            transaction = "web%s" % str(datetime.now().strftime("%Y%m%d%H%M%S"))
-
+            transaction = "web%s" % str(datetime.now())
+            time_left = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), cost, place_id)
             credentials = {
                 'car_number': request.json['car_number'],
                 'cost': cost,
-                'time_left': get_estimated_time_for_given_car(request.json['car_number'], place_id, cost),
+                'time_left': time_left,
                 'transaction': transaction,
                 'place': request.json['place'],
                 'rate': get_current_tariff_matrix(place_id)
             }
-            try:
-                create_payment_record(credentials['car_number'], place_id, credentials['cost'], credentials['transaction'])
-            except ValueError:
-                raise ValueError
+            pricehistory_id = get_current_pricehistory_id(place_id)
 
+            p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
+            db_session.add(p)
+            db_session.commit()
             return render_template("payment_response.html", credentials=credentials)
         else:
             error = "Your data is not valid"
@@ -108,7 +105,8 @@ def show_history():
         choosen_place = request.json['place']      
         data_time = request.json['date']
         actual_history = get_payment_by_date(choosen_place, data_time)
-        return render_template('response_history.html', history_info = actual_history)
+        print "------", actual_history
+        return render_template('response_history.html', history_info = actual_history) 
 
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
@@ -165,8 +163,11 @@ def find_place():
 
 @app.route('/<lang_code>/time_left', methods=['GET', 'POST'])
 def time_left():
-    est_time = get_estimated_time_for_given_car(request.json['car_number'],
-                                                get_placeid_by_placename(request.json['place']), int(request.json['cost']))
+    cost = request.json['cost']
+    place_id = get_placeid_by_placename(request.json['place'])
+
+    est_time = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), int(cost), place_id)
+
     if est_time:
         return jsonify(time_left=est_time.strftime("%H:%M:%S %Y-%m-%d"))
     return jsonify(time_left='error')
