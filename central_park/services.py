@@ -52,23 +52,23 @@ def calculate_estimated_time(time_start, cost, place_id):
         time_finish = time_start
         try:
             cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
-        except AttributeError:
-            raise AttributeError("AttributeError") 
-        if (cost_in_first_hour < cost):
-            cost -= cost_in_first_hour
-            hour = time_start.hour + 1
-            time_finish += timedelta(hours=1)
-            time_finish.replace(minute=0, second=0)
-            while cost > tariff[hour % 24]:
-                cost -= tariff[hour % 24]
+            if (cost_in_first_hour < cost):
+                cost -= cost_in_first_hour
                 time_finish += timedelta(hours=1)
-                hour += 1
+                time_finish = time_finish.replace(minute=0, second=0)
+                hour = time_finish.hour
+                while cost > tariff[hour % 24]:
+                    cost -= tariff[hour % 24]
+                    time_finish += timedelta(hours=1)
+                    hour += 1
+                else:
+                    minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour % 24])
+                    time_finish += timedelta(minutes=minutes_in_last_hour)
             else:
-                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour % 24])
+                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_finish.hour])
                 time_finish += timedelta(minutes=minutes_in_last_hour)
-        else:
-            minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
-            time_finish += timedelta(minutes=minutes_in_last_hour)
+        except AttributeError:
+            raise AttributeError("AttributeError")
         return time_finish
     return None
 
