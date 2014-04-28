@@ -4,7 +4,7 @@
 {% if error %}
         <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
 {% endif %}
-<form method="POST">
+
 <fieldset>{{_('Choose parking lot') }} 
     <select id="place_id" name="place" >
         {% for place in place_list %} 
@@ -12,33 +12,37 @@
         {% endfor %}
     </select>
 </fieldset><br/>
-    <input data-datepicker="datepicker" class="small" type="text" value="2014-03-28" name="date" id="data_id" />
+    <input data-datepicker="datepicker" class="small" type="text" value="2014-04-07" name="date" id="data_id" />
     <i class="glyphicon glyphicon-calendar"></i>        
   
 
-     <input type="submit"  onclick="HistoryInfo();" size="20" value="Show info">  
+     <input type="submit"  onclick="HistoryInfo();" size="20" value={{ _('Show')}}>  
             
-</form>
+
+
+<div id='result' class='result'>
+    {{ result }}
+</div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 HistoryInfo = function() {
 
         var formData = {
-            "Place":$("#place_id").val(),
+            "place":$("#place_id").val(),
             "date": $('#data_id').val()
             };
             console.log(formData)
         $.ajax({
-            url:'127.0.0.1:5000/en/history',
+            url:'/en/history',
             type:'POST',
             data: JSON.stringify(formData),
             contentType: "application/json",
 
-            success: function (request)
+            success: function (response)
             {
-             alert('Ok');
-           
+                var myDiv = $('#result'); // The place where you want to insert the template
+                myDiv.html(response);
             },
 
             error: function (request)
@@ -46,7 +50,7 @@ HistoryInfo = function() {
             alert('Error125');
             },
 
-            });
+        });
 
         return false;
     };

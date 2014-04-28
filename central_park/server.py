@@ -63,8 +63,6 @@ def payment():
     else:
         min_possible_cost = 1
         place_id = get_placeid_by_placename(request.json['place'])
-        print place_id, type(place_id)
-
 
         reg = r'\d{1,}'
         reg_str = r'[A-Z, a-z, 0-9]{4,6}'
@@ -72,21 +70,20 @@ def payment():
         if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
                 and re.search(reg_str, request.json['car_number'])):
             cost = int(request.json['cost'])
-            transaction = "web%s" % str(datetime.now())
+            transaction = "web%s" % str(datetime.now().strftime("%Y%m%d%H%M%S"))
             time_left = calculate_estimated_time(datetime.now(), cost, place_id)
             credentials = {
                 'car_number': request.json['car_number'],
                 'cost': cost,
                 'time_left': time_left,
                 'transaction': transaction,
-                'place_id': request.json['place'],
+                'place': request.json['place'],
                 'rate': get_current_tariff_matrix(place_id)
             }
             pricehistory_id = get_current_pricehistory_id(place_id)
 
-            p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
-            db_session.add(p)
-            db_session.commit()
+            insert_payment(credentials['car_number'], credentials['cost'], credentials['time_left'],
+                           credentials['transaction'], get_placeid_by_placename(credentials['place']),pricehistory_id)
             return render_template("payment_response.html", credentials=credentials)
         else:
             error = "Your data is not valid"
@@ -101,14 +98,10 @@ def show_history():
         return render_template('history.html', place_list = list_of_place)
     
     else:
-        choosen_place = request.values.get('place')
-        print (choosen_place)
-      
-        data_time = request.values.get('date')
-      
+        choosen_place = request.json['place']      
+        data_time = request.json['date']
         actual_history = get_payment_by_date(choosen_place, data_time)
-        print (actual_history)
-        return render_template('response_history.html', history_info = actual_history) 
+        return render_template('response_history.html', history_info = actual_history)
 
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
@@ -129,7 +122,10 @@ def dynamic_select():
     if place == []:
         return jsonify(response='None')
     else:
-        return jsonify(response='OK')
+        place_id = get_placeid_by_placename(place_name)
+        cur_tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
+        return jsonify(response='OK', first_hour_tariff=cur_tariff[datetime.now().hour],
+                       second_hour_tariff=cur_tariff[(datetime.now() + timedelta(hours=1)).hour])
 
 
 @app.route('/<lang_code>/log', methods=['GET', 'POST'])
@@ -163,12 +159,12 @@ def find_place():
 @app.route('/<lang_code>/time_left', methods=['GET', 'POST'])
 def time_left():
     cost = request.json['cost']
-    place_id = request.json['place']
-    est_time = calculate_estimated_time(datetime.now(), int(cost), place_id)
+    place = request.json['place']
+    est_time = calculate_estimated_time(datetime.now(), int(cost), get_placeid_by_placename(place))
+
     if est_time:
-        return est_time.strftime("%H:%M:%S %Y-%m-%d")
-    else:
-        return ''
+        return jsonify(time_left=est_time.strftime("%H:%M:%S %Y-%m-%d"))
+    return jsonify(time_left='error')
 
 
 if __name__ == '__main__':

@@ -1,19 +1,14 @@
 // Check if string is a whole number(digits only).
-    var isWhole_re  = /^\s*\d+\s*$/;
-    function isWhole (s) {
-        return String(s).search (isWhole_re) != -1;
-    };
     
-    function checkform ( form )
-    {
-    // ** START **
-        if (form.place.value == "" || form.car_number.value == "" || form.cost.value == "" || isWhole(form.cost.value) == true) {
-            alert( "Please enter valid data" );
-            return false ;
-        }
-    // ** END **
-        return true ;
-    };
+function checkform ( form )
+{
+    if (form.place.value == "" || form.car_number.value == "" || is_valid_cost(form.cost.value) == true) {
+        alert( "Please enter valid data" );
+        return false ;
+    }
+    return true ;
+};
+
 
 GetInfo  = function() {
        if (checkform(this))
@@ -45,6 +40,8 @@ GetInfo  = function() {
     };
     return true;
 };
+
+
 is_valid_cost = function(value){
     value = $.trim(value);
     var isWhole_re  = /^\s*\d{1,3}\s*$/;
@@ -61,16 +58,16 @@ time_left = function(){
         var formData = {
             "place": $("#place").val(),
             "cost": cost,
-        };
+        }; 
         $.ajax({
                     url:'/en/time_left',
                     type:'POST',
                     data: JSON.stringify(formData, null),
                     contentType: "application/json",
-                    success: function (time_till)
+                    success: function (response)
                     {
-                        document.getElementById('time_left_label').className = " ";
-                        document.getElementById('time_left_value').innerHTML = time_till;
+                        document.getElementById("parkingTimeLeft").innerHTML = 
+                            '<label> Parking till: ' + response["time_left"] + '</label>';
                     },
 
                     error: function (st)
@@ -104,15 +101,15 @@ place_request = function(){
             {
                 if (response["response"] == "OK"){
                     document.getElementById("placeValid").innerHTML = 
-                        '<img src="../static/images/checked.png" alt="OK!">';
+                        '<label> 1st hour: '+response["first_hour_tariff"]+'hrn/h, 2nd: '+response["second_hour_tariff"]+'hrn/h</label>';
                 } else { 
                     document.getElementById("placeValid").innerHTML = 
-                        '<label>Please_enter_place_name_correctly</label>';
+                        '<label>Please_enter_place_name_correctly!</label>';
                 };
             },
             error: function (request)
             {
-                alert('Error!!!')
+                //not implemented
             },
 
         });

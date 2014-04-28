@@ -8,23 +8,18 @@
 {% if credentials %}
 <dl>
 	<dt>
-		<b>{{_('User name')}}:</b>
-		{{ credentials.username }}
-	</dt>
-
-	<dt>
 		<b>{{_('Car number:') }}</b>
 		{{ credentials.car_number }}
 	</dt>
 		
 	<dt>
 		<b>{{_('Place №:') }}</b>
-		{{ credentials.id_place }}
+		{{ credentials.place }}
 	</dt>
 	
 	<dt>
 		<b>{{_('Can stand to:') }}</b>
-		{{ credentials.leave_before }}
+		{{ credentials.time_left }}
 	</dt>
 
 	<dt>

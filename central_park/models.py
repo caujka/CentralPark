@@ -63,12 +63,9 @@ class Payment(Base):
     def __init__(self, car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
         self.car_number = car_number
         self.cost = cost
-        self.date = datetime.now()
+        self.activation_time = datetime.now()
         self.expiration_time = expiration_time
         self.transaction = transaction
         self.place_id = place_id
         self.pricehistory_id = pricehistory_id
 
-
-    def __repr__(self):
-        return '<Payment from %r cost:%r$ till %r>' % (self.car_number, self.cost, self.expiration_time)
