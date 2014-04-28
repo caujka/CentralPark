@@ -71,11 +71,11 @@ def payment():
 
         if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
                 and re.search(reg_str, request.json['car_number']) and int(request.json['cost']) > 0
-                and get_placeid_by_placename(request.json['place'])):
+                and get_placeid_by_placename(request.json['place']) is not None):
 
             cost = int(request.json['cost'])
             place_id = get_placeid_by_placename(request.json['place'])
-            transaction = "web%s" % str(datetime.now().strftime("%Y%m%d%H%M%S"))
+            transaction = "waiting"
 
             credentials = {
                 'car_number': request.json['car_number'],
@@ -90,7 +90,7 @@ def payment():
             except ValueError:
                 raise ValueError
 
-            return render_template("payment_response.html", credentials=credentials)
+            return redirect("127.0.0.1:5001/banking", credentials=)
         else:
             error = "Your data is not valid"
             return render_template("payment_response.html", error=error)
