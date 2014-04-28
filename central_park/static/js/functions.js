@@ -31,7 +31,7 @@ GetInfo  = function() {
 
                 error: function (st)
                 {
-                    alert('error in paying')
+                    alert('Ooops! Something wrong, try again.')
                 },
 
                 });

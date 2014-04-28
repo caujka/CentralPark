@@ -1,0 +1,39 @@
+
+{% block content%}
+<h3>{{_('Payment result') }} </h3>
+{% if error %}
+        <div class=error><Strong>{{_('Error') }}</Strong> {{ error }}
+{% endif %}
+
+{% if credentials %}
+<dl>
+	<dt>
+		<b>{{_('Car number:') }}</b>
+		{{ credentials.car_number }}
+	</dt>
+		
+	<dt>
+		<b>{{_('Place №:') }}</b>
+		{{ credentials.place }}
+	</dt>
+	
+	<dt>
+		<b>{{_('Can stand to:') }}</b>
+		{{ credentials.time_left }}
+	</dt>
+
+	<dt>
+		<b>{{_('Sum:') }}</b>
+		{{ credentials.cost }}
+	</dt>
+
+	<dt>
+		<b>{{_('Rate:') }}</b>
+		{{ credentials.rate }}
+	</dt>
+	
+</dl>
+
+{% endif%}
+
+{% endblock %}

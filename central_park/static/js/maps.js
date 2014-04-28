@@ -28,9 +28,9 @@ $.ajax({
   var map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
   var markers = [];
-  var markers_lat = [49.8392491,49.8393491,49.8352491];
-  var markers_lng = [24.0300454,24.0303454,24.0305454];
-  var markers_id = [0,1,2];
+  var markers_lat = [49.6392491,49.8393491,49.0352491, 44.0556, 46.25, 47.0255];
+  var markers_lng = [24.0300454,24.0303454,24.0305454, 56.220, 22.02, 45.36];
+  var markers_id = [0,1,2, 3, 4, 5];
   
 function getRandom(min, max)
 {

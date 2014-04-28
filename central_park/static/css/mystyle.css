@@ -8,7 +8,7 @@ padding: 0;
 }
 
 a { color: #960224; text-decoration: none;}
-p { color: yellow; text-decoration: none; text-align:left; font-weight:bold; font-size:25pt;}
+p { color: yellow; text-decoration: none; text-align:right; font-weight:bold; font-size:25pt;}
 a:hover { text-decoration: underline; }
 
 h1 {
@@ -166,7 +166,7 @@ line-height: 80px;
 #top_menu .contact_us a{
 	float: left;
 	display: block;
-	width: 700px;
+	width: 650px;
 	height: 130px;
 	background: url(../images/2.png) bottom no-repeat;
 }

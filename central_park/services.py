@@ -1,7 +1,7 @@
 from database import db_session
 from models import ParkingPlace, PriceHistory, Payment
 from sqlalchemy import desc
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta
 
 
 
@@ -44,7 +44,7 @@ def calculate_estimated_time(time_start, cost, place_id):
     params:
         cost: payed amount of money (INT)
         lot_id: id of parking lot (INT)
-    return:
+    return:, "get_estimated_time_for_given_car return wrong value"
         time_finish: time expiration of parking (DATETIME)
     """
     tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
@@ -82,25 +82,25 @@ def calculate_total_price(place_id, time_finish):
     return:
         cost: total cost for given parking duration (INT)
     """
-    if type(time_finish) is not datetime: return "value time_finish is not datetime"
-
-    tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-    time_start = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if type(time_finish) == datetime:
+        tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
+        time_start = datetime.now()
     
-    if (time_finish.hour == time_start.hour and time_finish.day == time_start.day):
-        return calculate_minutes_cost(time_finish.minute - time_start.minute, tariff[time_start.hour])
-    else:
-        cost = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
-        hour = time_start.hour + 1
-        time_start += timedelta(hours=1)
-        time_start += timedelta(minutes=60-time_start.minute)
-        time_start += timedelta(minutes=60-time_start.second)
-        while time_start.hour < time_finish.hour:
-            cost += tariff[hour % 24]
-            time_start += timedelta(hours=1)
+        if (time_finish.hour == time_start.hour and time_finish.day == time_start.day):
+            return calculate_minutes_cost(time_finish.minute - time_start.minute, tariff[time_start.hour])
         else:
-            cost += calculate_minutes_cost(tariff[hour], time_finish.minute - time_start.minute)
+            cost = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
+            time_start += timedelta(hours=1)
+            time_start = time_start.replace(minute=0, second=0)
+            hour = time_start.hour
+            while time_start.hour < time_finish.hour:
+                cost += tariff[hour % 24]
+                time_start += timedelta(hours=1)
+            else:
+                cost += calculate_minutes_cost(tariff[hour], time_finish.minute - time_start.minute)
             return int(cost)
+    else:
+        return "Incorrect type of time_finish (datetime should be)"
 
 
 # FIXED for NEW database
@@ -149,7 +149,10 @@ def get_payment_by_date(place, date_tmp):
         query: list of Payment who parked in this date at ParkingLor (LIST of objects)
     """
     res = []
-    date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
+    try:
+        date_tmp = datetime.strptime(date_tmp, "%Y-%m-%d")
+    except TypeError:
+        raise TypeError("invalid data format given. Should be 'YYYY-MM-DD'")
     list_of_payments = db_session.query(Payment).filter(Payment.activation_time >= date_tmp,
                                              Payment.activation_time <= (date_tmp + timedelta(days=1)),
                                              Payment.place_id == place).all()
@@ -172,12 +175,15 @@ def get_priced_parking_lot(price_min, price_max):
     current_hour = datetime.now().hour
     query = db_session.query(ParkingPlace)
     places = []
-    for item in query:
-        tariff = get_current_tariff_matrix(2)
-        tariff = parse_tariff_to_list(tariff)
-        if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
-           places.append({'id': item.id, 'address': item.address, 'name': item.name})
-    return places
+    try:
+        for item in query:
+            tariff = get_current_tariff_matrix(2)
+            tariff = parse_tariff_to_list(tariff)
+            if ((tariff[current_hour] >= int(price_min)) and (tariff[current_hour] <= int(price_max))):
+                places.append({'id': item.id, 'address': item.address, 'name': item.name})
+        return places
+    except TypeError:
+        raise TypeError
 
 
 # FIXED for NEW database
@@ -244,16 +250,19 @@ def continue_parking(parked_car_record, cost, transaction):
         db_session.add(parked_car_record)
         db_session.commit()
         return True
-    except ValueError:
-        raise ValueError('Database insertion error')
+    except StandardError:
+        raise StandardError("Database insertion error")
 
 
 def get_estimated_time_for_given_car(car_number, place_id, cost):
-    already_parked_record = is_car_already_parked_here(place_id, car_number)
-    if already_parked_record is False or already_parked_record is None:
-        return calculate_estimated_time(datetime.now(), cost, place_id)
+    if place_id in get_list_of_places():
+        already_parked_record = is_car_already_parked_here(place_id, car_number)
+        if already_parked_record is False or already_parked_record is None:
+            return calculate_estimated_time(datetime.now(), cost, place_id)
+        else:
+            return calculate_estimated_time(already_parked_record.expiration_time, cost, place_id)
     else:
-        return calculate_estimated_time(already_parked_record.expiration_time, cost, place_id)
+        return None
 
 
 def calculate_minutes_cost(price_of_hour, minutes):
@@ -265,7 +274,37 @@ def calculate_estimated_time_in_last_hour(estimated_money, price_of_hour):
 
 
 def parse_tariff_to_list(tariff):
-    if tariff:
+    if type(tariff) == str or type(tariff) == unicode:
         return tuple([int(x) for x in tariff.split(';')])
     else:
         return None
+
+
+def take_parking_coord():
+    locations = db_session.query(ParkingPlace.location, ParkingPlace.id, ParkingPlace.name).all()
+    ls = []
+    tup = ()
+    list_of_coord =[]
+    for i in locations:
+        ls.append(i[0])
+        tup = tuple(ls)
+    
+    k=0
+    while k < len(tup):
+        a=tuple([float(x) for x in tup[k].split(',')])    
+        list_of_coord.append(a)
+        k+=1
+    return list_of_coord
+
+
+def get_payment_by_circle_coord(list_of_id):
+    list_of_payment = []
+    for i in list_of_id:
+        element = db_session.query(ParkingPlace.name, Payment.car_number, Payment.expiration_time)
+        element = element.filter(ParkingPlace.id == i, Payment.place_id == i,\
+            Payment.expiration_time > datetime.now()).order_by(ParkingPlace.name).all()
+        if element:
+            list_of_payment.append(element)
+    return list_of_payment
+
+    
