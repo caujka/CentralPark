@@ -31,7 +31,7 @@ def get_locale():
 @app.before_request
 def before():
     if request.view_args and 'lang_code' in request.view_args:
-        if request.view_args['lang_code'] not in ('en','de','uk'):
+        if request.view_args['lang_code'] not in ('en', 'de', 'uk'):
             return abort(404)
         g.current_lang = request.view_args['lang_code']
         request.view_args.pop('lang_code')
@@ -68,13 +68,12 @@ def payment():
     else:
 
         reg_cost = r'\d{1,}'
-        reg_number = r'[A-Z, a-z, 0-9]{3,10}'
+        reg_number = r'[A-Z, a-z, А-Я, а-я, 0-9]{3,10}'
         reg_place = r'[A-Z, a-z, 0-9]{1,}'
-
 
         if (re.search(reg_cost, request.json['cost']) and re.search(reg_place, request.json['place'])
                 and re.search(reg_number, request.json['car_number']) and int(request.json['cost']) > 0
-                and get_placeid_by_placename(request.json['place'])):
+                and get_placeid_by_placename(request.json['place']) >= 0):
 
             cost = int(request.json['cost'])
             place_id = get_placeid_by_placename(request.json['place'])
