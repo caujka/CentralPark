@@ -66,11 +66,13 @@ def payment():
 
     else:
 
-        reg = r'\d{1,}'
-        reg_str = r'[A-Z, a-z, 0-9]{3,8}'
+        reg_cost = r'\d{1,}'
+        reg_number = r'[A-Z, a-z, 0-9]{3,10}'
+        reg_place = r'[A-Z, a-z, 0-9]{1,}'
 
-        if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
-                and re.search(reg_str, request.json['car_number']) and int(request.json['cost']) > 0
+
+        if (re.search(reg_cost, request.json['cost']) and re.search(reg_place, request.json['place'])
+                and re.search(reg_number, request.json['car_number']) and int(request.json['cost']) > 0
                 and get_placeid_by_placename(request.json['place'])):
 
             cost = int(request.json['cost'])
@@ -116,7 +118,6 @@ def can_stand():
         return render_template('get_cars.html', classactive_canstand="class=active", res_list=get_list_of_places())
     elif request.method == 'POST':
         lot_name = request.values.get('lot_name')
-        #lot_id = get_list_of_places()
         response = get_parked_car_on_lot(lot_name)
         return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active")
 
