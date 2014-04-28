@@ -4,31 +4,6 @@ from sqlalchemy import desc
 from datetime import datetime, timedelta, date, time
 
 
-# FIXED for NEW database
-def create_payment_record(car_number, place_id, cost, expiration_time, transaction):
-    """
-    params:
-        car_number(STRING), place_id(INT), cost(INT),
-        expiration_time: expiration time, calculated on template (DATETIME)
-        transaction: information about type of paying and operation number (STRING)
-    return:
-        tariff[0].id: id of actual PriceHistory for given ParkingLot (INT)
-    """
-    already_parked = db_session.query(Payment).filter(Payment.place_id == place_id,
-                                                       Payment.car_number == car_number,
-                                                       Payment.expiration_time >= datetime.now()).first()
-    if already_parked is not None:
-        already_parked.expiration_time = expiration_time
-        already_parked.cost += cost
-        already_parked.transaction += ', '+transaction
-        db_session.commit()
-    else:
-        pricehistory_id = get_current_pricehistory_id(place_id)
-        if insert_payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
-            return True
-        else:
-            return False
-
 
 # FIXED for NEW database
 def get_current_pricehistory_id(place_id):
@@ -76,27 +51,27 @@ def calculate_estimated_time(time_start, cost, place_id):
     if tariff:
         time_finish = time_start
         try:
-            cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)   
-        except AttributeError:
-            raise AttributeError("AttributeError") 
-        if (cost_in_first_hour < cost):
-            cost -= cost_in_first_hour
-            hour = time_start.hour + 1
-            time_finish += timedelta(hours=1)
-            time_finish += timedelta(minutes=60-time_finish.minute)
-            time_finish += timedelta(minutes=60-time_finish.second)
-            while cost > tariff[hour]:
-                cost -= tariff[hour % 24]
+            cost_in_first_hour = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
+            if (cost_in_first_hour < cost):
+                cost -= cost_in_first_hour
                 time_finish += timedelta(hours=1)
+                time_finish = time_finish.replace(minute=0, second=0)
+                hour = time_finish.hour
+                while cost > tariff[hour % 24]:
+                    cost -= tariff[hour % 24]
+                    time_finish += timedelta(hours=1)
+                    hour += 1
+                else:
+                    minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour % 24])
+                    time_finish += timedelta(minutes=minutes_in_last_hour)
             else:
-                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[hour])
+                minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_finish.hour])
                 time_finish += timedelta(minutes=minutes_in_last_hour)
-        else:# FIXED for NEW database
-            minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_start.hour])
-            time_finish += timedelta(minutes=minutes_in_last_hour)
+        except AttributeError:
+            raise AttributeError("AttributeError")
         return time_finish
-    else:
-        return None
+    return None
+
 
 # FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
@@ -213,21 +188,73 @@ def get_placeid_by_placename(place_name):
     return:
         lot_id: ParkingLot.id of given ParkingLot (INT)
     """
-    parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
-    return parking_place[0][0]
+    parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
+    if parking_place != [] and parking_place != None:
+        return parking_place[0][0]
+    return None
 
+
+# FIXED for NEW database
+def create_payment_record(car_number, place_id, cost, transaction):
+    already_parked = is_car_already_parked_here(place_id, car_number)
+    if already_parked is False or already_parked is None:
+        try:
+            insert_new_payment(car_number, cost, transaction,
+                               place_id, get_current_pricehistory_id(place_id))
+            return True
+        except ValueError:
+            raise ValueError
+    else:
+        try:
+            continue_parking(already_parked, cost, transaction)
+            return True
+        except ValueError:
+            raise ValueError
 
 
 #some internal functions
 #fixed for new database
-def insert_payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id):
+def is_car_already_parked_here(place_id, car_number):
+    already_parked_car = db_session.query(Payment).filter(Payment.car_number == car_number,
+                                                          Payment.place_id == place_id,
+                                                          Payment.expiration_time >= datetime.now()).all()
+    if already_parked_car != [] and already_parked_car is not None:
+        return already_parked_car[0]
+    return False
+
+
+def insert_new_payment(car_number, cost, transaction, place_id, pricehistory_id):
     try:
-        pay = Payment(car_number, cost, expiration_time, transaction, place_id, pricehistory_id)
+        estimated_time = calculate_estimated_time(datetime.now(), cost, place_id)
+        pay = Payment(car_number, cost, estimated_time, transaction, place_id, pricehistory_id)
         db_session.add(pay)
         db_session.commit()
         return True
     except ValueError:
-        return False
+        raise ValueError('Database insertion error')
+
+
+def continue_parking(parked_car_record, cost, transaction):
+    try:
+        parked_car_record.expiration_time = calculate_estimated_time(parked_car_record.expiration_time,
+                                                                     cost,
+                                                                     parked_car_record.place_id)
+        parked_car_record.cost += cost
+        parked_car_record.transaction += ', '+transaction
+        db_session.add(parked_car_record)
+        db_session.commit()
+        return True
+    except ValueError:
+        raise ValueError('Database insertion error')
+
+
+def get_estimated_time_for_given_car(car_number, place_id, cost):
+    already_parked_record = is_car_already_parked_here(place_id, car_number)
+    if already_parked_record is False or already_parked_record is None:
+        return calculate_estimated_time(datetime.now(), cost, place_id)
+    else:
+        return calculate_estimated_time(already_parked_record.expiration_time, cost, place_id)
+
 
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
