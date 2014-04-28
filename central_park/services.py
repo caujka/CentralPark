@@ -183,6 +183,7 @@ def get_priced_parking_lot(price_min, price_max):
            places.append({'id': item.id, 'address': item.address, 'name': item.name})
     return places
 
+
 # FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
@@ -191,8 +192,10 @@ def get_placeid_by_placename(place_name):
     return:
         lot_id: ParkingLot.id of given ParkingLot (INT)
     """
-    parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name)
-    return parking_place[0][0]
+    parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
+    if parking_place != [] and parking_place != None:
+        return parking_place[0][0]
+    return None
 
 
 # FIXED for NEW database

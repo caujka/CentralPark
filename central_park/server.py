@@ -70,7 +70,8 @@ def payment():
         reg_str = r'[A-Z, a-z, 0-9]{3,8}'
 
         if (re.search(reg, request.json['cost']) and re.search(reg, request.json['place'])
-                and re.search(reg_str, request.json['car_number']) and int(request.json['cost']) > 0):
+                and re.search(reg_str, request.json['car_number']) and int(request.json['cost']) > 0
+                and get_placeid_by_placename(request.json['place'])):
 
             cost = int(request.json['cost'])
             place_id = get_placeid_by_placename(request.json['place'])
