@@ -30,7 +30,7 @@ def get_locale():
 @app.before_request
 def before():
     if request.view_args and 'lang_code' in request.view_args:
-        if request.view_args['lang_code'] not in ('en','de','uk'):
+        if request.view_args['lang_code'] not in ('en', 'de', 'uk'):
             return abort(404)
         g.current_lang = request.view_args['lang_code']
         request.view_args.pop('lang_code')
@@ -66,15 +66,17 @@ def payment():
         place_id = get_placeid_by_placename(request.json['place'])
         print place_id, type(place_id)
 
+        reg_cost = r'\d{1,}'
+        reg_number = r'[A-Z, a-z, А-Я, а-я, 0-9]{3,10}'
+        reg_place = r'[A-Z, a-z, 0-9]{1,}'
 
-        reg = r'\d{1,}'
-        reg_str = r'[A-Z, a-z, 0-9]{4,6}'
-
-        if (re.search(reg, request.json['cost']) and re.search(reg_str, request.json['place'])
-                and re.search(reg_str, request.json['car_number'])):
-            cost = int(request.json['cost'])
-            transaction = "web%s" % str(datetime.now())
+        if (re.search(reg_cost, request.json['cost']) and re.search(reg_place, request.json['place'])
+                and re.search(reg_number, request.json['car_number']) and int(request.json['cost']) > 0
+                and get_placeid_by_placename(request.json['place']) >= 0):
             time_left = calculate_estimated_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), cost, place_id)
+            place_id = get_placeid_by_placename(request.json['place'])
+            transaction = "waiting"
+
             credentials = {
                 'car_number': request.json['car_number'],
                 'cost': cost,
@@ -88,7 +90,7 @@ def payment():
             p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
             db_session.add(p)
             db_session.commit()
-            return render_template("payment_response.html", credentials=credentials)
+            return redirect("127.0.0.1:5001/banking", credentials=)
         else:
             error = "Your data is not valid"
             return render_template("payment_response.html", error=error)
@@ -115,7 +117,6 @@ def can_stand():
         return render_template('chek_parking.html')
     elif request.method == 'POST':
         lot_name = request.values.get('lot_name')
-        #lot_id = get_list_of_places()
         response = get_parked_car_on_lot(lot_name)
         return render_template('auth_cars.html', response=response, lot_name=lot_name, classactive_canstand="class=active")
 
