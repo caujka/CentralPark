@@ -286,12 +286,12 @@ def take_parking_coord():
     tup = ()
     list_of_coord =[]
     for i in locations:
-        ls.append(i[0])
+        ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
     
     k=0
     while k < len(tup):
-        a=tuple([float(x) for x in tup[k].split(',')])    
+        a=tuple([x for x in tup[k].split(',')])    
         list_of_coord.append(a)
         k+=1
     return list_of_coord

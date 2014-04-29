@@ -6,7 +6,7 @@
         {% endif %}
 <pre>
 <fieldset font="Arial">
-    {{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" size="20" required><span id="placeValid"></span><br>
+    {{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" value="{{place_from_map}}"  size="20" required><span id="placeValid"></span><br>
     {{_('Enter your car number:') }}    <input type="text" name="car_number" id="car_number" value="{{request.form.car_number}}" size="20" required><br>
     {{_('Money:') }}          <input type="text" name="cost" id="cost" onkeyup="time_left();" value="{{request.form.cost}}" size="5" required><span id="parkingTimeLeft"></span>
 </fieldset>
