@@ -75,6 +75,15 @@ background: url(../images/menuover.png) repeat-x;
 color: white;
 }
 
+ .div1{
+	border: 10px;
+	background-color: #DCDCDC;
+}
+
+.div2{
+    background-color: #F5F5F5;
+}
+
 .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus{
 
 background: url(../images/menuover.png) repeat-x;
