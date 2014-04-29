@@ -14,7 +14,7 @@
 
 <div id="map-canvas"></div>
 
-<button onclick="getLocation();"><b>{{_('Showinfo') }}</b></button>  
+<button onclick="getLocation();"><b>{{_('Show info') }}</b></button>  
 <div id="id_list_pay"></div>
 <div id="container"></div>
 
@@ -75,7 +75,7 @@ function showPosition(position)  {
             {
 
                 var mapOptions1 = {
-                    zoom: 20,
+                    zoom: 12,
                     center: new google.maps.LatLng(sh,vv),
                     mapTypeId: google.maps.MapTypeId.TERRAIN
   };
@@ -126,7 +126,8 @@ function showPosition(position)  {
                   var marker = new google.maps.Marker({
 
                     position: latLng,
-                    map: map
+                    map: map,
+                    title: "Parking " + list_loc['list_ofcoord'][i][2]
                 
                   });
                   markers.push(marker);
@@ -172,7 +173,6 @@ function showPosition(position)  {
                         }
                 });
 
-                  
 
               },  
               error: function (response)
