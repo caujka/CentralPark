@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-28 03:11+0300\n"
+"POT-Creation-Date: 2014-04-29 14:47+0300\n"
 "PO-Revision-Date: 2014-04-28 03:41+0300\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,191 +17,215 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: ../central_park/templates/avaliable_places.html:3
+#: templates/avaliable_places.html:3
 msgid "Available Places"
 msgstr "Available Places"
 
-#: ../central_park/templates/avaliable_places.html:5
-#: ../central_park/templates/find_place.html:5
-#: ../central_park/templates/get_cars.html:5
-#: ../central_park/templates/history.html:5
-#: ../central_park/templates/page_not_found.html:3
-#: ../central_park/templates/payment_response.html:5
+#: templates/avaliable_places.html:5 templates/chek_parking.html:5
+#: templates/find_place.html:5 templates/get_cars.html:5
+#: templates/history.html:5 templates/page_not_found.html:3
+#: templates/payment_response.html:5 templates/response_check.html:5
 msgid "Error"
 msgstr "Error"
 
-#: ../central_park/templates/avaliable_places.html:8
+#: templates/avaliable_places.html:8
 msgid "on"
 msgstr "on"
 
-#: ../central_park/templates/avaliable_places.html:8
+#: templates/avaliable_places.html:8
 msgid "for"
 msgstr "for"
 
-#: ../central_park/templates/find_place.html:3
-msgid "Search parking by price"
-msgstr "Price searchment"
-
-#: ../central_park/templates/find_place.html:10
-msgid "From:"
-msgstr "From:"
-
-#: ../central_park/templates/find_place.html:12
-msgid "To:"
-msgstr "To:"
-
-#: ../central_park/templates/find_place.html:17
-msgid "Find!"
-msgstr "Find"
-
-#: ../central_park/templates/get_cars.html:3
+#: templates/chek_parking.html:3 templates/get_cars.html:3
 msgid "Check filling parking"
 msgstr "Check filling parking"
 
-#: ../central_park/templates/get_cars.html:9
+#: templates/chek_parking.html:17
+msgid "Showinfo"
+msgstr ""
+
+#: templates/chek_parking.html:148
+#, fuzzy
+msgid "Parking - "
+msgstr "Parking ID:"
+
+#: templates/find_place.html:3
+msgid "Search parking by price"
+msgstr "Price searchment"
+
+#: templates/find_place.html:10
+msgid "From:"
+msgstr "From:"
+
+#: templates/find_place.html:12
+msgid "To:"
+msgstr "To:"
+
+#: templates/find_place.html:17
+msgid "Find!"
+msgstr "Find"
+
+#: templates/get_cars.html:9
 msgid "Select parking lot"
 msgstr "Select parking lot"
 
-#: ../central_park/templates/get_cars.html:15
+#: templates/get_cars.html:15 templates/history.html:19
 msgid "Show"
 msgstr "Show"
 
-#: ../central_park/templates/hello.html:3
+#: templates/get_cars.html:17
+msgid "Showinf"
+msgstr ""
+
+#: templates/hello.html:3
 msgid "Welcome"
 msgstr "Welcome"
 
-#: ../central_park/templates/hello.html:6
+#: templates/hello.html:6
 msgid "Logout"
 msgstr "Logout"
 
-#: ../central_park/templates/history.html:3
+#: templates/history.html:3
 msgid "Get info"
 msgstr "Get info"
 
-#: ../central_park/templates/history.html:8
+#: templates/history.html:8
 msgid "Choose parking lot"
 msgstr "Choose parking lot"
 
-#: ../central_park/templates/log.html:3
+#: templates/log.html:3 templates/log.html:15
 msgid "login"
 msgstr "Login"
 
-#: ../central_park/templates/log.html:10
+#: templates/log.html:10
 msgid "Login or username"
 msgstr "Login or username"
 
-#: ../central_park/templates/log.html:12
+#: templates/log.html:12
 msgid "Password"
 msgstr "Password"
 
-#: ../central_park/templates/payment.html:3
-#: ../central_park/templates/start.html:36
+#: templates/payment.html:3 templates/start.html:36
 msgid "Pay for parking"
 msgstr "Payment"
 
-#: ../central_park/templates/payment.html:9
+#: templates/payment.html:9
 msgid "Enter parking place:"
 msgstr "Parking place number:"
 
-#: ../central_park/templates/payment.html:10
+#: templates/payment.html:10
 msgid "Enter your car number:"
 msgstr "Enter your car number:"
 
-#: ../central_park/templates/payment.html:11
+#: templates/payment.html:11
 msgid "Money:"
 msgstr "Money:"
 
-#: ../central_park/templates/payment.html:14
+#: templates/payment.html:14
 msgid "PAY"
 msgstr "PAY"
 
-#: ../central_park/templates/payment_response.html:3
+#: templates/payment_response.html:3 templates/response_check.html:3
 msgid "Payment result"
 msgstr "Payment result"
 
-#: ../central_park/templates/payment_response.html:11
+#: templates/payment_response.html:11 templates/response_check.html:11
+#: templates/response_history.html:4
 msgid "Car number:"
 msgstr "Car number:"
 
-#: ../central_park/templates/payment_response.html:16
+#: templates/payment_response.html:16 templates/response_check.html:16
 msgid "Place №:"
 msgstr "Place №:"
 
-#: ../central_park/templates/payment_response.html:21
+#: templates/payment_response.html:21 templates/response_check.html:21
 msgid "Can stand to:"
 msgstr "Can stand to:"
 
-#: ../central_park/templates/payment_response.html:26
+#: templates/payment_response.html:26 templates/response_check.html:26
 msgid "Sum:"
 msgstr "Sum:"
 
-#: ../central_park/templates/payment_response.html:31
+#: templates/payment_response.html:31 templates/response_check.html:31
 msgid "Rate:"
 msgstr "Rate:"
 
-#: ../central_park/templates/response_aval_place.html:3
+#: templates/response_aval_place.html:3
 msgid "Info of parking place"
 msgstr "Parking place Info:"
 
-#: ../central_park/templates/response_aval_place.html:10
+#: templates/response_aval_place.html:10
 msgid "Parking ID:"
 msgstr "Parking ID:"
 
-#: ../central_park/templates/response_aval_place.html:11
+#: templates/response_aval_place.html:11
 msgid "Name of parking:"
 msgstr "Parking name"
 
-#: ../central_park/templates/response_aval_place.html:12
+#: templates/response_aval_place.html:12
 msgid "Address parking:"
 msgstr "Address:"
 
-#: ../central_park/templates/response_price.html:3
+#: templates/response_history.html:4
+msgid "Cost:"
+msgstr ""
+
+#: templates/response_history.html:4
+#, fuzzy
+msgid "Parking till:"
+msgstr "Parking ID:"
+
+#: templates/response_price.html:3
 msgid "Paid places"
 msgstr "Paid places"
 
-#: ../central_park/templates/response_price.html:7
+#: templates/response_price.html:7
 msgid "Cars parked on"
 msgstr "Cars parked on"
 
-#: ../central_park/templates/response_price.html:7
+#: templates/response_price.html:7
 msgid "place №"
 msgstr "place №"
 
-#: ../central_park/templates/start.html:35
+#: templates/start.html:35
 msgid "Start"
 msgstr "Start"
 
-#: ../central_park/templates/start.html:37
+#: templates/start.html:37
 msgid "Statistic"
 msgstr "Statistic"
 
-#: ../central_park/templates/start.html:38
+#: templates/start.html:38
 msgid "Filling parking"
 msgstr "Filling parking"
 
-#: ../central_park/templates/start.html:39
+#: templates/start.html:39
 msgid "Find parking"
 msgstr "Find parking"
 
-#: ../central_park/templates/start.html:40
-msgid "Log in"
-msgstr "Log in"
-
-#: ../central_park/templates/start.html:41
+#: templates/start.html:40
 msgid "maps"
 msgstr "Maps"
 
-#: ../central_park/templates/welcome.html:3
+#: templates/start.html:41
+msgid "Log in"
+msgstr "Log in"
+
+#: templates/welcome.html:3
 msgid "Welcome to Central Parking"
 msgstr "Welcome to Central Parking"
 
-#: ../central_park/templates/welcome.html:4
+#: templates/welcome.html:4
 msgid "Welcome to the city parking system"
 msgstr "Welcome to the city parking system"
 
-#: ../central_park/templates/welcome.html:5
-msgid "This service allows you to quickly find out where to park your car and immediately pay for parking!"
-msgstr "This service allows you to quickly find out where to park your car and immediately pay for parking!"
+#: templates/welcome.html:5
+msgid ""
+"This service allows you to quickly find out where to park your car and "
+"immediately pay for parking!"
+msgstr ""
+"This service allows you to quickly find out where to park your car and "
+"immediately pay for parking!"
 
 #~ msgid "User name:"
 #~ msgstr "User name:"
@@ -214,3 +238,4 @@ msgstr "This service allows you to quickly find out where to park your car and i
 
 #~ msgid "Statistic:"
 #~ msgstr "Statistic:"
+

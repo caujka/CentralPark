@@ -1,11 +1,16 @@
 {% block content%}
-    <table>
-    	{% for record in history_info %} 
-    		<p>
-    			<tr>        
-					<tc>{{ record.car_number }}</tc> <tc>  {{ record.cost }}</tc> <tc>{{ record.expiration_time }}</tc>
-		        </tr>
-    		</p>
+    <div class="table">
+        <div class="row titlerow">
+            <div class="col col20">{{_('Car number:') }}</div><div class="col col30">{{_('Cost:') }}</div><div class="col col50">{{_('Parking till:') }}</div>
+        </div>
+        {% for record in history_info %}
+        <div class="row">
+
+    	    <div class="col col20">{{ record.car_number }}</div><div class="col col30">{{ record.cost }}</div><div class="col col50">{{ record.expiration_time.strftime("%H:%M  %d-%m-%Y") }}</div>
+
+        </div>
         {% endfor %}
-    </table>
+
+    </div>
+
 {% endblock %}

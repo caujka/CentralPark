@@ -1,4 +1,4 @@
-import unittest, random  
+import unittest
 from services import *
 from datetime import datetime, date
 
@@ -52,9 +52,9 @@ class CalculateTotalPriceTestCase(unittest.TestCase):
         self.assertIsInstance(calculate_total_price(place_id, time_finish), int, "calculate_total_price function returns incorrent value.")
 
     def test_error_calculate_total_price(self):
-        place_id = 1
+        place_id = 999
         time_finish = "somestring"
-        self.assertIsInstance(calculate_total_price(place_id, time_finish), str, "calculate_total_price function returns incorrent value.")
+        self.assertIsNone(calculate_total_price(place_id, time_finish), "calculate_total_price function returns incorrent value.")
 
 
 class GetParkedCarOnLotTestCase(unittest.TestCase):
