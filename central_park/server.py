@@ -99,7 +99,6 @@ def payment():
                 'rate': tariff
                 }
 
-
             return render_template("payment_response.html", credentials=credentials)
             #return redirect("127.0.0.1:5001/banking")
         else:
