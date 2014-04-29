@@ -174,3 +174,7 @@ line-height: 80px;
 input {
 line-height: 1;
 }
+
+#div1{
+	border: 10px;
+}
