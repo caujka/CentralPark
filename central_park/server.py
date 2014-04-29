@@ -90,7 +90,7 @@ def payment():
             p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
             db_session.add(p)
             db_session.commit()
-            return redirect("127.0.0.1:5001/banking", credentials=)
+            return redirect("127.0.0.1:5001/banking", credentials=credentials)
         else:
             error = "Your data is not valid"
             return render_template("payment_response.html", error=error)

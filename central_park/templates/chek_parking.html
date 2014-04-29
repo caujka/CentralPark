@@ -16,7 +16,10 @@
 
 <button onclick="getLocation();"><b>{{_('Showinfo') }}</b></button>  
 <div id="id_list_pay"></div>
-  <div id="container"></div>
+<div id="container"></div>
+
+
+
 
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
@@ -102,11 +105,13 @@ function showPosition(position)  {
             contentType: "application/json",
             success: function (response)
             {
+
               showyourcoord();
               list_loc = response;
               list_of_aval_point = new Array;
               list_marker = new Array;
-              var latLng_point 
+              var a = [];
+
 
               for (i=0; i < list_loc['list_ofcoord'].length; i++) {
                 //var latLng = new google.maps.LatLng(49.8392491,24.0300454);
@@ -117,16 +122,12 @@ function showPosition(position)  {
                 //console.log(latLng_point);
                 if (distanceInMetres <= radius) {
                   list_of_aval_point.push(i);
-                  list_marker.push(latLng_point);
-                };    
+                  var point = (latLng_point['k'], latLng_point['A']);
+                  a.push({lan:latLng_point['k'], lon:latLng_point['A']});
+
+                };
+               
               }
-
-              for(var p in list_marker){
-                console.log(list_marker[p]['k']);
-              }
-
-
-
 
               var formD = {
                            "ls":list_of_aval_point
@@ -144,10 +145,10 @@ function showPosition(position)  {
 
                           for(var parking in dic){
                             inHTML = '';
-                            inHTML += '<div> ' + parking +'<br/>';
+                            inHTML += '<div> ' +'{{_('Parking - ') }} ' + parking +'<br/>';
                             var element = dic[parking];
                             for (var car in element){
-                              inHTML += '<li> ' + element[car]['car_number'] + " - " + element[car]['expception_time'] + '</li>';
+                              inHTML += '     <li> ' +element[car]['car_number'] + " - " + element[car]['expception_time'] + '</li>';
                             }
                             inHTML  += '</div>';
                             container.innerHTML += inHTML;
