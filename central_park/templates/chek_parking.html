@@ -163,7 +163,7 @@ function showPosition(position)  {
 
                           for(var parking in dic){
                             inHTML = '';
-                            inHTML += '<div class="div1"> <b>' +'{{_('Parking - ') }} ' + parking +'</b><br/>';
+                            inHTML += '<div class="div1">' +'{{_('Parking - ') }} ' + parking +'</b><br/>';
                             var element = dic[parking];
                             for (var car in element){
                               inHTML += '<li class="div2"> ' + element[car]['car_number'] + " - " + element[car]['expception_time'] + '</li>';
