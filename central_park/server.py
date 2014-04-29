@@ -59,7 +59,10 @@ def index():
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'GET':
-        return render_template('payment.html', classactive_payment="class=active")
+        if request.args.get('parking_place') == None:
+            return render_template('payment.html', place_from_map="")
+        else:
+            return render_template('payment.html', place_from_map=request.args.get('parking_place'))
 
     else:
         min_possible_cost = 1
@@ -90,7 +93,7 @@ def payment():
             p = Payment(request.json['car_number'], cost, time_left, transaction, place_id, pricehistory_id)
             db_session.add(p)
             db_session.commit()
-            return redirect("127.0.0.1:5001/banking", credentials=)
+            return redirect("127.0.0.1:5001/banking", credentials='')
         else:
             error = "Your data is not valid"
             return render_template("payment_response.html", error=error)
@@ -152,8 +155,12 @@ def welcome():
 
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
-    return 'aaaaaaa_info'
+    s = request.args.get('parking_name')
+    return "Here goes info about parking place" + s
 
+@app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])
+def maps_ajax_maker():
+    return jsonify({'status':'ok','position':take_parking_coord()})
 
 @app.route('/<lang_code>/find', methods=['GET', 'POST'])
 def find_place():
