@@ -1,9 +1,7 @@
-{%extends "content_template.html"%}
-{% block content%}
-        <h2>{{_('Info of parking place') }}</h2>
-        {% if error %}
-            <p class=error><Strong>Error</Strong> {{ error }}
-        {% endif %}
+<h2>{{_('Info of parking place') }}</h2>
+{% if error %}
+        <p class=error><Strong>Error</Strong> {{ error }}
+{% endif %}
 {% for lot in lots %}
     <dl>
     	<dt>
@@ -13,6 +11,3 @@
 	    </dt>
 	</dl>
 {% endfor %}
-
-        
-{% endblock %}
