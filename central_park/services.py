@@ -127,16 +127,29 @@ def get_parked_car_on_lot(place_id):
 
 
 # FIXED for NEW database
-def get_list_of_places():
+def get_list_of_places_id():
     """
     return:
-        response: list of all ParkingLot.name (LIST of STR)
+        response: list of all ParkingPlace.id (LIST of INT)
     """
     list_of_places_tuples = db_session.query(ParkingPlace.id).all()
     response = []
     for item in list_of_places_tuples:
         response.append(item[0])
     return response
+
+
+def get_list_of_places_names():
+    """
+    return:
+        response: list of all ParkingLot.name (LIST of STR)
+    """
+    list_of_places_tuples = db_session.query(ParkingPlace.name).all()
+    response = []
+    for item in list_of_places_tuples:
+        response.append(item[0])
+    return response
+
 
 
 # FIXED for NEW database
@@ -255,7 +268,7 @@ def continue_parking(parked_car_record, cost, transaction):
 
 
 def get_estimated_time_for_given_car(car_number, place_id, cost):
-    if place_id in get_list_of_places():
+    if place_id in get_list_of_places_id():
         already_parked_record = is_car_already_parked_here(place_id, car_number)
         if already_parked_record is False or already_parked_record is None:
             return calculate_estimated_time(datetime.now(), cost, place_id)

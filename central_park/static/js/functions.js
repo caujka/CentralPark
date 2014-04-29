@@ -76,6 +76,9 @@ time_left = function(){
                         
                     },
                 })
+    } else {
+        document.getElementById("parkingTimeLeft").innerHTML = 
+                            '<label> Please, insert correct cost! </label>';
     }
 };
 

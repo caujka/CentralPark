@@ -110,13 +110,13 @@ def payment():
 def show_history():
     
     if request.method == 'GET':
-        list_of_place = get_list_of_places()
-        return render_template('history.html', place_list = list_of_place)
+        list_of_place = get_list_of_places_names()
+        return render_template('history.html', place_list=list_of_place)
     
     else:
         choosen_place = request.json['place']      
         data_time = request.json['date']
-        actual_history = get_payment_by_date(choosen_place, data_time)
+        actual_history = get_payment_by_date(get_placeid_by_placename(choosen_place), data_time)
         return render_template('response_history.html', history_info = actual_history)
 
 

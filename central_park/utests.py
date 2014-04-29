@@ -68,8 +68,8 @@ class GetParkedCarOnLotTestCase(unittest.TestCase):
 
 
 class GetListOfPlacesTestCase(unittest.TestCase):
-    def test_normal_get_list_of_places(self):
-        self.assertIsInstance(get_list_of_places(), list, "get_payment_by_date function returns incorrent value.")
+    def test_normal_get_list_of_places_id(self):
+        self.assertIsInstance(get_list_of_places_id(), list, "get_payment_by_date function returns incorrent value.")
 
 
 class GetPaymentByDateTestCase(unittest.TestCase):
@@ -98,7 +98,7 @@ class GetPricesParkingLotTestCase(unittest.TestCase):
 
 class GetPlaceidByPlacenameTestCase(unittest.TestCase):
     def test_normal_get_placeid_by_placename(self):
-        place_name = "1"
+        place_name = "name01"
         self.assertTrue(get_placeid_by_placename(place_name) != None, "get_placeid_by_placename function returns incorrent value.")
 
 
