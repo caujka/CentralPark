@@ -394,9 +394,14 @@ def take_parking_coord():
 
 def finish_sms_payment_record(transaction):
     record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
-    record.transaction.replace("waiting", "")
-    db_session.add(record)
-    db_session.commit()
+    if record is not None:
+        record.transaction.replace("waiting", "")
+        payment_id = record.id
+
+        db_session.add(record)
+        db_session.commit()
+        return payment_id
+    return None
 
 
 def delete_payment_by_transaction(transaction):

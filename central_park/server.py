@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
-from services import * 
+from services import *
 from datetime import datetime, timedelta
 from models import *
 from database import db_session, init_db
 from flask.ext.babel import *
+from flask_babelex import Babel
 from flask import *
 from flask import Flask, request, render_template, jsonify, Response, json
 import hashlib
 import re
+import logging
+
+logging.basicConfig(filename="server.log", format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level=logging.DEBUG)
 
 # create our little application :)
 app = Flask(__name__)
@@ -229,16 +233,31 @@ def authenticate_sms_paying_request():
             if (sms_body is not False) and (sms_body is not None) and (sms_body['place'] in get_list_of_places_names()):
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
                                       int(sms_body['sms_price']), 'sms'+request.form['site_service_id']+"waiting")
+
+                logging.INFO("SMS Payment request was created. Transaction: %s" & 'sms'+request.form['site_service_id']+"waiting")
                 return {'sms_id': request.form['sms_id'] + "\n", 'response': "Success\n", 'error': 0}
+
+            logging.INFO("SMS Payment was requested. Error in sms_body: '%s' was found" & request.form['sms_body'])
             return {'sms_id': request.form['sms_id'] + "\n", 'response': "Fail\n", 'error': 1}
+
+    else:
+        #log creating
+        usernum = "user number: " + request.form['user_num']
+        sms_id = "sms_id: " + request.form['sms_id']
+        site_service_id = "site_service_id: " + request.form['site_service_id']
+        sms_body = "sms text: " + request.form['sms_body']
+        logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" & usernum, sms_id, site_service_id, sms_body)
+        #--------
 
 
 @app.route('/sms_pay_submit', method=['POST'])
 def submit_sms_paying_request():
     if request.form['status'] == 1:
-        finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
+        payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
+        logging.INFO("Finished sms payment with id: %s" & payment_id)
     else:
         delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
+        logging.INFO("Sms paying was not successful. Payment record was deleted")
 
 
 
