@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 import os
-from services import *
-from datetime import datetime, timedelta
-from models import *
 from database import db_session, init_db
+from services import *
+
+from flask import *
 from flask.ext.babel import *
 from flask_babelex import Babel
-from flask import *
-from flask import Flask, request, render_template, jsonify, Response, json
+
+from datetime import datetime, timedelta
+from models import *
 import hashlib
 import re
 import logging
 
-logging.basicConfig(filename="server.log", format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename=u"server.log",
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.DEBUG)
 
 # create our little application :)
 app = Flask(__name__)
@@ -45,7 +48,8 @@ def before():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
-    
+
+
 #Controling session closing
 @app.teardown_appcontext
 def teardown_session(expception=None):
@@ -97,15 +101,14 @@ def payment():
                 time_tmp += timedelta(hours=1)
 
             if just_parked_car:
-                 credentials = {
-                'car_number': just_parked_car.car_number,
-                'cost': cost,
-                'time_left': just_parked_car.expiration_time.strftime("%H:%M %d-%m-%Y"),
-                'transaction': just_parked_car.transaction,
-                'place': request.json['place'],
-                'rate': tariff
+                credentials = {
+                    'car_number': just_parked_car.car_number,
+                    'cost': cost,
+                    'time_left': just_parked_car.expiration_time.strftime("%H:%M %d-%m-%Y"),
+                    'transaction': just_parked_car.transaction,
+                    'place': request.json['place'],
+                    'rate': tariff
                 }
-
             return render_template("payment_response.html", credentials=credentials)
             #return redirect("127.0.0.1:5001/banking")    - NOT IMPLEMENTED
         else:
@@ -221,9 +224,11 @@ def get_payment_by_coord():
 
 
 #SMS paying implementation
-@app.route('/sms_pay_request', method=['POST'])
+@app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
+    print "begin"
     if request.form['sms_id'] not in get_list_of_sms_ids():
+        print "is"
         secret_key = hashlib.md5()
         secret_key.update(str(request.form['sms_id']) + request.form['sms_body'] +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
@@ -234,33 +239,32 @@ def authenticate_sms_paying_request():
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
                                       int(sms_body['sms_price']), 'sms'+request.form['site_service_id']+"waiting")
 
-                logging.INFO("SMS Payment request was created. Transaction: %s" & 'sms'+request.form['site_service_id']+"waiting")
+                logging.INFO("SMS Payment request was created. Transaction: %s" % ('sms'+request.form['site_service_id']+"waiting"))
                 return {'sms_id': request.form['sms_id'] + "\n", 'response': "Success\n", 'error': 0}
 
-            logging.INFO("SMS Payment was requested. Error in sms_body: '%s' was found" & request.form['sms_body'])
+            logging.INFO("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
             return {'sms_id': request.form['sms_id'] + "\n", 'response': "Fail\n", 'error': 1}
-
     else:
-        #log creating
-        usernum = "user number: " + request.form['user_num']
-        sms_id = "sms_id: " + request.form['sms_id']
-        site_service_id = "site_service_id: " + request.form['site_service_id']
-        sms_body = "sms text: " + request.form['sms_body']
-        logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" & usernum, sms_id, site_service_id, sms_body)
-        #--------
+        print "not"
+        logging.WARNING
+    print "end"
+    #log creating
+    user_num = "user number: %s" % str(request.form['user_num'])
+    sms_id = "sms_id: %s" % str(request.form['sms_id'])
+    site_service_id = "site_service_id: &s" % str(request.form['site_service_id'])
+    sms_body = "sms text: &s" % str(request.form['sms_body'])
+    logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" % (user_num, sms_id, site_service_id, sms_body))
+    #--------
 
 
-@app.route('/sms_pay_submit', method=['POST'])
+@app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
     if request.form['status'] == 1:
         payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
-        logging.INFO("Finished sms payment with id: %s" & payment_id)
+        logging.INFO("Finished sms payment with id: %s" % payment_id)
     else:
         delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
         logging.INFO("Sms paying was not successful. Payment record was deleted")
-
-
-
 
 
 if __name__ == '__main__':

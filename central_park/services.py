@@ -2,9 +2,13 @@ from database import db_session
 from models import *
 from sqlalchemy import desc
 from datetime import datetime, timedelta
+import logging
+
+logging.basicConfig(filename=u"server.log",
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.DEBUG)
 
 
-# FIXED for NEW database
 def get_current_pricehistory_id(place_id):
     """
     params:
@@ -22,7 +26,6 @@ def get_current_pricehistory_id(place_id):
         return None
 
 
-# FIXED for NEW database
 def get_current_tariff_matrix(place_id):
     """
     params:
@@ -39,7 +42,6 @@ def get_current_tariff_matrix(place_id):
         return None
 
 
-# FIXED for NEW database
 def calculate_estimated_time(time_start, cost, place_id):
     """
     params:
@@ -71,12 +73,12 @@ def calculate_estimated_time(time_start, cost, place_id):
                 minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_finish.hour])
                 time_finish += timedelta(minutes=minutes_in_last_hour)
         except AttributeError:
+            logging.WARNING("Error in time calculating: %s" % AttributeError)
             raise AttributeError("AttributeError")
         return time_finish
     return None
 
 
-# FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
     """
     params:
@@ -106,7 +108,6 @@ def calculate_total_price(place_id, time_finish):
     return None
 
 
-# FIXED for NEW database
 def get_parked_car_on_lot(place_id):
     """
     params:
@@ -129,7 +130,6 @@ def get_parked_car_on_lot(place_id):
     return place_list
 
 
-# FIXED for NEW database
 def get_list_of_places_id():
     """
     return:
@@ -154,7 +154,6 @@ def get_list_of_places_names():
     return response
 
 
-# FIXED for NEW database
 def get_payment_by_date(place, date_tmp):
     """
     params:
@@ -178,7 +177,6 @@ def get_payment_by_date(place, date_tmp):
     return res
 
 
-# FIXED for NEW database
 def get_priced_parking_lot(price_min, price_max):
     """
     params:
@@ -201,7 +199,6 @@ def get_priced_parking_lot(price_min, price_max):
         raise TypeError
 
 
-# FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
     params:
@@ -216,7 +213,6 @@ def get_placeid_by_placename(place_name):
     return None
 
 
-# FIXED for NEW database
 def create_payment_record(car_number, place_id, cost, transaction):
     """
     params:
@@ -244,8 +240,6 @@ def create_payment_record(car_number, place_id, cost, transaction):
             raise ValueError
 
 
-#some internal functions
-#fixed for new database
 def is_car_already_parked_here(place_id, car_number):
     """
     params:
@@ -342,7 +336,6 @@ def parse_sms_content(sms_content):
     return False
 
 
-
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
 
@@ -366,7 +359,7 @@ def get_list_of_sms_ids():
     sms_history = db_session.query(SMSHistory).all()
     ls = []
     for sms in sms_history:
-        ls.append(sms[1])
+        ls.append(sms.sms_id)
     return ls
 
 
