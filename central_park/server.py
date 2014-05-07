@@ -6,7 +6,8 @@ from models import *
 from database import db_session, init_db
 from flask.ext.babel import *
 from flask import *
-from flask import Flask, request, render_template, jsonify, json
+from flask import Flask, request, render_template, jsonify, Response, json
+import hashlib
 import re
 
 # create our little application :)
@@ -21,6 +22,7 @@ app.config.update(dict(
     USERNAME='admin',
     PASSWORD='default'
 ))
+
 
 @babel.localeselector
 def get_locale():   
@@ -202,16 +204,45 @@ def get_payment_by_coord():
     ls = request.json['ls']
     final_list = get_payment_by_circle_coord(ls)
     info = {}
-    for cars_in_parcing in final_list:
+    for cars_in_parking in final_list:
         cars = []
-        for car in cars_in_parcing:
+        for car in cars_in_parking:
             car = {
                 'car_number': car[1],
                 'expception_time': car[2]
             }
             cars.append(car)
-        info[cars_in_parcing[0][0]] = cars
+        info[cars_in_parking[0][0]] = cars
     return jsonify(res=info)
+
+
+#SMS paying implementation
+@app.route('/sms_pay_request', method=['POST'])
+def authenticate_sms_paying_request():
+    if request.form['sms_id'] not in get_list_of_sms_ids():
+        secret_key = hashlib.md5()
+        secret_key.update(str(request.form['sms_id']) + request.form['sms_body'] +
+                          str(request.form['site_service_id']) + str(request.form['operator_id']) +
+                          str(request.form['num']) + str(request.form['sms_price']) + "SMSCentralPark")
+        if secret_key.digest() == request.form['secret_key']:
+            sms_body = parse_sms_content(request.form['sms_body'])
+            if (sms_body is not False) and (sms_body is not None) and (sms_body['place'] in get_list_of_places_names()):
+                create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
+                                      int(sms_body['sms_price']), 'sms'+request.form['site_service_id']+"waiting")
+                return {'sms_id': request.form['sms_id'] + "\n", 'response': "Success\n", 'error': 0}
+            return {'sms_id': request.form['sms_id'] + "\n", 'response': "Fail\n", 'error': 1}
+
+
+@app.route('/sms_pay_submit', method=['POST'])
+def submit_sms_paying_request():
+    if request.form['status'] == 1:
+        finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
+    else:
+        delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
+
+
+
+
 
 if __name__ == '__main__':
     init_db()

@@ -1,5 +1,5 @@
 from database import db_session
-from models import ParkingPlace, PriceHistory, Payment
+from models import *
 from sqlalchemy import desc
 from datetime import datetime, timedelta
 
@@ -327,6 +327,22 @@ def get_estimated_time_for_given_car(car_number, place_id, cost):
     return None
 
 
+def parse_sms_content(sms_content):
+    """
+    params:
+        sms_content: all sms's content (STR)
+    return:
+        respond: dict with value of car number and parking place to pay for (dict)
+        False: if sms content has wrong format (doesn't have two separators '#') (None)
+    """
+    sms_content_list = sms_content.split('#')
+    if len(sms_content_list) >= 3:
+        respond = {['car_number']: sms_content_list[2], ['place']: sms_content_list[1]}
+        return respond
+    return False
+
+
+
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
 
@@ -340,6 +356,18 @@ def parse_tariff_to_list(tariff):
         return tuple([int(x) for x in tariff.split(';')])
     else:
         return None
+
+
+def get_list_of_sms_ids():
+    """
+    return:
+        ls: list of all sms_id in SMSHistory (LIST of STR)
+    """
+    sms_history = db_session.query(SMSHistory).all()
+    ls = []
+    for sms in sms_history:
+        ls.append(sms[1])
+    return ls
 
 
 def take_parking_coord():
@@ -358,10 +386,26 @@ def take_parking_coord():
     
     k=0
     while k < len(tup):
-        a=tuple([x for x in tup[k].split(',')])    
+        a = tuple([x for x in tup[k].split(',')])
         list_of_coord.append(a)
-        k+=1
+        k += 1
     return list_of_coord
+
+
+def finish_sms_payment_record(transaction):
+    record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
+    record.transaction.replace("waiting", "")
+    db_session.add(record)
+    db_session.commit()
+
+
+def delete_payment_by_transaction(transaction):
+    try:
+        record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
+        db_session.delete(record)
+        db_session.commit()
+    except:
+        raise ValueError
 
 
 def get_payment_by_circle_coord(list_of_id):
