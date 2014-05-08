@@ -226,9 +226,7 @@ def get_payment_by_coord():
 #SMS paying implementation
 @app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
-    print "begin"
     if request.form['sms_id'] not in get_list_of_sms_ids():
-        print "is"
         secret_key = hashlib.md5()
         secret_key.update(str(request.form['sms_id']) + request.form['sms_body'] +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
@@ -245,16 +243,14 @@ def authenticate_sms_paying_request():
             logging.INFO("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
             return {'sms_id': request.form['sms_id'] + "\n", 'response': "Fail\n", 'error': 1}
     else:
-        print "not"
         logging.WARNING
-    print "end"
-    #log creating
-    user_num = "user number: %s" % str(request.form['user_num'])
-    sms_id = "sms_id: %s" % str(request.form['sms_id'])
-    site_service_id = "site_service_id: &s" % str(request.form['site_service_id'])
-    sms_body = "sms text: &s" % str(request.form['sms_body'])
-    logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" % (user_num, sms_id, site_service_id, sms_body))
-    #--------
+        #log creating
+        user_num = "user number: %s" % str(request.form['user_num'])
+        sms_id = "sms_id: %s" % str(request.form['sms_id'])
+        site_service_id = "site_service_id: &s" % str(request.form['site_service_id'])
+        sms_body = "sms text: &s" % str(request.form['sms_body'])
+        logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" % (user_num, sms_id, site_service_id, sms_body))
+        #--------
 
 
 @app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
