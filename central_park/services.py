@@ -429,3 +429,10 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
+def get_statistics_by_place(place_name):
+    stat = []
+    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter( ParkingPlace.name==place_name).filter( ParkingPlace.id == Payment.place_id).all()
+    for i in statistics:
+        stat.append([i[1],i[2]])
+    return stat
+"Payment.place_id == ParkingPlace.id"

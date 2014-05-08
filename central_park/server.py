@@ -168,7 +168,9 @@ def welcome():
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
     s = request.args.get('parking_name')
-    return "Here goes info about parking place" + s
+    ss = get_statistics_by_place(s);
+    ss.append(['some name', 3.5]);
+    return jsonify(info="Here goes info about parking place" + s,statistics=ss)
 
 
 @app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])
@@ -221,7 +223,7 @@ def get_payment_by_coord():
 
 
 #SMS paying implementation
-@app.route('/sms_pay_request', method=['POST'])
+@app.route('/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
     if request.form['sms_id'] not in get_list_of_sms_ids():
         secret_key = hashlib.md5()
@@ -250,7 +252,7 @@ def authenticate_sms_paying_request():
         #--------
 
 
-@app.route('/sms_pay_submit', method=['POST'])
+@app.route('/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
     if request.form['status'] == 1:
         payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
