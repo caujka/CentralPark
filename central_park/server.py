@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, requests, time
 from services import * 
 from datetime import datetime, timedelta
 from models import *
@@ -25,7 +25,6 @@ app.config.update(dict(
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
-
 
 @app.before_request
 def before():
@@ -56,6 +55,11 @@ def home():
 @app.route('/<lang_code>')
 def index():
     return render_template('welcome.html')
+
+
+@app.route('/<lang_code>/testpay')
+def testpay():
+    return render_template('testpay.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -106,6 +110,19 @@ def payment():
             error = "Your data is not valid"
             return render_template("payment_response.html", error=error)
 
+@app.route('/server_url', methods=['POST', 'GET'])
+def banking_server():
+    
+    print "--------------------1", request.json
+    print "--------------------2", request.form.get('amt')
+    print "--------------------3", request.values.get('amt')
+    print "--------------------4", request.form['amt']
+    print "--------------------5", request.json['amt']
+    return redirect('/return_url', code=302)
+
+@app.route('/return_url', methods=['GET', 'POST'])
+def payment_success():
+    return render_template('payment_success.html')
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():
