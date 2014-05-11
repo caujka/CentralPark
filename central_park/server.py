@@ -171,7 +171,7 @@ def welcome():
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
     s = request.args.get('parking_name')
-    return "Here goes info about parking place" + s
+    return jsonify({'statistics': get_statistics_by_place(s) ,'info':"Here goes info about parking place" + s})
 
 
 @app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])
