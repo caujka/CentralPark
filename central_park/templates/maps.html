@@ -7,11 +7,17 @@
         padding: 0px
       }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false">
+
+</script>
     <script src="/static/js/maps.js"></script>
-    <div id="map-canvas" style="width:79%; height:100%; float:left"></div>
-    <div id="content-window" style="width:19%; height:100%; float:left">
-<button onclick = "testgo()"> test</button>
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="/static/js/charts.js"></script>
+
+    <div id="map-canvas" style="width:60%; height:100%; float:left"></div>
+    <div id="content-window" style="width:40%; height:100%; float:left">
+Here goes some statistics<br />
+<div id="chart_div"></div>
 </div>
 {% endblock %}
 
