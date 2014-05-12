@@ -6,7 +6,6 @@ from services import *
 from flask import *
 
 from flask import Flask, request, render_template, jsonify, json, redirect, url_for
-import re
 from log import *
 from flask.ext.babel import *
 from flask_babelex import Babel
