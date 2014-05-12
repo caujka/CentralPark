@@ -4,7 +4,7 @@ from database import db_session, init_db
 from services import *
 
 from flask import *
-<<<<<<< HEAD
+
 from flask import Flask, request, render_template, jsonify, json, redirect, url_for
 import re
 from log import *
