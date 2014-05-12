@@ -129,6 +129,9 @@ def show_history():
         actual_history = get_payment_by_date(get_placeid_by_placename(chosen_place), date_time)
         return render_template('response_history.html', history_info=actual_history)
 
+@app.route('/stats', methods=['GET', 'POST'])
+def stat():
+    statistics_payment_fill()
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
 def can_stand():

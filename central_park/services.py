@@ -1,7 +1,8 @@
 from database import db_session
 from models import *
 from sqlalchemy import desc
-from datetime import datetime, timedelta
+from datetime import timedelta
+import random, datetime, time, string
 import logging
 
 logging.basicConfig(filename=u"server.log",
@@ -428,4 +429,34 @@ def get_statistics_by_place(place_name):
     for i in statistics:
         stat.append([i[1],i[2]])
     return stat
+
+def statistics_payment_fill():
+    cars_count = 100
+    year_b = 2000
+    month_b = 10
+    day_b = 1
+
+    year_e = 2014
+    month_e = 11
+    day_e = 1
+    for x in range(0, cars_count):
+        start_time = time.mktime(datetime.date(year_b, month_b, day_b).timetuple())
+        end_time = time.mktime(datetime.date(year_e, month_e, day_e).timetuple())
+
+        date = random.randrange(int(start_time), int(end_time))
+        activation_time = datetime.datetime.fromtimestamp(date)
+
+        car_number = (random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + " "+ str(random.randint(1000,9999))+ random.choice(string.ascii_letters) + random.choice(string.ascii_letters)).upper()
+        cost = random.randint(10,90)
+        place_id = random.randint(1,6)
+        transaction = 'string'
+
+        pricehistory_id = get_current_pricehistory_id(place_id)
+        estimated_time = calculate_estimated_time(activation_time, cost, place_id)
+        pay = Payment(car_number, cost, estimated_time, transaction, place_id, pricehistory_id)
+        pay.activation_time = activation_time
+        db_session.add(pay)
+        db_session.commit()
+    return "all payments ok"
+
 "Payment.place_id == ParkingPlace.id"
