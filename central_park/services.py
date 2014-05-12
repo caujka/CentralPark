@@ -1,8 +1,8 @@
 from database import db_session
 from models import *
 from sqlalchemy import desc
-from datetime import timedelta
-import random, datetime, time, string
+from datetime import timedelta, datetime
+import random, time, string
 import logging
 
 logging.basicConfig(filename=u"server.log",
@@ -332,8 +332,7 @@ def parse_sms_content(sms_content):
     """
     sms_content_list = sms_content.split('#')
     if len(sms_content_list) >= 3:
-        respond = {['car_number']: sms_content_list[2], ['place']: sms_content_list[1]}
-        return respond
+        return {'car_number': sms_content_list[2], 'place': sms_content_list[1]}
     return False
 
 
@@ -423,12 +422,14 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
+
 def get_statistics_by_place(place_name):
     stat = []
-    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter( ParkingPlace.name==place_name).filter( ParkingPlace.id == Payment.place_id).all()
+    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter(ParkingPlace.name == place_name, ParkingPlace.id == Payment.place_id).all()
     for i in statistics:
-        stat.append([i[1],i[2]])
+        stat.append([i[1], i[2]])
     return stat
+
 
 def statistics_payment_fill():
     cars_count = 100

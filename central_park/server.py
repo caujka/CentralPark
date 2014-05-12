@@ -9,7 +9,7 @@ from flask_babelex import Babel
 
 from datetime import datetime, timedelta
 from models import *
-import hashlib
+from hashlib import md5
 import re
 import logging
 
@@ -230,21 +230,27 @@ def get_payment_by_coord():
 @app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
     if request.form['sms_id'] not in get_list_of_sms_ids():
-        secret_key = hashlib.md5()
-        secret_key.update(str(request.form['sms_id']) + request.form['sms_body'] +
+        print request
+        secret_key = md5()
+        secret_key.update(str(request.form['sms_id']) + str(request.form['sms_body']) +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
                           str(request.form['num']) + str(request.form['sms_price']) + "SMSCentralPark")
-        if secret_key.digest() == request.form['secret_key']:
+
+        if secret_key.hexdigest() == request.form['secret_key']:
+            print "hash true -------------------------------------------------------------------------"
             sms_body = parse_sms_content(request.form['sms_body'])
             if (sms_body is not False) and (sms_body is not None) and (sms_body['place'] in get_list_of_places_names()):
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
-                                      int(sms_body['sms_price']), 'sms'+request.form['site_service_id']+"waiting")
+                                      int(request.form['sms_price']), 'sms'+str(request.form['site_service_id'])+"waiting")
+                logging.info("SMS Payment request was created. Transaction: %s" % 'sms'+request.form['site_service_id']+'waiting')
+                return jsonify(sms_id=request.form['sms_id'] + "\n", response="Success\n", error=0)
 
-                logging.INFO("SMS Payment request was created. Transaction: %s" % ('sms'+request.form['site_service_id']+"waiting"))
-                return {'sms_id': request.form['sms_id'] + "\n", 'response': "Success\n", 'error': 0}
+            logging.info("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
 
-            logging.INFO("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
-            return {'sms_id': request.form['sms_id'] + "\n", 'response': "Fail\n", 'error': 1}
+            return jsonify(sms_id=request.form['sms_id'] + "\n", response="Fail\n", error=1)
+
+        print "hash false -------------------------------------------------------------------------"
+        return None
     else:
         logging.WARNING
         #log creating
@@ -254,7 +260,7 @@ def authenticate_sms_paying_request():
         sms_body = "sms text: &s" % str(request.form['sms_body'])
         logging.WARNING("Repeated sms-paying was detected! %s %s %s %s" % (user_num, sms_id, site_service_id, sms_body))
         #--------
-
+    return None
 
 @app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
