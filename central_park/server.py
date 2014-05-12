@@ -4,6 +4,10 @@ from database import db_session, init_db
 from services import *
 
 from flask import *
+
+from flask import Flask, request, render_template, jsonify, json, redirect, url_for
+import re
+from log import *
 from flask.ext.babel import *
 from flask_babelex import Babel
 
@@ -31,6 +35,24 @@ app.config.update(dict(
 ))
 
 
+@app.route('/<lang_code>/log', methods=['GET','POST'])
+def log():
+    if request.method == 'GET':
+        return render_template('log.html')
+    if request.method == 'POST':    
+        name = request.json['log']
+        pas = func_hash(request.json['pass'])
+        check_user_info(name, pas)
+        return render_template('welcome.html')
+
+
+@app.route('/<lang_code>/logout')
+def loggout():
+    session.pop('logged_in', None)
+    session.pop('name', None)
+    flash("You were logged out")
+    return render_template('log.html')
+        
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
@@ -65,7 +87,7 @@ def home():
 
 @app.route('/<lang_code>')
 def index():
-    return render_template('welcome.html')
+    return render_template('start.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -168,7 +190,7 @@ def maps():
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():
-    return render_template('welcome.html', classactive_welcome="class=active")
+    return render_template('start.html', classactive_welcome="class=active")
 
 
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
@@ -230,14 +252,12 @@ def get_payment_by_coord():
 @app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
     if request.form['sms_id'] not in get_list_of_sms_ids():
-        print request
         secret_key = md5()
         secret_key.update(str(request.form['sms_id']) + str(request.form['sms_body']) +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
                           str(request.form['num']) + str(request.form['sms_price']) + "SMSCentralPark")
 
         if secret_key.hexdigest() == request.form['secret_key']:
-            print "hash true -------------------------------------------------------------------------"
             sms_body = parse_sms_content(request.form['sms_body'])
             if (sms_body is not False) and (sms_body is not None) and (sms_body['place'] in get_list_of_places_names()):
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
@@ -249,7 +269,6 @@ def authenticate_sms_paying_request():
 
             return jsonify(sms_id=request.form['sms_id'] + "\n", response="Fail\n", error=1)
 
-        print "hash false -------------------------------------------------------------------------"
         return None
     else:
         logging.WARNING
