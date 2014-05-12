@@ -6,8 +6,9 @@ from models import *
 from database import db_session, init_db
 from flask.ext.babel import *
 from flask import *
-from flask import Flask, request, render_template, jsonify, json
+from flask import Flask, request, render_template, jsonify, json, redirect, url_for
 import re
+from log import *
 
 # create our little application :)
 app = Flask(__name__)
@@ -22,6 +23,25 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
+
+@app.route('/<lang_code>/log', methods=['GET','POST'])
+def log():
+    if request.method == 'GET':
+        return render_template('log.html')
+    if request.method == 'POST':    
+        name = request.json['log']
+        pas = func_hash(request.json['pass'])
+        check_user_info(name, pas)
+        return render_template('welcome.html')
+
+
+@app.route('/<lang_code>/logout')
+def loggout():
+    session.pop('logged_in', None)
+    session.pop('name', None)
+    flash("You were logged out")
+    return render_template('log.html')
+        
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
@@ -48,6 +68,9 @@ def teardown_session(expception=None):
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
 
+
+
+
 @app.route('/')
 def home():
      return redirect(url_for('welcome', lang_code="en"))
@@ -55,7 +78,7 @@ def home():
 
 @app.route('/<lang_code>')
 def index():
-    return render_template('welcome.html')
+    return render_template('start.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -108,6 +131,7 @@ def payment():
 
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
+@login_required
 def show_history():
     
     if request.method == 'GET':
@@ -156,7 +180,7 @@ def maps():
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():
-    return render_template('welcome.html', classactive_welcome="class=active")
+    return render_template('start.html', classactive_welcome="class=active")
 
 
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
