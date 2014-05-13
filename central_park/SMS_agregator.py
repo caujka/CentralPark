@@ -33,7 +33,7 @@ credentials['partner_currency'] = "UAH"
 
 '''
 credentials['sms_id'] = 1
-credentials['sms_body'] = "ed#name01#aaaa111222dd"
+credentials['sms_body'] = "ed#name01#aa11222dd"
 credentials['site_service_id'] = 12
 credentials['user_num'] = 2343245325
 credentials['num'] = 1222

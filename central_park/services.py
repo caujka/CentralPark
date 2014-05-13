@@ -388,7 +388,9 @@ def take_parking_coord():
 def finish_sms_payment_record(transaction):
     record = db_session.query(Payment).filter(Payment.transaction.like("%" + transaction + "%")).one()
     if record is not None:
-        record.transaction.replace("sms" + transaction + "waiting", "sms" + transaction)
+        print "record founded"
+        print record.transaction
+        record.transaction = record.transaction.replace(transaction, transaction.split("waiting")[0])
         payment_id = record.id
 
         db_session.add(record)
@@ -460,3 +462,12 @@ def statistics_payment_fill():
         db_session.commit()
     return "all payments ok"
 
+
+def get_tariff_for_parked_car(just_parked_car):
+    tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
+    tariff = ""
+    time_tmp = just_parked_car.activation_time
+    while time_tmp.hour <= just_parked_car.expiration_time.hour:
+        tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
+        time_tmp += timedelta(hours=1)
+    return tariff

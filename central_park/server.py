@@ -17,8 +17,7 @@ import re
 import logging
 
 logging.basicConfig(filename=u"server.log",
-                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
-                    level=logging.INFO)
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s')
 
 # create our little application :)
 app = Flask(__name__)
@@ -113,14 +112,7 @@ def payment():
                 transaction = "waiting"
 
                 create_payment_record(request.json['car_number'], place_id, cost, transaction)
-
                 just_parked_car = is_car_already_parked_here(place_id, request.json['car_number'])
-                tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-                tariff = ""
-                time_tmp = just_parked_car.activation_time
-                while time_tmp.hour <= just_parked_car.expiration_time.hour:
-                    tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
-                    time_tmp += timedelta(hours=1)
 
                 if just_parked_car:
                     credentials = {
@@ -129,7 +121,7 @@ def payment():
                         'time_left': just_parked_car.expiration_time.strftime("%H:%M %d-%m-%Y"),
                         'transaction': just_parked_car.transaction,
                         'place': request.json['place'],
-                        'rate': tariff
+                        'rate': get_tariff_for_parked_car(just_parked_car)
                     }
                 return render_template("payment_response.html", credentials=credentials)
                 #return redirect("127.0.0.1:5001/banking")    - NOT IMPLEMENTED
@@ -171,13 +163,16 @@ def can_stand():
 def dynamic_select():
     place_name = request.json['place']
     place = db_session.query(ParkingPlace.name).filter(ParkingPlace.name == place_name).all()
-    if place is []:
+    if place is [] or place is None:
         return jsonify(response='None')
     else:
-        place_id = get_placeid_by_placename(place_name)
-        cur_tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-        return jsonify(response='OK', first_hour_tariff=cur_tariff[datetime.now().hour],
-                       second_hour_tariff=cur_tariff[(datetime.now() + timedelta(hours=1)).hour])
+        try:
+            place_id = get_placeid_by_placename(place_name)
+            cur_tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
+            return jsonify(response='OK', first_hour_tariff=cur_tariff[datetime.now().hour],
+                           second_hour_tariff=cur_tariff[(datetime.now() + timedelta(hours=1)).hour])
+        except:
+            return jsonify(response='None')
 
 
 @app.route('/<lang_code>/log', methods=['GET', 'POST'])
@@ -279,10 +274,14 @@ def authenticate_sms_paying_request():
 
 @app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
+    print "in sms_pay_submit"
+    print "print request.form['status']=", request.form['status']
     if int(request.form['status']) == 1:
+        print "in request.form['status']==1"
         payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Finished sms payment with id: %s" % payment_id)
     else:
+        print "request.form['status']=!1"
         delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Sms paying was not successful. Payment record was deleted")
     return jsonify(status='Done')
