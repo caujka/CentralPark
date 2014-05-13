@@ -377,7 +377,7 @@ def take_parking_coord():
         ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
     
-    k=0
+    k = 0
     while k < len(tup):
         a = tuple([x for x in tup[k].split(',')])
         list_of_coord.append(a)
@@ -386,9 +386,9 @@ def take_parking_coord():
 
 
 def finish_sms_payment_record(transaction):
-    record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
+    record = db_session.query(Payment).filter(Payment.transaction.like("%" + transaction + "%")).one()
     if record is not None:
-        record.transaction.replace("waiting", "")
+        record.transaction.replace("sms" + transaction + "waiting", "sms" + transaction)
         payment_id = record.id
 
         db_session.add(record)
@@ -460,4 +460,3 @@ def statistics_payment_fill():
         db_session.commit()
     return "all payments ok"
 
-"Payment.place_id == ParkingPlace.id"

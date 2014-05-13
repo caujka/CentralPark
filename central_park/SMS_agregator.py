@@ -2,8 +2,8 @@
 from hashlib import md5
 import requests
 import re
-
-credencials = {
+from flask import json
+credentials = {
     "sms_id": "",
     "sms_body": "",
     "site_service_id": "",
@@ -19,38 +19,51 @@ credencials = {
     "secret_key": "",
 }
 '''
-credencials['sms_id'] = raw_input("Please, enter sms_id: ")
-credencials['sms_body'] = raw_input("Please, enter sms_body in format 'XX#parking_place#car_number': ")
-credencials['site_service_id'] = raw_input("Please, enter site_service_id: ")
-credencials['user_num'] = raw_input("Please, enter user_num: ")
-credencials['num'] = 1222
-credencials['operator_id'] = 1
-credencials['operator_name'] = "operator_name"
-credencials['sms_price'] = raw_input("Please, enter sms_price: ")
-credencials['sms_currency'] = "UAH"
-credencials['partner_cost'] = credencials['sms_price']
-credencials['partner_currency'] = "UAH"
-'''
+credentials['sms_id'] = raw_input("Please, enter sms_id: ")
+credentials['sms_body'] = raw_input("Please, enter sms_body in format 'XX#parking_place#car_number': ")
+credentials['site_service_id'] = raw_input("Please, enter site_service_id: ")
+credentials['user_num'] = raw_input("Please, enter user_num: ")
+credentials['num'] = 1222
+credentials['operator_id'] = 1
+credentials['operator_name'] = "operator_name"
+credentials['sms_price'] = raw_input("Please, enter sms_price: ")
+credentials['sms_currency'] = "UAH"
+credentials['partner_cost'] = credentials['sms_price']
+credentials['partner_currency'] = "UAH"
 
-credencials['sms_id'] = 1
-credencials['sms_body'] = "ed#name01#sad"
-credencials['site_service_id'] = '32sd'
-credencials['user_num'] = 2343245325
-credencials['num'] = 1222
-credencials['operator_id'] = 1
-credencials['operator_name'] = "operator_name"
-credencials['sms_price'] = 23
-credencials['sms_currency'] = "UAH"
-credencials['partner_cost'] = credencials['sms_price']
-credencials['partner_currency'] = "UAH"
+'''
+credentials['sms_id'] = 1
+credentials['sms_body'] = "ed#name01#aaaa111222dd"
+credentials['site_service_id'] = 12
+credentials['user_num'] = 2343245325
+credentials['num'] = 1222
+credentials['operator_id'] = 1
+credentials['operator_name'] = "operator_name"
+credentials['sms_price'] = 15
+credentials['sms_currency'] = "UAH"
+credentials['partner_cost'] = credentials['sms_price']
+credentials['partner_currency'] = "UAH"
 
 
 secret_key = md5()
-secret_key.update(str(credencials['sms_id']) + credencials['sms_body'] +
-                  str(credencials['site_service_id']) + str(credencials['operator_id']) +
-                  str(credencials['num']) + str(credencials['sms_price']) + "SMSCentralPark")
+secret_key.update(str(credentials['sms_id']) + credentials['sms_body'] +
+                  str(credentials['site_service_id']) + str(credentials['operator_id']) +
+                  str(credentials['num']) + str(credentials['sms_price']) + "SMSCentralPark")
 
-credencials['secret_key'] = re.escape(secret_key.hexdigest())
+credentials['secret_key'] = re.escape(secret_key.hexdigest())
 
-r = requests.post("http://127.0.0.1:5000/en/sms_pay_request", credencials)
-print r.text
+r = requests.post("http://127.0.0.1:5000/en/sms_pay_request", credentials)
+response = json.loads(r.content)
+
+if response['error'] == 0:
+    credentials_submit = {
+        "sms_id": credentials['sms_id'],
+        "status": 1,
+        "user_num": credentials['user_num'],
+        "site_service_id": credentials['site_service_id']
+    }
+    print "success"
+    r = requests.post("http://127.0.0.1:5000/en/sms_pay_submit", credentials_submit)
+
+
+
