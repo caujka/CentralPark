@@ -1,8 +1,8 @@
 from database import db_session
 from models import *
 from sqlalchemy import desc
-from datetime import timedelta
-import random, datetime, time, string
+from datetime import timedelta, datetime
+import random, time, string
 import logging
 
 
@@ -334,8 +334,7 @@ def parse_sms_content(sms_content):
     """
     sms_content_list = sms_content.split('#')
     if len(sms_content_list) >= 3:
-        respond = {['car_number']: sms_content_list[2], ['place']: sms_content_list[1]}
-        return respond
+        return {'car_number': sms_content_list[2], 'place': sms_content_list[1]}
     return False
 
 
@@ -380,7 +379,7 @@ def take_parking_coord():
         ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
     
-    k=0
+    k = 0
     while k < len(tup):
         a = tuple([x for x in tup[k].split(',')])
         list_of_coord.append(a)
@@ -389,9 +388,11 @@ def take_parking_coord():
 
 
 def finish_sms_payment_record(transaction):
-    record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
+    record = db_session.query(Payment).filter(Payment.transaction.like("%" + transaction + "%")).one()
     if record is not None:
-        record.transaction.replace("waiting", "")
+        print "record founded"
+        print record.transaction
+        record.transaction = record.transaction.replace(transaction, transaction.split("waiting")[0])
         payment_id = record.id
 
         db_session.add(record)
@@ -425,12 +426,14 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
+
 def get_statistics_by_place(place_name):
     stat = []
-    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter( ParkingPlace.name==place_name).filter( ParkingPlace.id == Payment.place_id).all()
+    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter(ParkingPlace.name == place_name, ParkingPlace.id == Payment.place_id).all()
     for i in statistics:
-        stat.append([i[1],i[2]])
+        stat.append([i[1], i[2]])
     return stat
+
 
 def statistics_payment_fill():
     cars_count = 100
@@ -461,6 +464,17 @@ def statistics_payment_fill():
         db_session.commit()
     return "all payments ok"
 
+
 "Payment.place_id == ParkingPlace.id"
 
+
+
+def get_tariff_for_parked_car(just_parked_car):
+    tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
+    tariff = ""
+    time_tmp = just_parked_car.activation_time
+    while time_tmp.hour <= just_parked_car.expiration_time.hour:
+        tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
+        time_tmp += timedelta(hours=1)
+    return tariff
 
