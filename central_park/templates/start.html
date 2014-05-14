@@ -37,31 +37,29 @@
        <div>
            <div class="container">
         
-            <ul class="nav nav-pills">
-            {% if not session['name'] %}
+            <ul class="nav nav-pills" id='list'>
+            {% if not session['logged_in'] %}
 			    <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
                 <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
                 <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
                 <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>
                 <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/log" >{{_('Log in') }}</a> </li>
             {% endif %}
-                 {% if session['name'] == 'admin' %}
+            {%if session['logged_in'] %}
                 <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
                 <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
-                <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
-                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>
-                
-                <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>      
+                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>        
+                    {% if 'admin' in session['role'] %}
+                        <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                    {% endif %}
+                    {%if 'inspector' in session['role'] %}
+                        <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li> 
+                    {% endif %}
                 <li class="top_menu_item" id='out'><a href="/{{g.current_lang}}/logout" onclick="Question(event);">{{_('Log out') }}</a> </li>
-              {% endif %}
-                {% if session['name'] == 'inspector' %}
-                <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
-                <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
-                <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
-                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>    
-                <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li>       
-                <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/logout">{{_('Log out') }}</a> </li>
-                {% endif %}
+            {% endif%}
+            
+
 
                 <div align='right' id='lang'>
                 

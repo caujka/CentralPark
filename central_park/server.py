@@ -7,14 +7,14 @@ from flask import *
 
 from flask import Flask, request, render_template, jsonify, json, redirect, url_for
 import re
-from log import *
+from authentication import *
 from flask.ext.babel import *
 from flask_babelex import Babel
-
 from datetime import datetime, timedelta
 from models import *
 import hashlib
 import logging
+
 
 logging.basicConfig(filename=u"server.log",
                     format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
@@ -42,6 +42,7 @@ def log():
         name = request.json['log']
         pas = func_hash(request.json['pass'])
         check_user_info(name, pas)
+        print session['role']
         return render_template('welcome.html')
 
 
@@ -77,9 +78,6 @@ def teardown_session(expception=None):
     db_session.remove()
 
 app.config.from_envvar('APP_SETTINGS', silent=True)
-
-
-
 
 
 @app.route('/')
@@ -159,6 +157,7 @@ def stat():
     statistics_payment_fill()
 
 @app.route('/<lang_code>/can_stand', methods=['GET', 'POST'])
+@login_required
 def can_stand():
     if request.method == 'GET':
         return render_template('chek_parking.html')

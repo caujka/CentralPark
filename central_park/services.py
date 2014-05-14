@@ -5,6 +5,8 @@ from datetime import timedelta
 import random, datetime, time, string
 import logging
 
+
+
 logging.basicConfig(filename=u"server.log",
                     format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
                     level=logging.DEBUG)
@@ -460,3 +462,5 @@ def statistics_payment_fill():
     return "all payments ok"
 
 "Payment.place_id == ParkingPlace.id"
+
+
