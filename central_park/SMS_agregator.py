@@ -18,7 +18,7 @@ credentials = {
     "partner_currency": "",
     "secret_key": "",
 }
-'''
+
 credentials['sms_id'] = raw_input("Please, enter sms_id: ")
 credentials['sms_body'] = raw_input("Please, enter sms_body in format 'XX#parking_place#car_number': ")
 credentials['site_service_id'] = raw_input("Please, enter site_service_id: ")
@@ -43,7 +43,7 @@ credentials['sms_price'] = 15
 credentials['sms_currency'] = "UAH"
 credentials['partner_cost'] = credentials['sms_price']
 credentials['partner_currency'] = "UAH"
-
+'''
 
 secret_key = md5()
 secret_key.update(str(credentials['sms_id']) + credentials['sms_body'] +
@@ -58,12 +58,9 @@ response = json.loads(r.content)
 if response['error'] == 0:
     credentials_submit = {
         "sms_id": credentials['sms_id'],
-        "status": 1,
+        "status": 0,
         "user_num": credentials['user_num'],
         "site_service_id": credentials['site_service_id']
     }
     print "success"
     r = requests.post("http://127.0.0.1:5000/en/sms_pay_submit", credentials_submit)
-
-
-
