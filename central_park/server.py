@@ -252,6 +252,7 @@ def get_payment_by_coord():
 @app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
     if request.form['sms_id'] not in get_list_of_sms_ids():
+        create_SMSHistory_record(request.form['sms_id'], request.form['site_service_id'])
         secret_key = md5()
         secret_key.update(str(request.form['sms_id']) + str(request.form['sms_body']) +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
@@ -262,7 +263,9 @@ def authenticate_sms_paying_request():
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
                                       int(request.form['sms_price']), 'sms'+str(request.form['site_service_id'])+"waiting")
                 logging.info("SMS Payment request was created. Transaction: %s" % 'sms'+request.form['site_service_id']+'waiting')
-                return jsonify(sms_id=request.form['sms_id'], response="Success", error=0)
+
+                sms_response = create_text_sms_response(sms_body['place'], sms_body['car_number'], request.form['sms_price'])
+                return jsonify(sms_id=request.form['sms_id'], response=sms_response, error=0)
             logging.info("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
     else:
         #log creating

@@ -465,10 +465,6 @@ def statistics_payment_fill():
     return "all payments ok"
 
 
-"Payment.place_id == ParkingPlace.id"
-
-
-
 def get_tariff_for_parked_car(just_parked_car):
     tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
     tariff = ""
@@ -478,3 +474,27 @@ def get_tariff_for_parked_car(just_parked_car):
         time_tmp += timedelta(hours=1)
     return tariff
 
+
+def create_SMSHistory_record(sms_id, site_service_id):
+    try:
+        sms = SMSHistory(sms_id, site_service_id)
+        db_session.add(sms)
+        db_session.commit()
+    except AttributeError:
+        raise AttributeError
+
+
+def create_text_sms_response(place, car_number, cost):
+    parked_car = Payment
+    try:
+        parked_car = is_car_already_parked_here(get_placeid_by_placename(place), car_number)
+    except RuntimeError:
+        logging.info("Error with database connection in 'create_text_sms_response'",  RuntimeError)
+    if parked_car:
+        time_start = parked_car.expiration_time
+    else:
+        time_start = datetime.now()
+
+    est_time = calculate_estimated_time(time_start, cost, get_placeid_by_placename(place))
+    est_time_str = est_time.strftime("%H:%M %d-%m-%Y")
+    return "Vy oplatyly stojanky '" + place + "' dlia avto '" + car_number + "'. Parkovka do " + est_time_str
