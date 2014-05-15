@@ -15,10 +15,12 @@ from models import *
 from hashlib import md5
 import re
 import logging
+import inspect
 
 
 logging.basicConfig(filename=u"server.log",
-                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s')
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.NOTSET)
 
 # create our little application :)
 app = Flask(__name__)
@@ -34,7 +36,7 @@ app.config.update(dict(
 ))
 
 
-@app.route('/<lang_code>/log', methods=['GET','POST'])
+@app.route('/<lang_code>/log', methods=['GET', 'POST'])
 def log():
     if request.method == 'GET':
         return render_template('log.html')
@@ -48,11 +50,15 @@ def log():
 
 @app.route('/<lang_code>/logout')
 def loggout():
+    #user_name = session['username']
     session.pop('logged_in', None)
     session.pop('name', None)
     flash("You were logged out")
+
+    #logging.info("User '"+user_name+"' logged out")
     return render_template('log.html')
-        
+
+
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
@@ -125,28 +131,30 @@ def payment():
                         'place': request.json['place'],
                         'rate': get_tariff_for_parked_car(just_parked_car)
                     }
+                logging.info("Place %s was booked via banking by %s", credentials['place'], credentials['car_number'])
                 return render_template("payment_response.html", credentials=credentials)
                 #return redirect("127.0.0.1:5001/banking")    - NOT IMPLEMENTED
             else:
-                error = "Your data is not valid"
+                error = "Database insertion error. Please, check entered data and try again"
                 return render_template("payment_response.html", error=error)
-    except BaseException:
-        return render_template("payment_response.html", error=BaseException)
+    except Exception:
+        logging.exception("Exception was received in %s: %s", inspect.stack()[0][3], extra=Exception)
+        return render_template("payment_response.html", error=Exception)
 
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():
-    
     if request.method == 'GET':
         list_of_place = get_list_of_places_names()
         return render_template('history.html', place_list=list_of_place)
-    
     else:
-        chosen_place = request.json['place']
-        date_time = request.json['date']
-        actual_history = get_payment_by_date(get_placeid_by_placename(chosen_place), date_time)
-        return render_template('response_history.html', history_info=actual_history)
-
+        try:
+            chosen_place = request.json['place']
+            date_time = request.json['date']
+            actual_history = get_payment_by_date(get_placeid_by_placename(chosen_place), date_time)
+            return render_template('response_history.html', history_info=actual_history)
+        except Exception:
+            logging ("Error was occurred in %s: %s", inspect.stack()[0][3], Exception)
 @app.route('/stats', methods=['GET', 'POST'])
 def stat():
     statistics_payment_fill()
@@ -295,4 +303,6 @@ def submit_sms_paying_request():
 
 if __name__ == '__main__':
     init_db()
+    print "Server started..."
     app.run(debug=True, use_reloader=False)
+

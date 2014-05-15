@@ -2,13 +2,54 @@
     
 function checkform ( form )
 {
-    if (form.place.value == "" || form.car_number.value == "" || is_valid_cost(form.cost.value) == true) {
-        alert( "Please enter valid data" );
-        return false ;
-    }
-    return true ;
+        var fields_to_check = "";
+        if (!is_valid_place(form.place.value)) {fields_to_check += "place name, "};
+        if (!is_valid_car_number(form.car_number.value)) {fields_to_check += "car number, "};
+        if (!is_valid_cost(form.cost.value)) {fields_to_check += "cost"};
+        console.log("cf", form.cost.value, form.cost.value );
+        if (fields_to_check != "") {
+            alert("You entered not correct information. Please, check next fields: ".concat(fields_to_check));
+            return false;
+        };
+    return true;
 };
 
+is_valid_cost = function(value){
+    value = $.trim(value);
+    console.log(value);
+    var isWhole_re  = /^\s*\d{1,3}\s*$/;
+    if (String(value).search(isWhole_re) != -1){
+        console.log("True");
+        return true;
+    };
+    console.log("False");
+    return false;
+}
+
+is_valid_place = function(value){
+    value = $.trim(value);
+    var isWhole_re  = /^\s*\w{1,8}\s*$/;
+    if (String(value).search(isWhole_re) != -1){
+        return true;
+    };
+    return false;
+}
+
+is_valid_car_number = function(value){
+    value = $.trim(value);
+    var isWhole_re  = /^\s*\w{3,10}\s*$/;
+    if (String(value).search(isWhole_re) != -1){
+        return true;
+    };
+    return false;
+}
+
+is_not_empty = function(value){
+    if (value){
+        return true;
+    };
+    return false;
+};
 
 GetInfo  = function() {
        if (checkform(this))
@@ -31,7 +72,7 @@ GetInfo  = function() {
 
                 error: function (st)
                 {
-                    alert('Ooops! Something wrong, try again.')
+                    alert('Server do not respond. Please, try again...')
                 },
 
                 });
@@ -42,18 +83,11 @@ GetInfo  = function() {
 };
 
 
-is_valid_cost = function(value){
-    value = $.trim(value);
-    var isWhole_re  = /^\s*\d{1,3}\s*$/;
-    if (String(value).search(isWhole_re) != -1){
-        return true;
-    };
-    return false;
-}
+
 
 
 time_left = function(){
-    cost = $.trim($("#cost").val());
+    var cost = $.trim($("#cost").val());
     if (is_valid_cost(cost)){
         var formData = {
             "place": $("#place").val(),
@@ -73,7 +107,8 @@ time_left = function(){
 
                     error: function (st)
                     {
-                        
+                        document.getElementById("parkingTimeLeft").innerHTML =
+                            '<label> Error on server! Please, check parking place name! </label>';
                     },
                 })
     } else {
@@ -82,12 +117,7 @@ time_left = function(){
     }
 };
 
-is_not_empty = function(value){
-    if (value){
-        return true;
-    };
-    return false;
-};
+
 
 
 place_request = function(){
@@ -108,17 +138,18 @@ place_request = function(){
                         '<label> 1st hour: '+response["first_hour_tariff"]+'hrn/h, 2nd: '+response["second_hour_tariff"]+'hrn/h</label>';
                 } else { 
                     document.getElementById("placeValid").innerHTML = 
-                        '<label>Please_enter_place_name_correctly!</label>';
+                        '<label>No such parking place. <br> Please enter place name correctly!</label>';
                 };
             },
             error: function (request)
             {
-                //not implemented
+                document.getElementById("placeValid").innerHTML =
+                        '<label>No such parking place. <br> Please enter place name correctly!</label>';
             },
 
         });
     } else {
          document.getElementById("placeValid").innerHTML = 
-                        '<label>Please_enter_place_name_correctly</label>';
+                        '<label>Please enter place name correctly</label>';
     };
 };
