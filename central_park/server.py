@@ -88,7 +88,7 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 
 @app.route('/')
 def home():
-     return redirect(url_for('welcome', lang_code="en"))
+     return redirect(url_for('payment', lang_code="en"))
 
 
 @app.route('/<lang_code>')
