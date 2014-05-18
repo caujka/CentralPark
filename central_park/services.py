@@ -210,8 +210,8 @@ def get_placeid_by_placename(place_name):
     """
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
     if parking_place != [] and parking_place != None:
+        print "-------------", parking_place
         return parking_place[0][0]
-    return None
 
 
 def create_payment_record(car_number, place_id, cost, transaction):

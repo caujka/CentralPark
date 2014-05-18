@@ -4,19 +4,29 @@
         {% if error %}
         <p class=error><Strong>Error</Strong> {{ error }}
         {% endif %}
+
+<script language='javascript'>
+    function cookieBrainFuck(){
+        var date = new Date( new Date().getTime() + 60 * 1000);
+        document.cookie="id=" + document.getElementById("order").value + ";expires=" + date.toUTCString();
+    }
+    </script> 
 <pre>
-<fieldset font="Arial">
-    {{_('Enter parking place:') }}      <input type=text name="place" id="place" onblur="place_request();" value="{{place_from_map}}"  size="20" required><span id="placeValid"></span><br>
-    {{_('Enter your car number:') }}    <input type="text" name="car_number" id="car_number" value="{{request.form.car_number}}" size="20" required><br>
-    {{_('Money:') }}          <input type="text" name="cost" id="cost" onkeyup="time_left();" value="{{request.form.cost}}" size="5" required><span id="parkingTimeLeft"></span>
-</fieldset>
+
+<form action="http://127.0.0.1:5001/payment" method="POST" id='submitForm' onsubmit='cookieBrainFuck()'>
+    {{_('Enter parking place:') }}<input type=text name="details" id="details" onblur="place_request();" value="{{place_from_map}}"  size="20" required><span id="placeValid"></span><br>
+    {{_('Enter currency:') }}   <input type="text" name="ccy" value="UAH" /><br>
+    {{_('Enter your car number:') }}    <input type="text" name="ext_details" id="ext_details" value="{{request.form.car_number}}" size="20" required><br>
+    {{_('Money:') }}          <input type="text" name="amt" id="amt" onkeyup="time_left();" value="{{request.form.cost}}" size="5" required><span id="parkingTimeLeft"></span>
+    <input type="hidden" name="merchant" value="1" />      
+    <input type="hidden" name="order" id="order" value="1" />      
+    <input type="hidden" name="pay_way" value="privat24" />      
+    <input type="hidden" name="return_url" value="http://localhost:5000/return_url" /> 
+    <input type="hidden" name="server_url" value="http://localhost:5000/server_url" /> 
+    <input type="submit" value="Оплатить" /> 
+
+</form>
 </pre>
-                <button  type="submit" onclick="GetInfo();" >{{_('PAY') }}</button>
-
-<div id='result'>
-{{ result }}
-</div>
-
 <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
 <script type="text/javascript" src="https://jquery-json.googlecode.com/files/jquery.json-2.4.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>

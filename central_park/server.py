@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
+import os, requests, time
+from services import * 
+from datetime import datetime, timedelta
+from models import *
 from database import db_session, init_db
 from services import *
 from statistics import *
@@ -10,7 +13,7 @@ from flask import Flask, request, render_template, jsonify, json, redirect, url_
 import re
 from authentication import *
 from flask.ext.babel import *
-from flask_babelex import Babel
+#from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
@@ -64,7 +67,6 @@ def loggout():
 def get_locale():   
     return g.get('current_lang', 'en')
 
-
 @app.before_request
 def before():
     if request.view_args and 'lang_code' in request.view_args:
@@ -95,6 +97,11 @@ def home():
 @app.route('/<lang_code>')
 def index():
     return render_template('start.html')
+
+
+@app.route('/<lang_code>/testpay')
+def testpay():
+    return render_template('testpay.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -142,6 +149,10 @@ def payment():
         logging.exception("Exception was received in %s: %s", inspect.stack()[0][3], extra=Exception)
         return render_template("payment_response.html", error=Exception)
 
+
+@app.route('/return_url', methods=['GET', 'POST'])
+def payment_success():
+    return render_template('payment_success.html')
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():

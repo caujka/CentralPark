@@ -55,9 +55,9 @@ GetInfo  = function() {
        if (checkform(this))
         {
             var formData = {
-                "place":$("#place").val(),
-                "car_number":$("#car_number").val(),
-                "cost":$("#cost").val(),
+                "place":$("#details").val(),
+                "car_number":$("#ext_details").val(),
+                "cost":$("#amt").val(),
                 };
             var lang_code = document.URL.split('/')[3];
             $.ajax({
@@ -87,11 +87,11 @@ GetInfo  = function() {
 
 
 time_left = function(){
-    var cost = $.trim($("#cost").val());
+    var cost = $.trim($("#amt").val());
     if (is_valid_cost(cost)){
         var formData = {
-            "place": $("#place").val(),
-            "car_number": $("#car_number").val(),
+            "place": $("#details").val(),
+            "car_number": $("#ext_details").val(),
             "cost": cost,
         }; 
         $.ajax({
@@ -121,7 +121,7 @@ time_left = function(){
 
 
 place_request = function(){
-    var place = $.trim($("#place").val());
+    var place = $.trim($("#details").val());
     
     if (is_not_empty(place)){
         var formData = {"place":place};
