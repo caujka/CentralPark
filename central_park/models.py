@@ -69,3 +69,14 @@ class Payment(Base):
         self.place_id = place_id
         self.pricehistory_id = pricehistory_id
 
+
+class SMSHistory(Base):
+    __tablename__ = 'SMSHistory'
+    id = Column(Integer, primary_key=True)
+    sms_id = Column(String)
+    site_service_id = Column(Integer)
+
+    def __init__(self, sms_id, site_service_id):
+        self.sms_id = sms_id
+        self.site_service_id = site_service_id
+

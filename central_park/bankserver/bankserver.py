@@ -21,36 +21,19 @@ def page_not_found(error):
     
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
-def transaction():
+def check_card_number():
 	return True
 
 def send_data(data):
-	#data=json.dumps(data)
-	#print "----------------", data.headers
-	print "----------------", data
 	data_json = json.dumps(data)
 	payload = {'json_payload': data_json}
-
 	url = "http://localhost:5002/server_url"
 	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 	r = requests.post(url, data=json.dumps(data), headers=headers)
 
-
-	#requests.post("http://localhost:5002/server_url", data=data)
-	#headers = {'Content-Type': 'application/json'}
-	#conn = httplib.HTTPConnection('localhost', 5000)
-	#params = urllib.urlencode(data)
-	#conn.request("POST", '/server_url', params, headers)
-	#conn = httplib.HTTPConnection('localhost', 5000)
-	#conn.request("POST", '/server_url', params, headers) #try two servers
-	#return 'OK!'
-	#print '-----------------------', info['return_url']
-	#conn.close()
-
 @app.route('/transaction', methods=['POST'])
 def pay():
-	if transaction(): 
-		
+	if check_card_number(): 
 		info = {}
 		info['amt'] = request.form.get('amt')
 		info['ccy'] = request.form.get('ccy')
@@ -62,9 +45,7 @@ def pay():
 		info['server_url'] = request.form.get('server_url')
 		info['return_url'] = request.form.get('return_url')
 		send_data(info)
-		#time.sleep(10)
 		return redirect(info['return_url'], code=302)
-
 
 @app.route('/payment', methods=['POST'])
 def testpay():
@@ -79,12 +60,6 @@ def testpay():
 	info['server_url'] = request.form.get('server_url')
 	info['return_url'] = request.form.get('return_url')
 	return render_template('bankpayment.html', info=info)
-
-def list_to_dict(lst):
-	res = {}
-	for tpl in lst:
-		res[tpl[0]] = tpl[1]
-	return res
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False, port = 5001)

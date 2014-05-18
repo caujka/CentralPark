@@ -1,10 +1,16 @@
 from database import db_session
-from models import ParkingPlace, PriceHistory, Payment
+from models import *
 from sqlalchemy import desc
-from datetime import datetime, timedelta
+from datetime import timedelta, datetime
+import random, time, string
+import logging
 
 
-# FIXED for NEW database
+logging.basicConfig(filename=u"server.log",
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.DEBUG)
+
+
 def get_current_pricehistory_id(place_id):
     """
     params:
@@ -22,7 +28,6 @@ def get_current_pricehistory_id(place_id):
         return None
 
 
-# FIXED for NEW database
 def get_current_tariff_matrix(place_id):
     """
     params:
@@ -39,7 +44,6 @@ def get_current_tariff_matrix(place_id):
         return None
 
 
-# FIXED for NEW database
 def calculate_estimated_time(time_start, cost, place_id):
     """
     params:
@@ -71,12 +75,12 @@ def calculate_estimated_time(time_start, cost, place_id):
                 minutes_in_last_hour = calculate_estimated_time_in_last_hour(cost, tariff[time_finish.hour])
                 time_finish += timedelta(minutes=minutes_in_last_hour)
         except AttributeError:
+            logging.WARNING("Error in time calculating: %s" % AttributeError)
             raise AttributeError("AttributeError")
         return time_finish
     return None
 
 
-# FIXED for NEW database
 def calculate_total_price(place_id, time_finish):
     """
     params:
@@ -106,7 +110,6 @@ def calculate_total_price(place_id, time_finish):
     return None
 
 
-# FIXED for NEW database
 def get_parked_car_on_lot(place_id):
     """
     params:
@@ -129,7 +132,6 @@ def get_parked_car_on_lot(place_id):
     return place_list
 
 
-# FIXED for NEW database
 def get_list_of_places_id():
     """
     return:
@@ -154,7 +156,6 @@ def get_list_of_places_names():
     return response
 
 
-# FIXED for NEW database
 def get_payment_by_date(place, date_tmp):
     """
     params:
@@ -178,7 +179,6 @@ def get_payment_by_date(place, date_tmp):
     return res
 
 
-# FIXED for NEW database
 def get_priced_parking_lot(price_min, price_max):
     """
     params:
@@ -201,7 +201,6 @@ def get_priced_parking_lot(price_min, price_max):
         raise TypeError
 
 
-# FIXED for NEW database
 def get_placeid_by_placename(place_name):
     """
     params:
@@ -212,11 +211,10 @@ def get_placeid_by_placename(place_name):
     """
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
     if parking_place != [] and parking_place != None:
+        print "-------------", parking_place
         return parking_place[0][0]
-    return None
 
 
-# FIXED for NEW database
 def create_payment_record(car_number, place_id, cost, transaction):
     """
     params:
@@ -244,8 +242,6 @@ def create_payment_record(car_number, place_id, cost, transaction):
             raise ValueError
 
 
-#some internal functions
-#fixed for new database
 def is_car_already_parked_here(place_id, car_number):
     """
     params:
@@ -327,6 +323,20 @@ def get_estimated_time_for_given_car(car_number, place_id, cost):
     return None
 
 
+def parse_sms_content(sms_content):
+    """
+    params:
+        sms_content: all sms's content (STR)
+    return:
+        respond: dict with value of car number and parking place to pay for (dict)
+        False: if sms content has wrong format (doesn't have two separators '#') (None)
+    """
+    sms_content_list = sms_content.split('#')
+    if len(sms_content_list) >= 3:
+        return {'car_number': sms_content_list[2], 'place': sms_content_list[1]}
+    return False
+
+
 def calculate_minutes_cost(price_of_hour, minutes):
     return minutes * price_of_hour / 60
 
@@ -340,6 +350,18 @@ def parse_tariff_to_list(tariff):
         return tuple([int(x) for x in tariff.split(';')])
     else:
         return None
+
+
+def get_list_of_sms_ids():
+    """
+    return:
+        ls: list of all sms_id in SMSHistory (LIST of STR)
+    """
+    sms_history = db_session.query(SMSHistory).all()
+    ls = []
+    for sms in sms_history:
+        ls.append(sms.sms_id)
+    return ls
 
 
 def take_parking_coord():
@@ -356,12 +378,35 @@ def take_parking_coord():
         ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
     
-    k=0
+    k = 0
     while k < len(tup):
-        a=tuple([x for x in tup[k].split(',')])    
+        a = tuple([x for x in tup[k].split(',')])
         list_of_coord.append(a)
-        k+=1
+        k += 1
     return list_of_coord
+
+
+def finish_sms_payment_record(transaction):
+    record = db_session.query(Payment).filter(Payment.transaction.like("%" + transaction + "%")).one()
+    if record is not None:
+        print "record founded"
+        print record.transaction
+        record.transaction = record.transaction.replace(transaction, transaction.split("waiting")[0])
+        payment_id = record.id
+
+        db_session.add(record)
+        db_session.commit()
+        return payment_id
+    return None
+
+
+def delete_payment_by_transaction(transaction):
+    try:
+        record = db_session.query(Payment).filter(Payment.transaction == transaction).one()
+        db_session.delete(record)
+        db_session.commit()
+    except:
+        raise ValueError
 
 
 def get_payment_by_circle_coord(list_of_id):
@@ -380,3 +425,75 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
+
+def get_statistics_by_place(place_name):
+    stat = []
+    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter(ParkingPlace.name == place_name, ParkingPlace.id == Payment.place_id).all()
+    for i in statistics:
+        stat.append([i[1], i[2]])
+    return stat
+
+
+def statistics_payment_fill():
+    cars_count = 100
+    year_b = 2000
+    month_b = 10
+    day_b = 1
+
+    year_e = 2014
+    month_e = 11
+    day_e = 1
+    for x in range(0, cars_count):
+        start_time = time.mktime(datetime.date(year_b, month_b, day_b).timetuple())
+        end_time = time.mktime(datetime.date(year_e, month_e, day_e).timetuple())
+
+        date = random.randrange(int(start_time), int(end_time))
+        activation_time = datetime.datetime.fromtimestamp(date)
+
+        car_number = (random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + " "+ str(random.randint(1000,9999))+ random.choice(string.ascii_letters) + random.choice(string.ascii_letters)).upper()
+        cost = random.randint(10,90)
+        place_id = random.randint(1,6)
+        transaction = 'string'
+
+        pricehistory_id = get_current_pricehistory_id(place_id)
+        estimated_time = calculate_estimated_time(activation_time, cost, place_id)
+        pay = Payment(car_number, cost, estimated_time, transaction, place_id, pricehistory_id)
+        pay.activation_time = activation_time
+        db_session.add(pay)
+        db_session.commit()
+    return "all payments ok"
+
+
+def get_tariff_for_parked_car(just_parked_car):
+    tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
+    tariff = ""
+    time_tmp = just_parked_car.activation_time
+    while time_tmp.hour <= just_parked_car.expiration_time.hour:
+        tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
+        time_tmp += timedelta(hours=1)
+    return tariff
+
+
+def create_SMSHistory_record(sms_id, site_service_id):
+    try:
+        sms = SMSHistory(sms_id, site_service_id)
+        db_session.add(sms)
+        db_session.commit()
+    except AttributeError:
+        raise AttributeError
+
+
+def create_text_sms_response(place, car_number, cost):
+    parked_car = Payment
+    try:
+        parked_car = is_car_already_parked_here(get_placeid_by_placename(place), car_number)
+    except RuntimeError:
+        logging.info("Error with database connection in 'create_text_sms_response'",  RuntimeError)
+    if parked_car:
+        time_start = parked_car.expiration_time
+    else:
+        time_start = datetime.now()
+
+    est_time = calculate_estimated_time(time_start, cost, get_placeid_by_placename(place))
+    est_time_str = est_time.strftime("%H:%M %d-%m-%Y")
+    return "Vy oplatyly stojanky '" + place + "' dlia avto '" + car_number + "'. Parkovka do " + est_time_str

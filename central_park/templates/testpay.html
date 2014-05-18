@@ -1,0 +1,23 @@
+{% extends "start.html" %}
+{% block content %}
+
+        
+<form action="http://127.0.0.1:5001/payment" method="POST" id='submitForm' onsubmit='cookieBrainFuck()'>
+    <input type="text" id = "amt" onblur="place_request();" value="{{place_from_map}}"  size="20" required/> <span id="placeValid"></span><br>    
+    <input type="text" name="ccy" value="UAH" />      
+    <input type="hidden" name="merchant" value="1" />      
+    <input type="hidden" name="order" id="order" value="1" />      
+    <input type="text" name="details" value="name01" />        
+    <input type="text" name="ext_details" value="name01" />      
+    <input type="hidden" name="pay_way" value="privat24" />      
+    <input type="hidden" name="return_url" value="http://localhost:5000/return_url" /> 
+    <input type="hidden" name="server_url" value="http://localhost:5000/server_url" />      
+    <input type="submit" value="Оплатить" /> </form>    
+
+    <script language='javascript'>
+    function cookieBrainFuck(){
+        var date = new Date( new Date().getTime() + 60 * 1000);
+        document.cookie="id=" + document.getElementById("order").value + ";expires=" + date.toUTCString();
+    }
+    </script> 
+{% endblock %} 

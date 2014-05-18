@@ -13,6 +13,12 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/menu_switcher.js')}}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js')}}"></script>
+    <script>
+        function Question() {
+            if( !confirm('Do you realy want to logout?'))
+            {event.preventDefault ? event.preventDefault() : (event.returnValue=false)}
+        }
+    </script>
 </head>
 <body onload='switch_menu()'>
 
@@ -31,14 +37,27 @@
        <div>
            <div class="container">
         
-            <ul class="nav nav-pills">
-			    <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
+            <ul class="nav nav-pills" id='list'>
+            {% if not session['logged_in'] %}
                 <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
-                <li class="top_menu_item" id='testpay'><a href="/{{g.current_lang}}/testpay">{{_('banking') }}</a> </li>
                 <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
-                <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li>
                 <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>
-                <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/log" >{{_('Log in') }}</a> </li>
+            {% endif %}
+            {%if session['logged_in'] %}
+                <li class="top_menu_item" id='welcome'><a href="/{{g.current_lang}}/welcome">{{_('Start') }}</a> </li>
+                <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay for parking') }}</a> </li>
+                <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>      
+                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>        
+                    {% if 'admin' in session['role'] %}
+                        <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                    {% endif %}
+                    {%if 'inspector' in session['role'] %}
+                        <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li> 
+                    {% endif %}
+                <li class="top_menu_item" id='out'><a href="/{{g.current_lang}}/logout" onclick="Question(event);">{{_('Log out') }}</a> </li>
+            {% endif%}
+            
 
 
                 <div align='right' id='lang'>

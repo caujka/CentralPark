@@ -4,7 +4,8 @@ function initialize() {
 
 function ajax_return_info(_marker,res)
 {
-  call_info_window(_marker,res);
+  call_info_window(_marker,res["info"]);
+  drawChart(res["statistics"]);
 }
 
 function ajax_init_info(_marker,str)
@@ -59,7 +60,8 @@ ajax_marker_add_request();
 
 function   call_info_window(marker, info_park){
     infowindow.setContent('Parking place - '+marker.getTitle()+'<br /> Info -'+info_park+'<br />Go to payment <a href="/en/payment?parking_place='+marker.getTitle()+'"><button> Pay</button></a>'); 
-	infowindow.open(map,marker);  
+	infowindow.open(map,marker); 
+        
   }
   
   function addMarker(location, id_marker) {
