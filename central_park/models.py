@@ -18,10 +18,11 @@ class ParkingPlace(Base):
     price_history = relationship("PriceHistory")
 
 
-    def __init__(self, name, place_category, location, min_capacity):
+    def __init__(self, name, place_category, location, address, min_capacity):
         self.name = name
         self.place_category = place_category
         self.location = location
+        self.address = address
         self.min_capacity = min_capacity
 
     def __repr__(self):

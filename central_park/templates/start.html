@@ -51,6 +51,8 @@
                 <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>        
                     {% if 'admin' in session['role'] %}
                         <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
+                        <li class="top_menu_item" id='add_tariff'><a href="/{{g.current_lang}}/add_tariff">{{_('Add tariff') }}</a> </li>
+                        <li class="top_menu_item" id='add_place'><a href="/{{g.current_lang}}/add_place">{{_('Add place') }}</a> </li>
                     {% endif %}
                     {%if 'inspector' in session['role'] %}
                         <li class="top_menu_item" id='can_stand' ><a href="/{{g.current_lang}}/can_stand">{{_('Filling parking') }}</a></li> 

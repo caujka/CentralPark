@@ -15,8 +15,9 @@
 <div id="map-canvas"></div>
 
 
+<input type="text" size="10" id='radius1'></input>
 
-<button onclick="getLocation();"><b>{{_('Show info') }}</b></button>
+<button onclick="return getLocation(); "><b>{{_('Show info') }}</b></button>
 
 <div id="id_list_pay"></div>
 <div id="container"></div>
@@ -45,29 +46,45 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
+var options = { frequency: 3000 };//{ maximumAge: 3000, timeout: 5000, enableHighAccuracy: true };
+
+
+function onError(error) {
+    alert('code: '    + error.code    + '\n' +
+          'message: ' + error.message + '\n');
+}
+
+function clearWatch() {
+        if (watchID != null) {
+            navigator.geolocation.clearWatch(watchID);
+            watchID = null;
+        }
+}
+
+var watchID = null;
+
 
 function getLocation() {
+  clearWatch();
+  //navigator.geolocation.getCurrentPosition(onSuccess, onError);
+  watchID = navigator.geolocation.watchPosition(showPosition,onError,options);
+}
 
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(showPosition);
-  }
-  else {
-    place_on_page.innerHTML="Geolocation is not supported by this browser.";
-  }
+document.addEventListener("deviceready", getLocation, false);
 
-  }
 
 function showPosition(position)  {
+
   sh = position.coords.latitude
   vv = position.coords.longitude
-  r = 2500
-
+  
+  var r = parseInt(document.getElementById('radius1').value)
   var formData = {
                 "coord_lan":sh,
                 "coord_log":vv,
                 "radius":r
   };
-
+ 
   var lang_code = document.URL.split('/')[3];
     $.ajax({
             url:'/'+lang_code+'/take_coord',
@@ -76,80 +93,78 @@ function showPosition(position)  {
             contentType: "application/json",
             success: function (response)
             {
-
                 var mapOptions1 = {
                     zoom: 12,
                     center: new google.maps.LatLng(sh,vv),
                     mapTypeId: google.maps.MapTypeId.TERRAIN
-  };
-
-  var citymap = {};
-        citymap['lviv'] = {
-            center: new google.maps.LatLng(49.8392491,24.0300454),
-        };
-  
-  var cityCircle;
-  var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions1);
-  for (var city in citymap) {
-      var placeOptions = {
-                          strokeColor: '#FF0000',
-                          strokeOpacity: 0.8,
-                          strokeWeight: 2,
-                          fillColor: '#FF0000',
-                          fillOpacity: 0.35,
-                          map: map,
-                          center: new google.maps.LatLng(sh,vv),
-                          radius: r,
-                          zoom:20
-      };
-  }
-
-  cityCircle = new google.maps.Circle(placeOptions);
-
-
-              list_loc = response;
-              list_of_aval_point = new Array;
-              list_marker = new Array;
-              var a = [];
-
-
-              for (i=0; i < list_loc['list_ofcoord'].length; i++) {
-
-                var latLng_center = new google.maps.LatLng(sh,vv);
-                var latLng_point = new google.maps.LatLng(list_loc['list_ofcoord'][i][0],list_loc['list_ofcoord'][i][1]);      
-                var distanceInMetres = google.maps.geometry.spherical.computeDistanceBetween(latLng_point, latLng_center);
-                radius = r;
-
-                if (distanceInMetres <= radius) {
-                  list_of_aval_point.push(i);
-                  var point = (latLng_point['k'], latLng_point['A']);
-                  a.push({lan:latLng_point['k'], lon:latLng_point['A']});
-                  var latLng = new google.maps.LatLng(latLng_point['k'],latLng_point['A'] )
-
-                  var marker = new google.maps.Marker({
-
-                    position: latLng,
-                    map: map,
-
-                    title: 'Parking ' + list_loc['list_ofcoord'][i][2]
-
-                
-                  });
-                  markers.push(marker);
-
                 };
 
-                
-              }
+                var citymap = {};
+                      citymap['lviv'] = {
+                          center: new google.maps.LatLng(49.8392491,24.0300454),
+                      };
+  
+                var cityCircle;
+                var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions1);
+                for (var city in citymap) {
+                    var placeOptions = {
+                                        strokeColor: '#FF0000',
+                                        strokeOpacity: 0.8,
+                                        strokeWeight: 2,
+                                        fillColor: '#FF0000',
+                                        fillOpacity: 0.35,
+                                        map: map,
+                                        center: new google.maps.LatLng(sh,vv),
+                                        radius: r,
+                                        zoom:20
+                    };
+                }
 
-              for (var i = 0; i < markers.length; i++) {
-                  markers[i].setMap(map);
-              }
+                cityCircle = new google.maps.Circle(placeOptions);
+
+
+
+                list_loc = response;
+                list_of_aval_point = new Array;
+                list_marker = new Array;
+                var a = [];
+
+
+                for (i=0; i < list_loc['list_ofcoord'].length; i++) {
+
+                  var latLng_center = new google.maps.LatLng(sh,vv);
+                  var latLng_point = new google.maps.LatLng(list_loc['list_ofcoord'][i][0],list_loc['list_ofcoord'][i][1]);      
+                  var distanceInMetres = google.maps.geometry.spherical.computeDistanceBetween(latLng_point, latLng_center);
+                  radius = r;
+
+                  if (distanceInMetres <= radius) {
+                    list_of_aval_point.push(i);
+                    var point = (latLng_point['k'], latLng_point['A']);
+                    a.push({lan:latLng_point['k'], lon:latLng_point['A']});
+                    var latLng = new google.maps.LatLng(latLng_point['k'],latLng_point['A'] )
+
+                    var marker = new google.maps.Marker({
+
+                      position: latLng,
+                      map: map,
+
+                      title: 'Parking ' + list_loc['list_ofcoord'][i][2]
+
+                  
+                    });
+                    markers.push(marker);
+
+                  };
+                }
+
+                for (var i = 0; i < markers.length; i++) {
+                    markers[i].setMap(map);
+                }
              
 
-              var formD = {
-                           "ls":list_of_aval_point
-              };
+                var formD = {
+                             "ls":list_of_aval_point
+                };
                 $.ajax({
                         url:'/'+lang_code+'/get_payment_by_coord',
                         type:'POST',
@@ -170,14 +185,15 @@ function showPosition(position)  {
                             }
                             inHTML  += '</div>';
                             container.innerHTML += inHTML;
+
                           }
+
                         },
                         error:function(resp){
                           alert('erorr')
 
                         }
                 });
-
 
               },  
               error: function (response)
@@ -187,7 +203,7 @@ function showPosition(position)  {
 
     });
 
- }
+}
                 
 </script>
 </fieldset>

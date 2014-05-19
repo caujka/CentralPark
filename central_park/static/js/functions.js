@@ -6,7 +6,6 @@ function checkform ( form )
         if (!is_valid_place(form.place.value)) {fields_to_check += "place name, "};
         if (!is_valid_car_number(form.car_number.value)) {fields_to_check += "car number, "};
         if (!is_valid_cost(form.cost.value)) {fields_to_check += "cost"};
-        console.log("cf", form.cost.value, form.cost.value );
         if (fields_to_check != "") {
             alert("You entered not correct information. Please, check next fields: ".concat(fields_to_check));
             return false;
@@ -16,13 +15,10 @@ function checkform ( form )
 
 is_valid_cost = function(value){
     value = $.trim(value);
-    console.log(value);
     var isWhole_re  = /^\s*\d{1,3}\s*$/;
     if (String(value).search(isWhole_re) != -1){
-        console.log("True");
         return true;
     };
-    console.log("False");
     return false;
 }
 

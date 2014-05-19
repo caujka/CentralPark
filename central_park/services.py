@@ -212,6 +212,7 @@ def get_placeid_by_placename(place_name):
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
     if parking_place != [] and parking_place != None:
         return parking_place[0][0]
+    return None
 
 
 def create_payment_record(car_number, place_id, cost, transaction):
@@ -376,7 +377,7 @@ def take_parking_coord():
     for i in locations:
         ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
-    
+
     k = 0
     while k < len(tup):
         a = tuple([x for x in tup[k].split(',')])
@@ -479,7 +480,7 @@ def create_SMSHistory_record(sms_id, site_service_id):
         raise AttributeError
 
 
-def create_text_sms_response(place, car_number, cost):
+def create_text_successful_sms_response(place, car_number, cost):
     parked_car = Payment
     try:
         parked_car = is_car_already_parked_here(get_placeid_by_placename(place), car_number)
@@ -493,3 +494,29 @@ def create_text_sms_response(place, car_number, cost):
     est_time = calculate_estimated_time(time_start, cost, get_placeid_by_placename(place))
     est_time_str = est_time.strftime("%H:%M %d-%m-%Y")
     return "Vy oplatyly stojanky '" + place + "' dlia avto '" + car_number + "'. Parkovka do " + est_time_str
+
+
+def add_tariff_matrix(place_id, tariff_matrix):
+    tariff_matrix_list = [int(x) for x in tariff_matrix.split(';')]
+    if len(tariff_matrix_list) == 24 and all(isinstance(price, int) for price in tariff_matrix_list):
+        try:
+            tariff = PriceHistory(place_id, datetime.now(), tariff_matrix)
+            db_session.add(tariff)
+            db_session.commit()
+            return True
+        except ValueError:
+            logging.error("database insertion error in add_tariff_matrix", ValueError)
+            return False
+
+
+def add_parking_place(name, place_category, location, address, min_capacity):
+    try:
+        if db_session.query(ParkingPlace).filter(ParkingPlace.name == name).all() != []:
+            return False
+        else:
+            parking_place = ParkingPlace(name, place_category, location, address, min_capacity)
+            db_session.add(parking_place)
+            db_session.commit()
+            return True
+    except ValueError:
+        logging.error("database insertion error in add_parking_place: %s" % ValueError)

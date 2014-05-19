@@ -24,12 +24,14 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 def check_card_number():
 	return True
 
+
 def send_data(data):
 	data_json = json.dumps(data)
 	payload = {'json_payload': data_json}
 	url = "http://localhost:5002/server_url"
 	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 	r = requests.post(url, data=json.dumps(data), headers=headers)
+
 
 @app.route('/transaction', methods=['POST'])
 def pay():
@@ -46,6 +48,7 @@ def pay():
 		info['return_url'] = request.form.get('return_url')
 		send_data(info)
 		return redirect(info['return_url'], code=302)
+
 
 @app.route('/payment', methods=['POST'])
 def testpay():

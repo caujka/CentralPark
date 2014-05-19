@@ -17,7 +17,22 @@
     <div id="map-canvas" style="width:60%; height:100%; float:left"></div>
     <div id="content-window" style="width:40%; height:100%; float:left">
 Here goes some statistics<br />
+<fieldset>{{_('Choose parking lot') }} 
+    <select id="place_id" name="place" >
+        {% for place in place_list %} 
+            <option value="{{place}}" size="20">{{place}}</option>
+        {% endfor %}
+    </select>
+</fieldset><br/>
+    <input data-datepicker="datepicker" class="small" type="text" value="2014-04-07" name="date" id="data_id1" />
+    <i class="glyphicon glyphicon-calendar"></i>        
+  
+     <input type="submit"  onclick="date1click()" size="20" value={{ _('Show')}}>  
+
 <div id="chart_div"></div>
+<div id="year_statistic_div"></div>
+<div id="day_statistic_div"></div>
+
 </div>
 {% endblock %}
 
