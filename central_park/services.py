@@ -425,45 +425,6 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
-
-def get_statistics_by_place(place_name):
-    stat = []
-    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter(ParkingPlace.name == place_name, ParkingPlace.id == Payment.place_id).all()
-    for i in statistics:
-        stat.append([i[1], i[2]])
-    return stat
-
-
-def statistics_payment_fill():
-    cars_count = 100
-    year_b = 2000
-    month_b = 10
-    day_b = 1
-
-    year_e = 2014
-    month_e = 11
-    day_e = 1
-    for x in range(0, cars_count):
-        start_time = time.mktime(datetime.date(year_b, month_b, day_b).timetuple())
-        end_time = time.mktime(datetime.date(year_e, month_e, day_e).timetuple())
-
-        date = random.randrange(int(start_time), int(end_time))
-        activation_time = datetime.datetime.fromtimestamp(date)
-
-        car_number = (random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + " "+ str(random.randint(1000,9999))+ random.choice(string.ascii_letters) + random.choice(string.ascii_letters)).upper()
-        cost = random.randint(10,90)
-        place_id = random.randint(1,6)
-        transaction = 'string'
-
-        pricehistory_id = get_current_pricehistory_id(place_id)
-        estimated_time = calculate_estimated_time(activation_time, cost, place_id)
-        pay = Payment(car_number, cost, estimated_time, transaction, place_id, pricehistory_id)
-        pay.activation_time = activation_time
-        db_session.add(pay)
-        db_session.commit()
-    return "all payments ok"
-
-
 def get_tariff_for_parked_car(just_parked_car):
     tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
     tariff = ""
@@ -472,7 +433,6 @@ def get_tariff_for_parked_car(just_parked_car):
         tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
         time_tmp += timedelta(hours=1)
     return tariff
-
 
 def create_SMSHistory_record(sms_id, site_service_id):
     try:
