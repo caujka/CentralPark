@@ -1,48 +1,18 @@
 //ajax_return_data_parking(res)
-var date1="";
-function date1click(){
-    date1=$("#data_id1").val();
-    ajax_statistic_init_return(date1, $("#place_id").val());
-    }
-
-function ajax_statistic_init_return(date, parking_name)
-{
-$("#year_statistic_div").html("<marquee><h3>...loading...</h3><marquee>"); 
-$("#day_statistic_div").html(""); 
-$.ajax({
-    url:"/statistic_ajax_year",
-        data: {"parking_name":parking_name,
-                "date1":date
-        },
-        contentType: 'application/json',
-        success: function(res){
-$("#year_statistic_div").html(""); 
-$("#day_statistic_div").html(""); 
-  drawYearStat(res["statistics_year"]);
-  drawDayStat(res["statistics_day"]);   
-}
-      }); 
-
-};
 
 function initialize() {
 
 function ajax_return_info(_marker,res)
 {
   call_info_window(_marker,res["info"]);
-  $("#place_id [value="+"'"+res['place_name']+"']").attr("selected", "selected");
-//  drawChart(res["statistics"]);
-//  drawBar();
+  drawChart(res["statistics"]);
 }
 
 function ajax_init_info(_marker,str)
 {
 $.ajax({
     url:"/maps_ajax_info",
-        data: {"parking_name":str,
-                "date1":date1,
-                "date2":""
-        },
+        data: {"parking_name":str},
         contentType: 'application/json',
         success: function(res){ajax_return_info(_marker,res);}
       }); 

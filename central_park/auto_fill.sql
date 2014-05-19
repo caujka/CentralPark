@@ -1,1 +1,60 @@
-select * from payment, parkingplace where (parkingplace.name='name12' and parkingplace.id = payment.place_id and date(payment.activation_time)='2014-04-07')
+DELETE FROM ParkingPlace;
+
+INSERT INTO ParkingPlace VALUES (0, 'name01', 0, "49.839951,24.028375", "address", 2);
+INSERT INTO ParkingPlace VALUES (1, 'name02', 0, "49.832876,23.998107", "address", 3);
+INSERT INTO ParkingPlace VALUES (2, 'name03', 1, "49.832626,23.999652", "address",1);
+INSERT INTO ParkingPlace VALUES (3, 'name11', 1, "49.839436,23.99521", "address",2);
+INSERT INTO ParkingPlace VALUES (4, 'name12', 1, "49.842563,24.017848", "address",3);
+INSERT INTO ParkingPlace VALUES (5, 'name13', 0, "49.842563,23.017848", "address",1);
+INSERT INTO ParkingPlace VALUES (6, 'name21', 0, "49.852563,24.017848", "address",2);
+INSERT INTO ParkingPlace VALUES (7, 'name22', 1, "49.842563,23.013248", "address",1);
+INSERT INTO ParkingPlace VALUES (8, 'name23', 0, "49.832563,24.99948", "address",2);
+
+DELETE FROM PriceHistory;
+
+INSERT INTO PriceHistory VALUES (0,'2013-10-07 08:23:19',  '35;35;35;35;35;35;35;35;35;35;35;35;30;30;30;30;30;30;30;35;35;35;35;35',  0);
+INSERT INTO PriceHistory VALUES (1,  '2013-11-07 12:23:19', '35;35;35;35;35;35;35;35;35;35;35;35;30;30;30;30;30;30;30;35;35;35;35;35',1);
+INSERT INTO PriceHistory VALUES (2,  '2013-11-07 23:23:19', '35;35;35;35;35;35;35;35;35;35;35;35;30;30;30;30;30;30;30;35;35;35;35;35',2);
+INSERT INTO PriceHistory VALUES (3, '2014-03-07 23:23:19', '5;5;5;5;5;5;15;15;15;15;15;15;10;10;10;10;10;10;10;15;15;15;15;15',  0);
+INSERT INTO PriceHistory VALUES (4,  '2014-03-07 23:23:19', '15;15;15;15;15;15;15;15;15;15;15;15;20;20;20;20;20;20;20;15;15;15;15;15',1);
+INSERT INTO PriceHistory VALUES (5, '2014-03-07 23:23:19', '25;25;25;25;25;25;35;35;35;35;35;35;30;30;30;30;30;30;30;25;25;25;25;25',  2);
+INSERT INTO PriceHistory VALUES (6, '2014-03-07 23:23:19', '25;25;25;25;25;25;35;35;35;35;35;35;30;30;30;30;30;30;30;25;25;25;25;25',  3);
+INSERT INTO PriceHistory VALUES (7, '2014-03-07 23:23:19', '5;5;5;5;5;5;15;15;15;15;15;15;10;10;10;10;10;10;10;15;15;15;15;15',  4);
+INSERT INTO PriceHistory VALUES (8,  '2014-03-07 23:23:19', '15;15;15;15;15;15;15;15;15;15;15;15;20;20;20;20;20;20;20;15;15;15;15;15',5);
+INSERT INTO PriceHistory VALUES (9, '2014-03-07 23:23:19', '25;25;25;25;25;25;35;35;35;35;35;35;30;30;30;30;30;30;30;25;25;25;25;25',  6);
+INSERT INTO PriceHistory VALUES (10, '2014-03-07 23:23:19', '5;5;5;5;5;5;15;15;15;15;15;15;10;10;10;10;10;10;10;15;15;15;15;15',  7);
+INSERT INTO PriceHistory VALUES (11,  '2014-03-07 23:23:19', '15;15;15;15;15;15;15;15;15;15;15;15;20;20;20;20;20;20;20;15;15;15;15;15',8);
+
+
+
+
+DELETE FROM Payment;
+
+INSERT INTO Payment VALUES (0, 'АТ0001СВ', '30','2014-04-07 08:20:19', '2014-04-07 08:23:19', 'string', '0', '0');
+INSERT INTO Payment VALUES (1, 'АТ0002СВ', '40','2014-04-07 08:20:19', '2014-04-07 09:23:19', 'string', '1', '1');
+INSERT INTO Payment VALUES (2, 'АТ0003СВ', '35','2014-04-06 09:20:19', '2014-04-07 10:23:19', 'string', '2', '2');
+INSERT INTO Payment VALUES (3, 'АТ0004СВ', '10','2014-04-06 09:20:19', '2014-04-07 11:23:19', 'string','3', '6');
+INSERT INTO Payment VALUES (4, 'АТ0005СВ', '10','2014-04-06 09:20:19', '2014-04-07 12:23:19', 'string','4', '7');
+INSERT INTO Payment VALUES (5, 'АТ0006СВ', '11','2014-04-06 09:20:19', '2014-04-07 13:23:19', 'string','5', '8');
+INSERT INTO Payment VALUES (6, 'АТ0007СВ', '15','2014-04-06 09:20:19', '2014-04-07 14:23:19', 'string','6', '9');
+INSERT INTO Payment VALUES (7, 'АТ0008СВ', '80','2014-04-06 09:20:19', '2014-04-07 09:23:19', 'string','7', '10');
+INSERT INTO Payment VALUES (8, 'АТ0009СВ', '20','2014-04-06 09:20:19', '2014-04-07 08:23:19', 'string', '8', '11');
+
+INSERT INTO Payment VALUES (9, 'АТ0001СВ', '30','2014-04-07 15:20:19', '2014-04-09 08:23:19', 'string','0', '3');
+INSERT INTO Payment VALUES (10, 'АТ0002СВ', '40','2014-04-07 15:20:19', '2014-04-09 09:23:19', 'string','1', '4');
+INSERT INTO Payment VALUES (11, 'АТ0003СВ', '35','2014-04-07 15:20:19', '2014-04-09 10:23:19', 'string','2', '5');
+INSERT INTO Payment VALUES (12, 'АТ0004СВ', '10','2014-04-07 15:20:19', '2014-04-09 11:23:19', 'string','3', '6');
+INSERT INTO Payment VALUES (13, 'АТ0005СВ', '10','2014-04-07 15:20:19', '2014-04-09 12:23:19', 'string','4', '7');
+INSERT INTO Payment VALUES (14, 'АТ0006СВ', '11','2014-04-07 15:20:19', '2014-04-09 13:23:19', 'string','5', '8');
+INSERT INTO Payment VALUES (15, 'АТ0007СВ', '15','2014-04-07 15:20:19', '2014-04-09 14:23:19', 'string','6', '9');
+INSERT INTO Payment VALUES (16, 'АТ0008СВ', '80','2014-04-07 15:20:19', '2014-04-09 09:23:19', 'string','7', '10');
+INSERT INTO Payment VALUES (17, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-09 08:23:19', 'string','8', '11');
+
+INSERT INTO Payment VALUES (18, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 08:23:19', 'string','0', '3');
+INSERT INTO Payment VALUES (19, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 09:23:19', 'string','1', '4');
+INSERT INTO Payment VALUES (20, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 10:23:19', 'string','2', '5');
+INSERT INTO Payment VALUES (21, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 11:23:19', 'string','3', '6');
+INSERT INTO Payment VALUES (22, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 12:23:19', 'string','4', '7');
+INSERT INTO Payment VALUES (23, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 13:23:19', 'string','5', '8');
+INSERT INTO Payment VALUES (24, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 14:23:19', 'string','6', '9');
+INSERT INTO Payment VALUES (25, 'АТ0009СВ', '20','2014-04-07 15:20:19', '2014-04-30 15:23:19', 'string','7', '10');
