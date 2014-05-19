@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-import os, time
-from services import * 
-from datetime import datetime, timedelta
-from models import *
+import os
 from database import db_session, init_db
-from services import *
-from statistics import *
+import services
 
 from flask import *
 
@@ -13,7 +9,7 @@ from flask import Flask, request, render_template, jsonify, json, redirect, url_
 import re
 from authentication import *
 from flask.ext.babel import *
-#from flask_babelex import Babel
+from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
@@ -44,11 +40,10 @@ app.config.update(dict(
 def log():
     if request.method == 'GET':
         return render_template('log.html')
-    if request.method == 'POST':    
+    if request.method == 'POST':
         name = request.json['log']
         pas = func_hash(request.json['pass'])
         check_user_info(name, pas)
-        print session['role']
         return render_template('welcome.html')
 
 
@@ -64,8 +59,9 @@ def loggout():
 
 
 @babel.localeselector
-def get_locale():   
+def get_locale():
     return g.get('current_lang', 'en')
+
 
 @app.before_request
 def before():
@@ -97,11 +93,6 @@ def home():
 @app.route('/<lang_code>')
 def index():
     return render_template('start.html')
-
-
-@app.route('/<lang_code>/testpay')
-def testpay():
-    return render_template('testpay.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -149,10 +140,6 @@ def payment():
         logging.exception("Exception was received in %s: %s", inspect.stack()[0][3], extra=Exception)
         return render_template("payment_response.html", error=Exception)
 
-
-@app.route('/return_url', methods=['GET', 'POST'])
-def payment_success():
-    return render_template('payment_success.html')
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():
@@ -205,8 +192,8 @@ def log_in():
 
 @app.route('/<lang_code>/maps', methods=['GET', 'POST'])
 def maps():
-    list_of_place = get_list_of_places_names()
-    return render_template('maps.html',place_list=list_of_place)
+    return render_template('maps.html', classactive_maps="class=active")
+
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():
@@ -216,14 +203,7 @@ def welcome():
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
     s = request.args.get('parking_name')
-    return jsonify({'info':"Here goes info about parking place",
-'place_name':s})
-
-@app.route('/statistic_ajax_year', methods=['GET', 'POST'])
-def statistics_year():
-    s = request.args.get('parking_name')
-    date1 = request.args.get('date1')
-    return jsonify({'place_name':s,'statistics_year':get_statistics_by_place_year(s, date1),'statistics_day':get_statistics_by_place_day(s, date1) })
+    return jsonify({'statistics': get_statistics_by_place(s), 'info': "Here goes info about parking place" + s})
 
 
 @app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])
@@ -291,7 +271,8 @@ def authenticate_sms_paying_request():
                                       int(request.form['sms_price']), 'sms'+str(request.form['site_service_id'])+"waiting")
                 logging.info("SMS Payment request was created. Transaction: %s" % 'sms'+request.form['site_service_id']+'waiting')
 
-                sms_response = create_text_sms_response(sms_body['place'], sms_body['car_number'], request.form['sms_price'])
+                sms_response = create_text_successful_sms_response(sms_body['place'], sms_body['car_number'],
+                                                                   int(request.form['sms_price']))
                 return jsonify(sms_id=request.form['sms_id'], response=sms_response, error=0)
             logging.info("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
     else:
@@ -307,17 +288,59 @@ def authenticate_sms_paying_request():
 
 @app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
-    print "in sms_pay_submit"
-    print "print request.form['status']=", request.form['status']
     if int(request.form['status']) == 1:
-        print "in request.form['status']==1"
         payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Finished sms payment with id: %s" % payment_id)
     else:
-        print "request.form['status']=!1"
         delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Sms paying was not successful. Payment record was deleted")
     return jsonify(status='Done')
+
+
+@app.route('/<lang_code>/add_place', methods=['GET', 'POST'])
+def add_new_parking_place():
+    if request.method == 'GET':
+        return render_template('add_place.html')
+    elif request.method == 'POST':
+        result = add_parking_place(request.json['place'], request.json['category'],
+                                   request.json['location'], request.json['address'],
+                                   int(request.json['min_capacity']))
+        if result:
+            logging.info("new place was created: %s" % request.json['place'])
+            return render_template('add_place_response.html',
+                                   place=request.json['place'],
+                                   location=request.json['location'],
+                                   address=request.json['address'],
+                                   min_capacity=request.json['min_capacity'], error=None)
+        elif result == False:
+            return render_template('add_place_response.html', error='Parking place with such name already exist.')
+        else:
+            return render_template('add_place_response.html', error='database insertion error in add_parking_place')
+
+
+@app.route('/<lang_code>/add_tariff', methods=['GET', 'POST'])
+def add_new_tariff_matrix():
+    if request.method == 'GET':
+        return render_template('add_tariff.html')
+    elif request.method == 'POST':
+        if add_tariff_matrix(get_placeid_by_placename(request.json['place']), request.json['tariff']):
+            logging.info("new tariff was created for place %s" % request.json['place'])
+            return render_template('add_tariff_response.html',
+                                   place=request.json['place'],
+                                   tariff=request.json['tariff'])
+        else:
+            return render_template('add_tariff_response.html', error='Database insertion error, Please, try again')
+
+
+@app.route('/<lang_code>/get_cur_tariff', methods=['POST'])
+def get_cur_tariff():
+    if request.method == 'POST':
+        tariff = get_current_tariff_matrix(get_placeid_by_placename(request.json['place']))
+        if tariff:
+            return jsonify(response=tariff)
+        else:
+            return jsonify(response='error')
+
 
 
 if __name__ == '__main__':

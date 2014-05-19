@@ -211,8 +211,8 @@ def get_placeid_by_placename(place_name):
     """
     parking_place = db_session.query(ParkingPlace.id).filter(ParkingPlace.name == place_name).all()
     if parking_place != [] and parking_place != None:
-        print "-------------", parking_place
         return parking_place[0][0]
+    return None
 
 
 def create_payment_record(car_number, place_id, cost, transaction):
@@ -377,7 +377,7 @@ def take_parking_coord():
     for i in locations:
         ls.append(i[0]+','+str(i[2]) )
         tup = tuple(ls)
-    
+
     k = 0
     while k < len(tup):
         a = tuple([x for x in tup[k].split(',')])
@@ -389,8 +389,6 @@ def take_parking_coord():
 def finish_sms_payment_record(transaction):
     record = db_session.query(Payment).filter(Payment.transaction.like("%" + transaction + "%")).one()
     if record is not None:
-        print "record founded"
-        print record.transaction
         record.transaction = record.transaction.replace(transaction, transaction.split("waiting")[0])
         payment_id = record.id
 
@@ -425,6 +423,45 @@ def get_payment_by_circle_coord(list_of_id):
             list_of_payment.append(element)
     return list_of_payment
 
+
+def get_statistics_by_place(place_name):
+    stat = []
+    statistics = db_session.query(ParkingPlace.name, Payment.car_number, Payment.cost).filter(ParkingPlace.name == place_name, ParkingPlace.id == Payment.place_id).all()
+    for i in statistics:
+        stat.append([i[1], i[2]])
+    return stat
+
+
+def statistics_payment_fill():
+    cars_count = 100
+    year_b = 2000
+    month_b = 10
+    day_b = 1
+
+    year_e = 2014
+    month_e = 11
+    day_e = 1
+    for x in range(0, cars_count):
+        start_time = time.mktime(datetime.date(year_b, month_b, day_b).timetuple())
+        end_time = time.mktime(datetime.date(year_e, month_e, day_e).timetuple())
+
+        date = random.randrange(int(start_time), int(end_time))
+        activation_time = datetime.datetime.fromtimestamp(date)
+
+        car_number = (random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + " "+ str(random.randint(1000,9999))+ random.choice(string.ascii_letters) + random.choice(string.ascii_letters)).upper()
+        cost = random.randint(10,90)
+        place_id = random.randint(1,6)
+        transaction = 'string'
+
+        pricehistory_id = get_current_pricehistory_id(place_id)
+        estimated_time = calculate_estimated_time(activation_time, cost, place_id)
+        pay = Payment(car_number, cost, estimated_time, transaction, place_id, pricehistory_id)
+        pay.activation_time = activation_time
+        db_session.add(pay)
+        db_session.commit()
+    return "all payments ok"
+
+
 def get_tariff_for_parked_car(just_parked_car):
     tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(just_parked_car.place_id))
     tariff = ""
@@ -433,6 +470,7 @@ def get_tariff_for_parked_car(just_parked_car):
         tariff += str(time_tmp.hour) + " hour: " + str(tariff_matrix[time_tmp.hour]) + "hrn/h; "
         time_tmp += timedelta(hours=1)
     return tariff
+
 
 def create_SMSHistory_record(sms_id, site_service_id):
     try:
@@ -443,7 +481,7 @@ def create_SMSHistory_record(sms_id, site_service_id):
         raise AttributeError
 
 
-def create_text_sms_response(place, car_number, cost):
+def create_text_successful_sms_response(place, car_number, cost):
     parked_car = Payment
     try:
         parked_car = is_car_already_parked_here(get_placeid_by_placename(place), car_number)
@@ -457,3 +495,29 @@ def create_text_sms_response(place, car_number, cost):
     est_time = calculate_estimated_time(time_start, cost, get_placeid_by_placename(place))
     est_time_str = est_time.strftime("%H:%M %d-%m-%Y")
     return "Vy oplatyly stojanky '" + place + "' dlia avto '" + car_number + "'. Parkovka do " + est_time_str
+
+
+def add_tariff_matrix(place_id, tariff_matrix):
+    tariff_matrix_list = [int(x) for x in tariff_matrix.split(';')]
+    if len(tariff_matrix_list) == 24 and all(isinstance(price, int) for price in tariff_matrix_list):
+        try:
+            tariff = PriceHistory(place_id, datetime.now(), tariff_matrix)
+            db_session.add(tariff)
+            db_session.commit()
+            return True
+        except ValueError:
+            logging.error("database insertion error in add_tariff_matrix", ValueError)
+            return False
+
+
+def add_parking_place(name, place_category, location, address, min_capacity):
+    try:
+        if db_session.query(ParkingPlace).filter(ParkingPlace.name == name).all() != []:
+            return False
+        else:
+            parking_place = ParkingPlace(name, place_category, location, address, min_capacity)
+            db_session.add(parking_place)
+            db_session.commit()
+            return True
+    except ValueError:
+        logging.error("database insertion error in add_parking_place: %s" % ValueError)
