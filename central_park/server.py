@@ -5,14 +5,10 @@ from datetime import datetime, timedelta
 from models import *
 from database import db_session, init_db
 from services import *
-
 from flask import *
-
-from flask import Flask, request, render_template, jsonify, json, redirect, url_for
 import re
 from authentication import *
 from flask.ext.babel import *
-#from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
@@ -47,7 +43,6 @@ def log():
         name = request.json['log']
         pas = func_hash(request.json['pass'])
         check_user_info(name, pas)
-        print session['role']
         return render_template('welcome.html')
 
 
@@ -299,14 +294,10 @@ def authenticate_sms_paying_request():
 
 @app.route('/<lang_code>/sms_pay_submit', methods=['POST'])
 def submit_sms_paying_request():
-    print "in sms_pay_submit"
-    print "print request.form['status']=", request.form['status']
     if int(request.form['status']) == 1:
-        print "in request.form['status']==1"
         payment_id = finish_sms_payment_record("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Finished sms payment with id: %s" % payment_id)
     else:
-        print "request.form['status']=!1"
         delete_payment_by_transaction("sms" + request.form['site_service_id'] + "waiting")
         logging.info("Sms paying was not successful. Payment record was deleted")
     return jsonify(status='Done')
