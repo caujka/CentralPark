@@ -1,0 +1,12 @@
+<form action="http://127.0.0.1:5001/transaction" method="POST">
+    <input type="text" name="amt" value= "{{ info.amt }}"/>      
+    <input type="text" name="ccy" value="{{ info.ccy }}" />      
+    <input type="text" name="merchant" value="{{ info.merchant }}" />  
+    <input type="text" name="card_number"/>  
+    <input type="hidden" name="order" value="{{ info.order }}" />     
+    <input type="hidden" name="details" value="{{ info.details }}" />
+    <input type="hidden" name="ext_details" value="{{ info.ext_details }}" />  
+    <input type="hidden" name="pay_way" value="{{ info.pay_way }}" />      
+    <input type="hidden" name="return_url" value="{{ info.return_url }}" />  
+    <input type="hidden" name="server_url" value="{{ info.server_url }}" />      
+    <input type="submit" value="Оплатить" /> </form>    

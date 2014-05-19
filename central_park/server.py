@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
+import os, time
+from services import * 
+from datetime import datetime, timedelta
+from models import *
 from database import db_session, init_db
 from services import *
+from statistics import *
 
 from flask import *
 
@@ -9,16 +13,18 @@ from flask import Flask, request, render_template, jsonify, json, redirect, url_
 import re
 from authentication import *
 from flask.ext.babel import *
-from flask_babelex import Babel
+#from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
 import re
 import logging
+import inspect
 
 
 logging.basicConfig(filename=u"server.log",
-                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s')
+                    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.NOTSET)
 
 # create our little application :)
 app = Flask(__name__)
@@ -34,7 +40,7 @@ app.config.update(dict(
 ))
 
 
-@app.route('/<lang_code>/log', methods=['GET','POST'])
+@app.route('/<lang_code>/log', methods=['GET', 'POST'])
 def log():
     if request.method == 'GET':
         return render_template('log.html')
@@ -48,15 +54,18 @@ def log():
 
 @app.route('/<lang_code>/logout')
 def loggout():
+    #user_name = session['username']
     session.pop('logged_in', None)
     session.pop('name', None)
     flash("You were logged out")
+
+    #logging.info("User '"+user_name+"' logged out")
     return render_template('log.html')
-        
+
+
 @babel.localeselector
 def get_locale():   
     return g.get('current_lang', 'en')
-
 
 @app.before_request
 def before():
@@ -82,12 +91,17 @@ app.config.from_envvar('APP_SETTINGS', silent=True)
 
 @app.route('/')
 def home():
-     return redirect(url_for('welcome', lang_code="en"))
+     return redirect(url_for('payment', lang_code="en"))
 
 
 @app.route('/<lang_code>')
 def index():
     return render_template('start.html')
+
+
+@app.route('/<lang_code>/testpay')
+def testpay():
+    return render_template('testpay.html')
 
 
 @app.route('/<lang_code>/payment', methods=['GET', 'POST'])
@@ -125,28 +139,34 @@ def payment():
                         'place': request.json['place'],
                         'rate': get_tariff_for_parked_car(just_parked_car)
                     }
+                logging.info("Place %s was booked via banking by %s", credentials['place'], credentials['car_number'])
                 return render_template("payment_response.html", credentials=credentials)
                 #return redirect("127.0.0.1:5001/banking")    - NOT IMPLEMENTED
             else:
-                error = "Your data is not valid"
+                error = "Database insertion error. Please, check entered data and try again"
                 return render_template("payment_response.html", error=error)
-    except BaseException:
-        return render_template("payment_response.html", error=BaseException)
+    except Exception:
+        logging.exception("Exception was received in %s: %s", inspect.stack()[0][3], extra=Exception)
+        return render_template("payment_response.html", error=Exception)
 
+
+@app.route('/return_url', methods=['GET', 'POST'])
+def payment_success():
+    return render_template('payment_success.html')
 
 @app.route('/<lang_code>/history', methods=['GET', 'POST'])
 def show_history():
-    
     if request.method == 'GET':
         list_of_place = get_list_of_places_names()
         return render_template('history.html', place_list=list_of_place)
-    
     else:
-        chosen_place = request.json['place']
-        date_time = request.json['date']
-        actual_history = get_payment_by_date(get_placeid_by_placename(chosen_place), date_time)
-        return render_template('response_history.html', history_info=actual_history)
-
+        try:
+            chosen_place = request.json['place']
+            date_time = request.json['date']
+            actual_history = get_payment_by_date(get_placeid_by_placename(chosen_place), date_time)
+            return render_template('response_history.html', history_info=actual_history)
+        except Exception:
+            logging ("Error was occurred in %s: %s", inspect.stack()[0][3], Exception)
 @app.route('/stats', methods=['GET', 'POST'])
 def stat():
     statistics_payment_fill()
@@ -185,8 +205,8 @@ def log_in():
 
 @app.route('/<lang_code>/maps', methods=['GET', 'POST'])
 def maps():
-    return render_template('maps.html', classactive_maps="class=active")
-
+    list_of_place = get_list_of_places_names()
+    return render_template('maps.html',place_list=list_of_place)
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
 def welcome():
@@ -196,7 +216,14 @@ def welcome():
 @app.route('/maps_ajax_info', methods=['GET', 'POST'])
 def maps_ajax():
     s = request.args.get('parking_name')
-    return jsonify({'statistics': get_statistics_by_place(s) ,'info':"Here goes info about parking place" + s})
+    return jsonify({'info':"Here goes info about parking place",
+'place_name':s})
+
+@app.route('/statistic_ajax_year', methods=['GET', 'POST'])
+def statistics_year():
+    s = request.args.get('parking_name')
+    date1 = request.args.get('date1')
+    return jsonify({'place_name':s,'statistics_year':get_statistics_by_place_year(s, date1),'statistics_day':get_statistics_by_place_day(s, date1) })
 
 
 @app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])
@@ -252,6 +279,7 @@ def get_payment_by_coord():
 @app.route('/<lang_code>/sms_pay_request', methods=['POST'])
 def authenticate_sms_paying_request():
     if request.form['sms_id'] not in get_list_of_sms_ids():
+        create_SMSHistory_record(request.form['sms_id'], request.form['site_service_id'])
         secret_key = md5()
         secret_key.update(str(request.form['sms_id']) + str(request.form['sms_body']) +
                           str(request.form['site_service_id']) + str(request.form['operator_id']) +
@@ -262,7 +290,9 @@ def authenticate_sms_paying_request():
                 create_payment_record(sms_body['car_number'], get_placeid_by_placename(sms_body['place']),
                                       int(request.form['sms_price']), 'sms'+str(request.form['site_service_id'])+"waiting")
                 logging.info("SMS Payment request was created. Transaction: %s" % 'sms'+request.form['site_service_id']+'waiting')
-                return jsonify(sms_id=request.form['sms_id'], response="Success", error=0)
+
+                sms_response = create_text_sms_response(sms_body['place'], sms_body['car_number'], request.form['sms_price'])
+                return jsonify(sms_id=request.form['sms_id'], response=sms_response, error=0)
             logging.info("SMS Payment was requested. Error in sms_body: '%s' was found" % (request.form['sms_body']))
     else:
         #log creating
@@ -292,4 +322,6 @@ def submit_sms_paying_request():
 
 if __name__ == '__main__':
     init_db()
+    print "Server started..."
     app.run(debug=True, use_reloader=False)
+
