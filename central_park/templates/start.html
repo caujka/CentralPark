@@ -41,13 +41,11 @@
             {% if not session['logged_in'] %}
                 <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay') }}</a> </li>
                 <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>
-                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>
                 <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/log" >{{_('Log in') }}</a> </li>
             {% endif %}
             {%if session['logged_in'] %}
                 <li class="top_menu_item" id='payment'><a href="/{{g.current_lang}}/payment">{{_('Pay') }}</a> </li>
                 <li class="top_menu_item" id='maps'><a href="/{{g.current_lang}}/maps">{{_('maps') }}</a></li>      
-                <li class="top_menu_item" id='find_place'><a href="/{{g.current_lang}}/find">{{_('Find parking') }}</a> </li>        
                     {% if 'admin' in session['role'] %}
                         <li class="top_menu_item" id='history'><a href="/{{g.current_lang}}/history">{{_('Statistic') }}</a> </li>
                         <li class="top_menu_item" id='add_tariff'><a href="/{{g.current_lang}}/add_tariff">{{_('Add tariff') }}</a> </li>

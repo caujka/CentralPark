@@ -6,7 +6,7 @@
 {% endif %}
 
 <fieldset font="Arial">
-    {{_('Enter parking place name: ') }}      <input  align="right"type=text name="place" id="place" onblur="getCurrentTariff();" value="{{place_from_map}}"  size="20" required>
+    {{_('Enter parking place name: ') }}      <input  align="right"type=text name="place" id="place" onkeyup="getCurrentTariff();" value="{{place_from_map}}"  size="20" required>
     <span id="place_valid"></span><br>
 
     <br><table id ="tarifftable" contenteditable="true" border=1 class="hidden">

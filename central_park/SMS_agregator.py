@@ -58,7 +58,7 @@ response = json.loads(r.content)
 if response['error'] == 0:
     credentials_submit = {
         "sms_id": credentials['sms_id'],
-        "status": 1,
+        "status": raw_input("Please, enter status (0Error/1Succsess): "),
         "user_num": credentials['user_num'],
         "site_service_id": credentials['site_service_id']
     }

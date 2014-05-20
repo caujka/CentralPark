@@ -3,17 +3,17 @@ import os
 from database import db_session, init_db
 from services import *
 from flask import *
+from statistics import *
 import re
 from authentication import *
 from flask.ext.babel import *
-#from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
 import re
 import logging
 import inspect
-from statistics import *
+
 logging.basicConfig(filename=u"server.log",
                     format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
                     level=logging.NOTSET)
