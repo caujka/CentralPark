@@ -1,0 +1,57 @@
+{% extends "content_template.html" %}
+{% block content %}
+<h1>{{_('Add new parking place') }}</h1>
+{% if error %}
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
+{% endif %}
+
+<fieldset font="Arial">
+    {{_('Enter parking place name: ') }}      <input  align="right"type=text name="place" id="place" onblur="" value="{{place_from_map}}"  size="20" required>
+    <span id="placeValid"></span><br>
+    {{_('Enter parking place geographic coordinates: XX.XXXXXX,YY.YYYYYY') }}    <input type="text" name="location" id="location" value="{{request.form.location}}" size="20" required><br>
+    {{_('Enter parking place address: ') }}    <input type="text" name="address" id="address" value="{{request.form.address}}" size="20" required><br>
+    {{_('Enter size category, normal or large (0/1): ') }}          <input type="text" name="category" id="category" onkeyup="" value="{{request.form.category}}" size="1" required><span id="categoty_valid_result"></span>
+    {{_('Enter minimal capacity of parking place: ') }}          <input type="text" name="min_capacity" id="min_capacity" onkeyup="" value="{{request.form.min_capacity}}" size="3" required><span id="min_capacity_valid_result"></span>
+</fieldset><br/>
+<input type="submit"  onclick="AddParkingSubmit();" size="20" value={{_('Add') }}>
+
+
+<div id='result' class='result'>
+    {{ result }}
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    AddParkingSubmit = function() {
+
+        var formData = {
+            "place":$("#place").val(),
+            "location":$('#location').val(),
+            "address":$('#address').val(),
+            "category":$('#category').val(),
+            "min_capacity":$('#min_capacity').val()
+            };
+        $.ajax({
+            url:'/en/add_place',
+            type:'POST',
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+
+            success: function (response)
+            {
+                var myDiv = $('#result'); // The place where you want to insert the template
+                myDiv.html(response);
+            },
+
+            error: function (request)
+            {
+            alert('Error  on server. Server do not respond');
+            },
+
+        });
+
+        return false;
+    };
+</script>
+{% endblock %}

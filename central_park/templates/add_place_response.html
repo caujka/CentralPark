@@ -1,0 +1,27 @@
+
+{% block content%}
+<h3>{{_('New place was inserted:') }} </h3>
+{% if error %}
+        <div class=error><Strong>{{_('Error') }}</Strong> {{ error }}
+{% else %}
+
+<dl>
+	<dt>
+		<b>{{_('Place name:') }}</b>
+		{{ place }}
+	</dt>
+		
+	<dt>
+		<b>{{_('Place location:') }}</b>
+		{{ location }}
+	</dt>
+	
+	<dt>
+		<b>{{_('Minimal capacity:') }}</b>
+		{{ min_capacity }}
+	</dt>
+</dl>
+
+{% endif%}
+
+{% endblock %}

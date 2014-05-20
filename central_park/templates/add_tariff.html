@@ -1,0 +1,124 @@
+{% extends "content_template.html" %}
+{% block content %}
+<h1>{{_('Add new parking place') }}</h1>
+{% if error %}
+        <p class=error><Strong>{{_('Error') }}</Strong> {{ error }}
+{% endif %}
+
+<fieldset font="Arial">
+    {{_('Enter parking place name: ') }}      <input  align="right"type=text name="place" id="place" onblur="getCurrentTariff();" value="{{place_from_map}}"  size="20" required>
+    <span id="place_valid"></span><br>
+
+    <br><table id ="tarifftable" contenteditable="true" border=1 class="hidden">
+        <tr class="tablerowhead">
+            <th contenteditable="false">0th </th>
+            <th contenteditable="false">1st </th>
+            <th contenteditable="false">2nd </th>
+            <th contenteditable="false">3rd </th>
+            <th contenteditable="false">4th </th>
+            <th contenteditable="false">5th </th>
+            <th contenteditable="false">6th </th>
+            <th contenteditable="false">7th </th>
+            <th contenteditable="false">8th </th>
+            <th contenteditable="false">9th </th>
+            <th contenteditable="false">10th </th>
+            <th contenteditable="false">11th </th>
+            <th contenteditable="false">12th </th>
+            <th contenteditable="false">13th </th>
+            <th contenteditable="false">14th </th>
+            <th contenteditable="false">15th </th>
+            <th contenteditable="false">16th </th>
+            <th contenteditable="false">17th </th>
+            <th contenteditable="false">18th </th>
+            <th contenteditable="false">19th </th>
+            <th contenteditable="false">20th </th>
+            <th contenteditable="false">21th </th>
+            <th contenteditable="false">22th </th>
+            <th contenteditable="false">23th </th>
+        </tr>
+        <tr id="table_row_not_editable" contenteditable="false"></tr>
+        <tr id="table_row_editable"></tr>
+    </table>
+
+</fieldset><br/>
+<input type="submit"  onclick="AddTariffSubmit();" size="20" value={{_('Add') }}>
+
+
+<div id='result' class='result'>
+    {{ result }}
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    AddTariffSubmit = function() {
+        var tariff = $('#tarifftable tr:eq(2) td:eq(0)').text();
+            for(var i=1; i<24; i++){
+                tariff = tariff+';'+$('#tarifftable tr:eq(2) td:eq('+i+')').text();
+            }
+        var formData = {
+            "tariff":tariff,
+            "place":$("#place").val(),
+            };
+        $.ajax({
+            url:'/en/add_tariff',
+            type:'POST',
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+
+            success: function (response)
+            {
+                var myDiv = $('#result'); // The place where you want to insert the template
+                myDiv.html(response);
+            },
+            error: function (request)
+            {
+            alert('Error  on server. Server do not respond');
+            },
+
+        });
+
+        return false;
+    };
+
+    getCurrentTariff = function() {
+
+        var formData = {
+            "place":$("#place").val(),
+            };
+        $.ajax({
+            url:'/en/get_cur_tariff',
+            type:'POST',
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+
+            success: function (response)
+            {
+                if (response['response'] == 'error'){
+                    document.getElementById('place_valid').innerHTML = 'No such place. Please, insert place name correctly';
+                    document.getElementById('tarifftable').className = "hidden";
+                } else {
+                    document.getElementById('place_valid').className = "hidden";
+                    document.getElementById('tarifftable').className = "";
+                    document.getElementById('table_row_not_editable').innerHTML = "";
+                    document.getElementById('table_row_editable').innerHTML = "";
+                    tariff = response['response'].split(';');
+                    for (var i=0; i<tariff.length; i++){
+                        document.getElementById('table_row_not_editable').innerHTML += '<td>' +tariff[i] + '</td>';
+                        document.getElementById('table_row_editable').innerHTML += '<td id="row+'+i+'">' +tariff[i] + '</td>';
+                    }
+                }
+            },
+
+            error: function (request)
+            {
+            alert('Error  on server. Server do not respond');
+            },
+
+        });
+
+        return false;
+    };
+
+</script>
+{% endblock %}
