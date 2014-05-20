@@ -6,7 +6,7 @@ from flask import *
 import re
 from authentication import *
 from flask.ext.babel import *
-from flask_babelex import Babel
+#from flask_babelex import Babel
 from datetime import datetime, timedelta
 from models import *
 from hashlib import md5
@@ -32,6 +32,10 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
+
+@app.route('/return_url', methods=['GET'])
+def success():
+    return render_template('payment_success.html')
 
 @app.route('/<lang_code>/log', methods=['GET', 'POST'])
 def log():
