@@ -391,7 +391,6 @@ def finish_sms_payment_record(transaction):
     if record is not None:
         record.transaction = record.transaction.replace(transaction, transaction.split("waiting")[0])
         payment_id = record.id
-
         db_session.add(record)
         db_session.commit()
         return payment_id

@@ -9,9 +9,7 @@ from flask import *
 from flask import Flask, request, render_template, jsonify, json
 import re
 
-# create our little application :)
 app = Flask(__name__)
-# Load default config and override config from an environment variable
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'central_park.db'),
     DEBUG=True,
@@ -23,16 +21,15 @@ app.config.update(dict(
 
 @app.route('/server_url', methods=['POST'])
 def payment():
-    print "--------------", request.json.get('ext_details')
-    place_id = get_placeid_by_placename(request.json.get('ext_details'))
-    print "---------------", place_id
+    
+    place_id = get_placeid_by_placename(request.json.get('details'))
     reg_cost = r'\d{1,}'
     reg_number = r'[A-Z, a-z, А-Я, а-я, 0-9]{3,10}'
     reg_place = r'[A-Z, a-z, 0-9]{1,}'
 
-    if (re.search(reg_cost, request.json.get('amt')) and re.search(reg_place, request.json.get('ext_details'))
-        and re.search(reg_number, request.json.get('details')) and int(request.json.get('amt')) > 0
-        and get_placeid_by_placename(request.json.get('ext_details')) >= 0):
+    if (re.search(reg_cost, request.json.get('amt')) and re.search(reg_place, request.json.get('details'))
+        and re.search(reg_number, request.json.get('ext_details')) and int(request.json.get('amt')) > 0
+        and get_placeid_by_placename(request.json.get('details')) >= 0):
         cost = int(request.json.get('amt'))
         transaction = "waiting"
         create_payment_record(request.json.get('details'), place_id, cost, transaction)
@@ -55,13 +52,15 @@ def payment():
                 'rate': tariff
                 }
 
-            return render_template("payment_response.html", credentials=credentials)
+            return 'Ok!'
             #return redirect("127.0.0.1:5001/banking")    - NOT IMPLEMENTED
     else:
         error = "Your data is not valid"
-        return render_template("payment_response.html", error=error)
+        return 'Oops! Something wrong.'
+        #return render_template("payment_response.html", error=error)
 
 
 if __name__ == '__main__':
     init_db()
+    print "Server started..."
     app.run(debug=True, use_reloader=False, port=5002)

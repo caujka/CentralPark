@@ -1,8 +1,8 @@
 <form action="http://127.0.0.1:5001/transaction" method="POST">
-    <input type="text" name="amt" value= "{{ info.amt }}"/>      
-    <input type="text" name="ccy" value="{{ info.ccy }}" />      
-    <input type="text" name="merchant" value="{{ info.merchant }}" />  
-    <input type="text" name="card_number"/>  
+    Введіть гроші: <input type="text" name="amt" value= "{{ info.amt }}"/><br>      
+    Введіть валюту: <input type="text" name="ccy" value="{{ info.ccy }}" /> <br>
+    ID мерчанту:<input type="text" name="merchant" value="{{ info.merchant }}" /><br>  
+    Номер картки: <input type="text" name="card_number"/><br>
     <input type="hidden" name="order" value="{{ info.order }}" />     
     <input type="hidden" name="details" value="{{ info.details }}" />
     <input type="hidden" name="ext_details" value="{{ info.ext_details }}" />  
