@@ -13,8 +13,7 @@ from hashlib import md5
 import re
 import logging
 import inspect
-
-
+from statistics import *
 logging.basicConfig(filename=u"server.log",
                     format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
                     level=logging.NOTSET)
@@ -193,7 +192,7 @@ def log_in():
 
 @app.route('/<lang_code>/maps', methods=['GET', 'POST'])
 def maps():
-    return render_template('maps.html', classactive_maps="class=active")
+    return render_template('maps.html', classactive_maps="class=active", place_list=get_list_of_places_names())
 
 
 @app.route('/<lang_code>/welcome', methods=['GET', 'POST'])
@@ -205,6 +204,14 @@ def welcome():
 def maps_ajax():
     s = request.args.get('parking_name')
     return jsonify({'statistics': get_statistics_by_place(s), 'info': "Here goes info about parking place" + s})
+
+
+@app.route('/statistic_ajax_year', methods=['GET', 'POST'])
+def statistics_year():
+    s = request.args.get('parking_name')
+    date1 = request.args.get('date1')
+    return jsonify({'place_name':s,'statistics_year':get_statistics_by_place_year(s, date1),
+                    'statistics_day':get_statistics_by_place_day(s, date1) })
 
 
 @app.route('/maps_ajax_marker_add', methods=['GET', 'POST'])

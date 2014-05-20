@@ -19,8 +19,8 @@ def get_current_pricehistory_id(place_id):
         tariff[0].id: id of actual PriceHistory for given ParkingPlace (INT)
         None: if there is no available PriceHistory record for given ParkingPlace
     """
-    i = place_id
-    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).all()
+    p_id = place_id
+    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == p_id).order_by(desc(PriceHistory.activation_time)).all()
 
     if len(tariff) > 0:
         return tariff[0].id
@@ -36,8 +36,8 @@ def get_current_tariff_matrix(place_id):
         tariff[0].hourly_rate: actual tariff matrix for given ParkingPlace(STRING)
         None: if there is tariff matrix for given ParkingPlace
     """
-    i = place_id
-    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == i).order_by(desc(PriceHistory.activation_time)).all()
+    p_id = place_id
+    tariff = db_session.query(PriceHistory).filter(PriceHistory.parkingplace_id == p_id).order_by(desc(PriceHistory.activation_time)).all()
     if len(tariff) > 0:
         return tariff[0].hourly_rate
     else:
@@ -78,35 +78,6 @@ def calculate_estimated_time(time_start, cost, place_id):
             logging.WARNING("Error in time calculating: %s" % AttributeError)
             raise AttributeError("AttributeError")
         return time_finish
-    return None
-
-
-def calculate_total_price(place_id, time_finish):
-    """
-    params:
-        place_id: id of parking place (INT)
-        time_finish: time expiration of parking (DATETIME)
-    return:
-        cost: total cost for given parking duration (INT)
-        None: if there is no such place_id or tariff matrix
-    """
-    if type(time_finish) == datetime:
-        tariff = parse_tariff_to_list(get_current_tariff_matrix(place_id))
-        time_start = datetime.now()
-    
-        if (time_finish.hour == time_start.hour and time_finish.day == time_start.day):
-            return calculate_minutes_cost(time_finish.minute - time_start.minute, tariff[time_start.hour])
-        else:
-            cost = calculate_minutes_cost(tariff[time_start.hour], 60 - time_start.minute)
-            time_start += timedelta(hours=1)
-            time_start = time_start.replace(minute=0, second=0)
-            hour = time_start.hour
-            while time_start.hour < time_finish.hour:
-                cost += tariff[hour % 24]
-                time_start += timedelta(hours=1)
-            else:
-                cost += calculate_minutes_cost(tariff[hour], time_finish.minute - time_start.minute)
-            return int(cost)
     return None
 
 
