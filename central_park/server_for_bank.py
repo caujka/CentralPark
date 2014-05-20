@@ -32,7 +32,7 @@ def payment():
         and get_placeid_by_placename(request.json.get('details')) >= 0):
         cost = int(request.json.get('amt'))
         transaction = "waiting"
-        create_payment_record(request.json.get('details'), place_id, cost, transaction)
+        create_payment_record(request.json.get('ext_details'), place_id, cost, transaction)
 
         just_parked_car = is_car_already_parked_here(place_id, request.json.get('details'))
         tariff_matrix = parse_tariff_to_list(get_current_tariff_matrix(place_id))
@@ -48,7 +48,7 @@ def payment():
                 'cost': cost,
                 'time_left': just_parked_car.expiration_time.strftime("%H:%M %d-%m-%Y"),
                 'transaction': just_parked_car.transaction,
-                'place': request.json.get('ext_details'),
+                'place': request.json.get('details'),
                 'rate': tariff
                 }
 
